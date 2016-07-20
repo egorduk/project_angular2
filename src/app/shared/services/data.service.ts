@@ -23,16 +23,35 @@ export class DataService {
     constructor(private http: Http) { }
 
     load() {
-        var headers = new Headers();
-        headers.append('Authorization', 'test');
+        //this.http.get(this._baseUrl + 'app/server/server.php')
+        this.http.get('http://localhost:80/project_angular2/src/app/server/server.php?action=get_pictures')
+            .subscribe(res => console.log(res.json()));
+        //var headers = new Headers();
+        //headers.append('Authorization', 'test');
 
-        return this.http.get('https://some.api')
-            .map(res => console.log("Response came!!!"))
+      /*  return this.http.get(this._baseUrl + 'app/server/server.php')
+            .map((res: Response) => {
+                console.log("Response came");
+                console.log(res);
+                //return res;
+            })
+            .catch(this.handleError);*/
+
+       /* this.http.get({
+            method: 'GET',
+            url: this._baseUrl + 'app/server/server.php'
+        }).then(function (response) {
+            // code to execute in case of success
+            console.log(response);
+        }, function (response) {
+            // code to execute in case of error
+        });*/
     }
 
     getPictures() : Observable<IPicture[]> {
         if (!this.pictures) {
-            return this.http.get(this._baseUrl + 'app/server/server.php')
+            //return this.http.get(this._baseUrl + 'app/server/server.php')
+            return this.http.get('http://localhost:80/project_angular2/src/app/server/server.php?action=get_pictures')
                 .map((res: Response) => {
                     this.pictures = res.json();
                     return this.pictures;

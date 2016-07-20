@@ -42,8 +42,6 @@ export class CustomersComponent implements OnInit {
               console.log(pictures);
               //this.pictures = pictures;
           });
-
-      this.dataService.load().subscribe((result) => console.log(result));
   }
 
   changeDisplayMode(mode: DisplayModeEnum) {
