@@ -23,18 +23,22 @@
                         </li>
                     </ul>
                     <filter-textbox class="navbar-right"
-                     (changed)="filterChanged($event)"></filter-textbox>
+                                    (changed)="filterChanged($event)"></filter-textbox>
                 </div>
             </div>
         </div>
-        
-        <customers-card 
-          [customers]="filteredCustomers" 
-          [hidden]="displayMode !== displayModeEnum.Card"></customers-card>
-    
-        <customers-grid 
-          [customers]="filteredCustomers" 
-          [hidden]="displayMode !== displayModeEnum.Grid"></customers-grid>
-          
+
+        <customers-card
+                [customers]="filteredCustomers"
+                [hidden]="displayMode !== displayModeEnum.Card"></customers-card>
+
+        <pictures-list
+                [pictures]="filteredPictures"
+                [hidden]="false"></pictures-list>
+
+        <!--  <customers-grid
+                  [customers]="filteredCustomers"
+                  [hidden]="displayMode !== displayModeEnum.Grid"></customers-grid>-->
+
     </div>
 </div>

@@ -52,6 +52,7 @@ export class DataService {
         if (!this.pictures) {
             //return this.http.get(this._baseUrl + 'app/server/server.php')
             return this.http.get('http://localhost:80/project_angular2/src/app/server/server.php?action=get_pictures')
+            //return this.http.get(this._baseUrl + 'pictures.json')
                 .map((res: Response) => {
                     this.pictures = res.json();
                     return this.pictures;
