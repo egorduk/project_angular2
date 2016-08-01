@@ -6,7 +6,7 @@ import {Observer} from 'rxjs/Observer';
 import 'rxjs/add/operator/map'; 
 import 'rxjs/add/operator/catch';
 
-import { ICustomer, IOrder, IState, IPicture } from '../interfaces';
+import { ICustomer, IOrder, IState, IPicture, IUser } from '../interfaces';
 
 @Injectable()
 export class DataService {
@@ -16,42 +16,37 @@ export class DataService {
     orders: IOrder[];
     states: IState[];
     pictures: IPicture[];
-    //body = JSON.stringify({action: "get_pictures"});
-    //searchParams = new URLSearchParams();
-    //searchParams.set('action', "get_pictures");
+    user: IUser;
+    _serverUrl: string = '';
 
-    constructor(private http: Http) { }
+    constructor(private http: Http) {
+       this._serverUrl = 'http://localhost:80/project_angular2/src/app/server/server.php';
+    }
 
-    load() {
-        //this.http.get(this._baseUrl + 'app/server/server.php')
-        this.http.get('http://localhost:80/project_angular2/src/app/server/server.php?action=get_pictures')
-            .subscribe(res => console.log(res.json()));
-        //var headers = new Headers();
-        //headers.append('Authorization', 'test');
+    loginUser(user: IUser) : Observable<boolean> {
+        /*let headers = new Headers({
+            'Content-Type': 'application/json'});
 
-      /*  return this.http.get(this._baseUrl + 'app/server/server.php')
-            .map((res: Response) => {
-                console.log("Response came");
-                console.log(res);
-                //return res;
-            })
+        return this.http
+            .post(this.serverUrl + '?action=login_user', JSON.stringify(user), {headers: headers})
+            .toPromise()
+            .then(res => res.json().data)
             .catch(this.handleError);*/
 
-       /* this.http.get({
-            method: 'GET',
-            url: this._baseUrl + 'app/server/server.php'
-        }).then(function (response) {
-            // code to execute in case of success
-            console.log(response);
-        }, function (response) {
-            // code to execute in case of error
-        });*/
+        return this.http.get(this._serverUrl + '?action=get_user&login=' + user.login + '&password=' + user.password)
+            .map((res: Response) => {
+                //this.pictures = res.json();
+                console.log(res);
+                //return this.user;
+                return true;
+            })
+            .catch(this.handleError);
     }
 
     getPictures() : Observable<IPicture[]> {
         if (!this.pictures) {
             //return this.http.get(this._baseUrl + 'app/server/server.php')
-            return this.http.get('http://localhost:80/project_angular2/src/app/server/server.php?action=get_pictures')
+            return this.http.get(this._serverUrl + '?action=get_pictures')
             //return this.http.get(this._baseUrl + 'pictures.json')
                 .map((res: Response) => {
                     this.pictures = res.json();

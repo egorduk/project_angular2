@@ -10,7 +10,5 @@ import { APP_PROVIDERS } from './app.providers';
   directives: [ ROUTER_DIRECTIVES ],
   providers: [ APP_PROVIDERS ]
 })
-export class AppComponent {
-  
-  
-}
+
+export class AppComponent {}

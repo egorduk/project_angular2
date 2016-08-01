@@ -15,6 +15,7 @@ import { ICustomer, IOrder, IPicture } from '../shared/interfaces';
     templateUrl: 'customers.component.html',
     directives: [ ROUTER_DIRECTIVES, FilterTextboxComponent, CustomersCardComponent, CustomersGridComponent, PicturesComponent ]
 })
+
 export class CustomersComponent implements OnInit {
 
     title: string;

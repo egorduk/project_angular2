@@ -1,0 +1,26 @@
+<div class="login">
+    <div class="container">
+        <header>
+            <h3><span class="glyphicon glyphicon-user"></span>&nbsp;&nbsp;Login Form</h3>
+        </header>
+        <br />
+        <div class="navbar">
+        </div>
+        <div class="container">
+            <form (ngSubmit)="onSubmit()" class="login-form">
+                <div class="form-group">
+                    <label for="login">Login</label>
+                    <input type="text" class="form-control" id=login name="login" [(ngModel)]="user.login" #login="ngModel" required>
+                    <div class="alert alert-danger" [hidden]="true">Incorrect login or email</div>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="text" class="form-control" id="password" name="password" [(ngModel)]="user.password" #password="ngModel" required>
+                </div>
+                <button class="btn btn-default" (click)="onSignIn($event)">Sigh in</button>&nbsp;&nbsp;
+                <button type="submit" class="btn btn-success" (click)="onSignUp($event)">Sign up</button>
+            </form>
+        </div>
+    </div>
+</div>
+
