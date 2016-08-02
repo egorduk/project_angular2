@@ -7,15 +7,15 @@
         <div class="navbar">
         </div>
         <div class="container">
+            <div class="alert alert-danger" [hidden]="_hideError">Incorrect email or password</div>
             <form (ngSubmit)="onSubmit()" class="login-form">
                 <div class="form-group">
-                    <label for="login">Login</label>
-                    <input type="text" class="form-control" id=login name="login" [(ngModel)]="user.login" #login="ngModel" required>
-                    <div class="alert alert-danger" [hidden]="true">Incorrect login or email</div>
+                    <label for="email">Email</label>
+                    <input type="text" class="form-control" id="email" name="email" [(ngModel)]="user.email" required>
                 </div>
                 <div class="form-group">
                     <label for="password">Password</label>
-                    <input type="text" class="form-control" id="password" name="password" [(ngModel)]="user.password" #password="ngModel" required>
+                    <input type="text" class="form-control" id="password" name="password" [(ngModel)]="user.password" required>
                 </div>
                 <button class="btn btn-default" (click)="onSignIn($event)">Sigh in</button>&nbsp;&nbsp;
                 <button type="submit" class="btn btn-success" (click)="onSignUp($event)">Sign up</button>

@@ -4,12 +4,14 @@ import { CustomersRoutes } from './customers/customers.routes';
 import { CustomerRoutes } from './customer/customer.routes';
 
 import { LoginComponent } from './auth/login.component';
+//import { HomeComponent } from './home.component';
 
 export const App_Routes: RouterConfig = [
 ...CustomersRoutes,
 ...CustomerRoutes,
-    { path: 'customers', pathMatch:'full', redirectTo: '/customers' }, //redirect to home page
-    { path: 'login', component: LoginComponent },
+    { path: 'customers', pathMatch: 'full', redirectTo: '/customers' }, //redirect to home page
+    { path: 'login', component: LoginComponent, name: 'Login' },
+   // { path: '/', component: HomeComponent, name: 'Home', useAsDefault: true },
     //{ path: '**', component: PageNotFoundComponent }
 ];
 

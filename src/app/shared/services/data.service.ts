@@ -33,12 +33,17 @@ export class DataService {
             .then(res => res.json().data)
             .catch(this.handleError);*/
 
-        return this.http.get(this._serverUrl + '?action=get_user&login=' + user.login + '&password=' + user.password)
+        return this.http.get(this._serverUrl + '?action=get_user&email=' + user.email + '&password=' + user.password)
             .map((res: Response) => {
                 //this.pictures = res.json();
-                console.log(res);
+                //console.log(res.json());
                 //return this.user;
-                return true;
+                res = res.json();
+                if (res == false) {
+                    return false;
+                } else {
+                    return true;
+                }
             })
             .catch(this.handleError);
     }

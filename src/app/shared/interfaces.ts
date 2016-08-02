@@ -32,6 +32,7 @@ export interface IPicture {
 
 export interface IUser {
     id: number;
+    email: string;
     login: string;
     password: string;
     firstName: string;
