@@ -1,13 +1,16 @@
 import { bootstrap } from '@angular/platform-browser-dynamic';
 import { disableDeprecatedForms, provideForms } from '@angular/forms';
 import { AppComponent } from './app.component';
-import { APP_ROUTER_PROVIDERS } from './app.routes';
-//import {LocalStorageService, LocalStorageSubscriber} from 'angular2-localstorage/LocalStorageEmitter';
-
-
+//import { APP_ROUTER_PROVIDERS } from './app.routes';
 import { provide } from '@angular/core';
 import { Http, HTTP_PROVIDERS } from '@angular/http';
-import { AuthConfig, AuthHttp } from 'angular2-jwt/angular2-jwt';
+import { provideRouter } from '@angular/router';
+import { FORM_PROVIDERS } from '@angular/common';
+//import { AuthConfig, AuthHttp } from 'angular2-jwt/angular2-jwt';
+//import { AUTH_PROVIDERS } from 'angular2-jwt';
+import { AUTH_PROVIDERS } from 'angular2-jwt/angular2-jwt';
+import { AuthGuard } from './common/auth.guard';
+import { routes } from './app.routes';
 
 /*var appPromise = bootstrap(AppComponent,[
     APP_ROUTER_PROVIDERS,
@@ -22,22 +25,32 @@ import { AuthConfig, AuthHttp } from 'angular2-jwt/angular2-jwt';
 
 LocalStorageSubscriber(appPromise);*/
 
+/*
+ bootstrap(
+ AppComponent,
+ [
+ disableDeprecatedForms(),
+ provideForms(),
+ APP_ROUTER_PROVIDERS,
+ HTTP_PROVIDERS,
+ provide(AuthHttp, {
+ useFactory: (http) => {
+ return new AuthHttp(new AuthConfig({
+ tokenName: 'jwt'
+ }), http);
+ },
+ deps: [Http]
+ })
+ ]
+ );*/
+
 bootstrap(
     AppComponent,
     [
-        disableDeprecatedForms(),
-        provideForms(),
-        APP_ROUTER_PROVIDERS,
+        provideRouter(routes),
+        FORM_PROVIDERS,
         HTTP_PROVIDERS,
-        provide(AuthHttp, {
-            useFactory: (http) => {
-                return new AuthHttp(new AuthConfig({
-                    tokenName: 'jwt'
-                }), http);
-            },
-            deps: [Http]
-        })
+        AUTH_PROVIDERS,
+        AuthGuard
     ]
 );
-
-https://auth0.com/blog/creating-your-first-real-world-angular-2-app-from-authentication-to-calling-an-api-and-everything-in-between/
