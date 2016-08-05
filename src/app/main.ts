@@ -5,7 +5,7 @@ import { AppComponent } from './app.component';
 import { provide } from '@angular/core';
 import { Http, HTTP_PROVIDERS } from '@angular/http';
 import { provideRouter } from '@angular/router';
-import { FORM_PROVIDERS } from '@angular/common';
+//import { FORM_PROVIDERS } from '@angular/common';
 //import { AuthConfig, AuthHttp } from 'angular2-jwt/angular2-jwt';
 //import { AUTH_PROVIDERS } from 'angular2-jwt';
 import { AUTH_PROVIDERS } from 'angular2-jwt/angular2-jwt';
@@ -48,7 +48,9 @@ bootstrap(
     AppComponent,
     [
         provideRouter(routes),
-        FORM_PROVIDERS,
+        disableDeprecatedForms(),
+        provideForms(),
+       // FORM_PROVIDERS,
         HTTP_PROVIDERS,
         AUTH_PROVIDERS,
         AuthGuard

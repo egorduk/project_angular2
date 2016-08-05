@@ -12,7 +12,7 @@ import { contentHeaders } from '../common/headers';
   directives: [ CORE_DIRECTIVES, FORM_DIRECTIVES ],
   //template: template,
  // styles: [ styles ]
-  template: 'signup.html'
+    templateUrl: 'app/signup/signup.html'
 })
 export class Signup {
   constructor(public router: Router, public http: Http) {
