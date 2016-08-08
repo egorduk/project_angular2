@@ -1,6 +1,9 @@
 <?php
-header("Access-Control-Allow-Origin", '*');
-header('Access-Control-Allow-Methods', 'POST,GET,OPTIONS,PUT,DELETE');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS');
+header('Access-Control-Allow-Headers: Origin, Content-Type, X-Auth-Token, Accept');
+//header("Access-Control-Allow-Origin", '*');
+//header('Access-Control-Allow-Methods', 'POST,GET,OPTIONS,PUT,DELETE');
 //header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
 
 /*if (isset($_GET['action']) && $_GET['action'] == 'get_pictures') {
@@ -48,13 +51,18 @@ switch ($requestMethod) {
         var_dump('get');
         break;
     case "POST":
-        var_dump($_POST);die;
+        $post = json_decode(file_get_contents('php://input'));
+        var_dump($post->username);die;
         $username = $_POST['username'];
         $password = $_POST['password'];
         echo json_encode(array('id_token' => $password));
 
         break;
     case "DELETE":
+        // delete stuff
+        break;
+    case "OPTIONS":
+        var_dump($_POST);die;
         // delete stuff
         break;
 }

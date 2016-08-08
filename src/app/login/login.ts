@@ -25,22 +25,36 @@ export class Login {
     }
 
     login(event, username, password) {
-        console.log(username);
+        //console.log(username);
         event.preventDefault();
         let body = JSON.stringify({ username, password });
-        //let body = { username: 'u', password: 'p' };
+        //console.log(body);
+       // let body = JSON.stringify({ username: 'u', password: 'p' });
         //this.http.post('http://localhost:3001/sessions/create', body, { headers: contentHeaders })
-        this.http.post(this._serverUrl + '/action/', body, { headers: contentHeaders })
+       this.http.post(this._serverUrl + '/action/create_session', body, { headers: contentHeaders })
             .subscribe(
                 response => {
                 localStorage.setItem('id_token', response.json().id_token);
                 this.router.navigate(['/home']);
             },
                 error => {
-                alert(error.text());
+                //alert(error.text());
                 console.log(error.text());
             }
         );
+
+      /*  this.http.get(this._serverUrl + '?action=test')
+            .subscribe(
+            response => {
+                //localStorage.setItem('id_token', response.json().id_token);
+                //this.router.navigate(['/home']);
+                console.log(response);
+            },
+            error => {
+                //alert(error.text());
+                console.log(error.text());
+            }
+        );*/
     }
 
     signup(event) {
