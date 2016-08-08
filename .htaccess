@@ -1,6 +1,6 @@
 <IfModule mod_rewrite.c>
 RewriteEngine On
-RewriteBase /action/
+RewriteBase /api/
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule . /project_angular2/src/server/server.php [L]

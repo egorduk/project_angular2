@@ -8,35 +8,39 @@ import { contentHeaders } from '../common/headers';
 //const template = require('./signup.html');
 
 @Component({
-  selector: 'signup',
-  directives: [ CORE_DIRECTIVES, FORM_DIRECTIVES ],
-  //template: template,
- // styles: [ styles ]
+    selector: 'signup',
+    directives: [ CORE_DIRECTIVES, FORM_DIRECTIVES ],
+    //template: template,
+    // styles: [ styles ]
     templateUrl: 'app/signup/signup.html'
 })
 export class Signup {
-  constructor(public router: Router, public http: Http) {
-  }
 
-  signup(event, username, password) {
-    event.preventDefault();
-    let body = JSON.stringify({ username, password });
-    this.http.post('http://localhost:3001/users', body, { headers: contentHeaders })
-      .subscribe(
-        response => {
-          localStorage.setItem('id_token', response.json().id_token);
-          this.router.navigate(['/home']);
-        },
-        error => {
-          alert(error.text());
-          console.log(error.text());
-        }
-      );
-  }
+    _serverUrl: string = '';
 
-  login(event) {
-    event.preventDefault();
-    this.router.navigate(['/login']);
-  }
+    constructor(public router: Router, public http: Http) {
+        this._serverUrl = 'http://localhost:80/project_angular2';
+    }
+
+    signup(event, email, password) {
+        event.preventDefault();
+        let body = JSON.stringify({ email, password });
+        this.http.post(this._serverUrl + '/api/create_user', body, { headers: contentHeaders })
+            .subscribe(
+                response => {
+                localStorage.setItem('id_token', response.json().id_token);
+                //this.router.navigate(['/home']);
+            },
+                error => {
+                //alert(error.text());
+                console.log(error.text());
+            }
+        );
+    }
+
+    login(event) {
+        event.preventDefault();
+        this.router.navigate(['/login']);
+    }
 
 }

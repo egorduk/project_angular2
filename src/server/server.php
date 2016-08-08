@@ -44,6 +44,7 @@ header('Access-Control-Allow-Headers: Origin, Content-Type, X-Auth-Token, Accept
 //var_dump($_SERVER['REQUEST_METHOD']);die;
 
 $requestMethod = $_SERVER['REQUEST_METHOD'];
+$requestUri = $_SERVER['REQUEST_URI'];
 
 switch ($requestMethod) {
     case "GET":
@@ -52,11 +53,50 @@ switch ($requestMethod) {
         break;
     case "POST":
         $post = json_decode(file_get_contents('php://input'));
-        var_dump($post->username);die;
-        $username = $_POST['username'];
-        $password = $_POST['password'];
-        echo json_encode(array('id_token' => $password));
+        //var_dump($post->username);die;
+        $data = explode('/api/', $requestUri);
+        $action = $data[1];
+        if ($action == 'create_session') {
+            if (!$post->email || !$post->password) {
+                header('HTTP/1.1 400 You must send the email and the password');
+                return;
+            }
 
+            $email = $post->email;
+            $password = md5($post->password);
+            $db = new PDO('mysql:dbname=project_angular2;host=127.0.0.1', 'root', '');
+            $query = $db->prepare("select * from user where email = ? and password = ?");
+            $query->execute(array($email, $password));
+
+            if ($query->rowCount() > 0) {
+                $data = $query->fetchAll(PDO::FETCH_ASSOC);
+                $data = array('user_id' => reset($data)['id']);
+                //var_dump($data);die;
+            } else {
+                header('HTTP/1.1 401 The email or password don\'t match');
+                return;
+            }
+
+            echo json_encode(array('id_token' => $password));
+        } elseif ($action == 'create_user') {
+            if (!$post->email || !$post->password) {
+                header('HTTP/1.1 400 You must send the email and the password');
+                return;
+            }
+
+            $email = $post->email;
+            $password = md5($post->password);
+            $db = new PDO('mysql:dbname=project_angular2;host=127.0.0.1', 'root', '');
+            $query = $db->prepare("insert into user(email, password) values(?, ?)");
+            $response = $query->execute(array($email, $password));
+
+            if ($response) {
+                echo json_encode(array('id_token' => $password));
+            } else {
+                echo json_encode(array('error' => 'Something wrong'));
+            }
+        }
+        //var_dump($action);die;
         break;
     case "DELETE":
         // delete stuff
