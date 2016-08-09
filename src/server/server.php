@@ -1,4 +1,5 @@
 <?php
+
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Origin, Content-Type, X-Auth-Token, Accept');
@@ -43,6 +44,13 @@ header('Access-Control-Allow-Headers: Origin, Content-Type, X-Auth-Token, Accept
 
 //var_dump($_SERVER['REQUEST_METHOD']);die;
 
+/*function __autoload($class) {
+    $parts = explode('\\', $class);
+    require_once end($parts) . '.php';
+}*/
+
+//use Namshi\JOSE;
+
 $requestMethod = $_SERVER['REQUEST_METHOD'];
 $requestUri = $_SERVER['REQUEST_URI'];
 
@@ -70,14 +78,26 @@ switch ($requestMethod) {
 
             if ($query->rowCount() > 0) {
                 $data = $query->fetchAll(PDO::FETCH_ASSOC);
-                $data = array('user_id' => reset($data)['id']);
+                $userId = reset($data)['id'];
                 //var_dump($data);die;
             } else {
                 header('HTTP/1.1 401 The email or password don\'t match');
                 return;
             }
 
-            echo json_encode(array('id_token' => $password));
+            require_once "JOSE/autoloader.php";
+            $jws  = new \Namshi\JOSE\SimpleJWS(array(
+                'alg' => 'RS256'
+            ));
+            $jws->setPayload(array(
+                'uid' => $userId,
+            ));
+            $serverFolder = dirname(__FILE__);
+            $privateKey = openssl_pkey_get_private('file://' . $serverFolder . '/key/ca.key');
+            $jws->sign($privateKey);
+            $token = $jws->getTokenString();
+
+            echo json_encode(array('id_token' => $token));
         } elseif ($action == 'create_user') {
             if (!$post->email || !$post->password) {
                 header('HTTP/1.1 400 You must send the email and the password');
