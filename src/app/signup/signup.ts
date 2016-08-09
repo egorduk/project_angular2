@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
-import { CORE_DIRECTIVES, FORM_DIRECTIVES } from '@angular/common';
+import { Router, ROUTER_DIRECTIVES } from '@angular/router';
+import { CORE_DIRECTIVES } from '@angular/common';
 import { Http } from '@angular/http';
 import { contentHeaders } from '../common/headers';
 
@@ -9,7 +9,7 @@ import { contentHeaders } from '../common/headers';
 
 @Component({
     selector: 'signup',
-    directives: [ CORE_DIRECTIVES, FORM_DIRECTIVES ],
+    directives: [ CORE_DIRECTIVES, ROUTER_DIRECTIVES ],
     //template: template,
     // styles: [ styles ]
     templateUrl: 'app/signup/signup.html'

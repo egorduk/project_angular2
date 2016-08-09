@@ -15,6 +15,7 @@ import { AuthHttp } from 'angular2-jwt/angular2-jwt';
     //template: 'home.html'
     templateUrl: 'app/home/home.html'
 })
+
 export class Home {
     jwt: string;
     decodedJwt: string;
@@ -24,8 +25,9 @@ export class Home {
 
     constructor(public router: Router, public http: Http, public authHttp: AuthHttp) {
         this.jwt = localStorage.getItem('id_token');
-        //this.decodedJwt = this.jwt && window.jwt_decode(this.jwt);
+        this.decodedJwt = this.jwt && window.jwt_decode(this.jwt);
         this._serverUrl = 'http://localhost:80/project_angular2';
+        this.getAllUserPictures();
     }
 
     logout() {
@@ -60,5 +62,13 @@ export class Home {
                     error => this.response = error.text()
             );
         }
+    }
+
+    getAllUserPictures() {
+        this.authHttp.get(this._serverUrl + '/api/get_all_user_pictures')
+            .subscribe(
+            response => this.response = response.text(),
+            error => this.response = error.text()
+        );
     }
 }

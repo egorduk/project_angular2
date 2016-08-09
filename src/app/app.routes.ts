@@ -9,5 +9,5 @@ export const routes: RouterConfig = [
     { path: 'login',  component: Login },
     { path: 'signup', component: Signup },
     { path: 'home',   component: Home, canActivate: [AuthGuard] },
-    { path: '**',     component: Login },
+    { path: '**',     component: Login }
 ];
