@@ -1,13 +1,14 @@
 <div class="jumbotron center-block friends">
     <h1></h1>
-    <div class="following_feed ">
-        <div class="row">
-            <div class="col-sm-6 col-md-4">
+    <p><a class="btn btn-primary btn-lg" role="button" (click)="getFriendsPictures()">test</a></p>
+    <div class="following_feed">
+        <div class="row" *ngFor="let picture of pictures">
+            <div class="col-md-6 col-md-offset-3">
                 <div class="thumbnail">
-                    <img src="../../uploads/1.jpg" alt="...">
+                    <img src="../../uploads/" alt="...">
                     <div class="caption">
                         <h3>Thumbnail label</h3>
-                        <p>...</p>
+                        <p>{{ picture }}</p>
                         <p><a href="#" class="btn btn-primary" role="button">Button</a> <a href="#" class="btn btn-default" role="button">Button</a></p>
                     </div>
                 </div>

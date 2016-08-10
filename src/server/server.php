@@ -10,34 +10,43 @@ $encAlgorithm = 'RS256';
 
 switch ($requestMethod) {
     case "GET":
+        $data = explode('/api/', $requestUri);
+        $action = $data[1];
 
-        require_once "JOSE/autoloader.php";
-        $headers = apache_request_headers();
-        $token = str_replace('Bearer ', '', $headers['Authorization']);
-        //var_dump($token);die;
-        $jws = \Namshi\JOSE\SimpleJWS::load($token);
-        $serverFolder = dirname(__FILE__);
-        $public_key = openssl_pkey_get_public('file://' . $serverFolder . '/key/public.pem');
-        //$privateKey = openssl_pkey_get_private('file://' . $serverFolder . '/sert.pem');
-        //var_dump($public_key);die;
-        if ($jws->isValid($public_key, $encAlgorithm)) {
-            $payload = $jws->getPayload();
-            $userId = $payload['uid'];
+        if ($action == 'get_friends_pictures') {
+            require_once "JOSE/autoloader.php";
+            $headers = apache_request_headers();
+            $token = getFormattedToken($headers['Authorization']);
+            $jws = \Namshi\JOSE\SimpleJWS::load($token);
+            $serverFolder = dirname(__FILE__);
+            $publicKey = openssl_pkey_get_public('file://' . $serverFolder . '/key/public.pem');
 
-            $db = new PDO('mysql:dbname=project_angular2;host=127.0.0.1', 'root', '');
-            $query = $db->prepare("select * from picture where user_id = ?");
-            $query->execute(array($userId));
+            if ($jws->isValid($publicKey, $encAlgorithm)) {
+                $payload = $jws->getPayload();
+                $userId = $payload['uid'];
 
-            if ($query->rowCount() > 0) {
-                $data = $query->fetchAll(PDO::FETCH_ASSOC);
-                //$userId = reset($data)['id'];
-                var_dump($data);die;
+                $db = getDb();
+                $query = $db->prepare("select p.filename, u.login from friend f
+                    inner join picture p on p.user_id = f.friend_id
+                    inner join user u on u.id = f.friend_id
+                    where f.user_id = ?
+                    order by p.date_upload desc");
+                $query->execute(array($userId));
+
+                if ($query->rowCount() > 0) {
+                    $arrGroupedPictures = [];
+                    $pictures = $query->fetchAll(PDO::FETCH_ASSOC);
+                    foreach($pictures as $key => $pic) {
+                        $arrGroupedPictures[$pic['login']][] = $pic['filename'];
+                    }
+                    echo json_encode($arrGroupedPictures);
+                } else {
+                    echo json_encode(array('error' => 'Something wrong'));
+                    return;
+                }
             } else {
-                echo json_encode(array('error' => 'Something wrong'));
-                return;
+                header('HTTP/1.1 401 Unauthorized ');
             }
-        } else {
-            header('HTTP/1.1 401 Unauthorized ');
         }
 
         break;
@@ -107,4 +116,12 @@ switch ($requestMethod) {
         var_dump($_POST);die;
         // delete stuff
         break;
+}
+
+function getDb() {
+    return new PDO('mysql:dbname=project_angular2;host=127.0.0.1', 'root', '');
+}
+
+function getFormattedToken($authHeader) {
+    return str_replace('Bearer ', '', $authHeader);
 }
