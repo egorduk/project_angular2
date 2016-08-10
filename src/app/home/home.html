@@ -1,5 +1,5 @@
-<div>
-    <div class="home jumbotron centered">
+<div class="">
+    <div class="home jumbotron center-block">
         <h1>Welcome!</h1>
        <!-- <h2 *ngIf="jwt">Your JWT is:</h2>
         <pre *ngIf="jwt" class="jwt"><code>{{ jwt }}</code></pre>
@@ -11,7 +11,13 @@
         <h2 *ngIf="response">The response of calling the <span class="red">{{ api }}</span> API is:</h2>
         <h3 *ngIf="response">{{ response }}</h3>-->
         <div>
-
+            <p><a class="btn btn-primary btn-lg" role="button" (click)="getAllUserPictures()">test</a></p>
+            <p><a class="btn btn-primary btn-lg" role="button" (click)="logout()">Logout</a></p>
+            <ul class="nav nav-tabs centered">
+                <li class="active"><a [routerLink]="['/friends']">Friends <span class="sr-only"></span></a></li>
+                <li class=""><a href="#">Activity <span class="sr-only"></span></a></li>
+                <li class=""><a href="#">Profile <span class="sr-only"></span></a></li>
+            </ul>
         </div>
     </div>
 </div>

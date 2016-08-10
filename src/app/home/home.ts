@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CORE_DIRECTIVES } from '@angular/common';
 import { Http, Headers } from '@angular/http';
-import { Router } from '@angular/router';
+import { Router, ROUTER_DIRECTIVES } from '@angular/router';
 import { AuthHttp } from 'angular2-jwt/angular2-jwt';
 
 //const styles = require('./home.css');
@@ -9,7 +9,7 @@ import { AuthHttp } from 'angular2-jwt/angular2-jwt';
 
 @Component({
     selector: 'home',
-    directives: [ CORE_DIRECTIVES ],
+    directives: [ CORE_DIRECTIVES, ROUTER_DIRECTIVES ],
     //template: template,
     //styles: [ styles ]
     //template: 'home.html'
@@ -70,5 +70,10 @@ export class Home {
             response => this.response = response.text(),
             error => this.response = error.text()
         );
+    }
+
+    friends(event) {
+        event.preventDefault();
+        this.router.navigate(['/friends']);
     }
 }
