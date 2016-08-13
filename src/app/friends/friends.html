@@ -34,16 +34,17 @@
             <div class="jumbotron">
                 <p style="text-align: center">You can follow</p>
                 <div class="row" *ngFor="let user of users">
+                <div>
                     <p>
                         <img src="../../uploads/avatars/{{ user.avatar }}" alt="..." class="img-circle" style="width: 40px; height: 40px;">
                         <span><a href="#">{{ user.login }}</a></span>
-                        <a href="#" class="btn btn-default" role="button">Follow</a><br>
+                        <a href="#" class="btn btn-default" role="button" (click)="followUser($event, user.id)">Follow</a><br>
                         <span>{{ user.pictures.length }} photos</span>
                     </p>
                     <div class="media">
                         <div class="media-left">
                             <a href="#" *ngFor="let picture of user.pictures">
-                                <img class="img-thumbnail" src="../../uploads/pictures/{{ picture }}" alt="..." style="">
+                            <img class="img-thumbnail" src="../../uploads/pictures/{{ picture }}" alt="..." style="">
                             </a>
                         </div>
                     </div>
@@ -51,4 +52,5 @@
             </div>
         </div>
     </div>
+</div>
 </div>

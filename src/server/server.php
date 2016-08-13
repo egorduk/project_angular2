@@ -66,12 +66,6 @@ switch ($requestMethod) {
                 if ($query->rowCount() > 0) {
                     $users = $query->fetchAll(PDO::FETCH_ASSOC);
 
-                    $arr = [];
-                    foreach($users as $user) {
-                        $arr[$user['login']][] = $user;
-                    }
-
-                    //echo json_encode($arr);
                     echo json_encode($users);
                 } else {
                     echo json_encode(array('error' => 'Something wrong'));
@@ -88,6 +82,12 @@ switch ($requestMethod) {
         //var_dump($post->username);die;
         $data = explode('/api/', $requestUri);
         $action = $data[1];
+        require_once "JOSE/autoloader.php";
+        $headers = apache_request_headers();
+        $token = getFormattedToken($headers['Authorization']);
+        $jws = \Namshi\JOSE\SimpleJWS::load($token);
+        $publicKey = getPublicKey();
+
         if ($action == 'create_session') {
             if (!$post->email || !$post->password) {
                 header('HTTP/1.1 400 You must send the email and the password');
@@ -96,7 +96,7 @@ switch ($requestMethod) {
 
             $email = $post->email;
             $password = md5($post->password);
-            $db = new PDO('mysql:dbname=project_angular2;host=127.0.0.1', 'root', '');
+            $db = getDb();
             $query = $db->prepare("select * from user where email = ? and password = ?");
             $query->execute(array($email, $password));
 
@@ -116,8 +116,7 @@ switch ($requestMethod) {
             $jws->setPayload(array(
                 'uid' => $userId,
             ));
-            $serverFolder = dirname(__FILE__);
-            $privateKey = openssl_pkey_get_private('file://' . $serverFolder . '/key/private.pem', 'pass');
+            $privateKey = getPrivateKey();
             $jws->sign($privateKey);
             $token = $jws->getTokenString();
 
@@ -130,7 +129,7 @@ switch ($requestMethod) {
 
             $email = $post->email;
             $password = md5($post->password);
-            $db = new PDO('mysql:dbname=project_angular2;host=127.0.0.1', 'root', '');
+            $db = getDb();
             $query = $db->prepare("insert into user(email, password) values(?, ?)");
             $response = $query->execute(array($email, $password));
 
@@ -138,6 +137,31 @@ switch ($requestMethod) {
                 echo json_encode(array('id_token' => $password));
             } else {
                 echo json_encode(array('error' => 'Something wrong'));
+            }
+        } elseif ($action == 'follow_user') {
+            if (!$post->id) {
+                header('HTTP/1.1 400 You must send the id');
+                return;
+            }
+
+            if ($jws->isValid($publicKey, $encAlgorithm)) {
+                $payload = $jws->getPayload();
+                $userId = $payload['uid'];
+
+                $friendId = $post->id;
+
+                $db = getDb();
+                $query = $db->prepare("insert into friend(user_id, friend_id) values(?, ?)");
+                $response = $query->execute(array($userId, $friendId));
+
+                if ($response) {
+                    echo json_encode(array('response' => $response));
+                } else {
+                    echo json_encode(array('response' => 'Something wrong'));
+                }
+                //echo json_encode(array('response' => true));
+            } else {
+                header('HTTP/1.1 401 Unauthorized');
             }
         }
         //var_dump($action);die;
@@ -162,4 +186,9 @@ function getFormattedToken($authHeader) {
 function getPublicKey() {
     $serverFolder = dirname(__FILE__);
     return openssl_pkey_get_public('file://' . $serverFolder . '/key/public.pem');
+}
+
+function getPrivateKey() {
+    $serverFolder = dirname(__FILE__);
+    return openssl_pkey_get_private('file://' . $serverFolder . '/key/private.pem', 'pass');
 }

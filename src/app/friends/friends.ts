@@ -44,11 +44,38 @@ export class Friends {
     getUnfollowUsers() {
         this.dataService.getUnfollowUsers()
             .subscribe((users: IUser[]) => {
-                users.forEach((value: any, key: any) => {
-                    users[key].pictures = value.pictures.split(',', 3);
-                });
                 console.log(users);
-                this.users = users;
+                if (!users.error) {
+                    users.forEach((value: any, key: any) => {
+                        users[key].pictures = value.pictures.split(',', 3);
+                    });
+                    this.users = users;
+                } else {
+                    this.users = null;
+                }
+            });
+    }
+
+    followUser(event, userId) {
+        event.preventDefault();
+        console.log(userId);
+        this.dataService.followUser(userId)
+            .subscribe((response: boolean) => {
+                console.log(response);
+                if (response.response) {
+                    this.getUnfollowUsers();
+                }
+            });
+    }
+
+    getUnfollowUser() {
+        this.dataService.getUnfollowUser()
+            .subscribe((users: IUser) => {
+               /* users.forEach((value: any, key: any) => {
+                    users[key].pictures = value.pictures.split(',', 3);
+                });*/
+                console.log(users);
+                //this.users = users;
             });
     }
 }
