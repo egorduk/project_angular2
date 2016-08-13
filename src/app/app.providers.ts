@@ -3,7 +3,8 @@ import { HTTP_PROVIDERS } from '@angular/http';
 import { LocationStrategy, HashLocationStrategy } from '@angular/common';
 
 import { Sorter } from './shared/utils/sorter';
-import { DataService } from './shared/services/data.service';
+//import { DataService } from './shared/services/data.service';
+import { DataService } from './common/service/data.service';
 import { TrackByService } from './shared/services/trackby.service';
 
 export const APP_PROVIDERS = [

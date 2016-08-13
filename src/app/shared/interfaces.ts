@@ -28,6 +28,7 @@ export interface IOrderItem {
 export interface IPicture {
     id: number;
     name: string;
+    filename: string;
 }
 
 export interface IUser {
