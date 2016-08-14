@@ -44,7 +44,7 @@ export class Friends {
     getUnfollowUsers() {
         this.dataService.getUnfollowUsers()
             .subscribe((users: IUser[]) => {
-                console.log(users);
+                //console.log(users);
                 if (!users.error) {
                     users.forEach((value: any, key: any) => {
                         users[key].pictures = value.pictures.split(',', 3);

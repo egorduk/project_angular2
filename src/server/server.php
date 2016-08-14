@@ -32,11 +32,7 @@ switch ($requestMethod) {
                 $query->execute(array($userId));
 
                 if ($query->rowCount() > 0) {
-                    //$arrGroupedPictures = [];
                     $pictures = $query->fetchAll(PDO::FETCH_ASSOC);
-                   /* foreach($pictures as $key => $pic) {
-                        $arrGroupedPictures[$pic['login']][] = $pic['filename'];
-                    }*/
                     echo json_encode($pictures);
                 } else {
                     echo json_encode(array('error' => 'Something wrong'));
