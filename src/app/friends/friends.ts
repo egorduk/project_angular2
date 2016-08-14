@@ -18,7 +18,7 @@ import { IPicture, IUser } from '../common/interfaces';
     templateUrl: 'app/friends/friends.html'
 })
 
-export class Friends {
+export class Friends { //https://github.com/blueimp/Bootstrap-Image-Gallery
 
     _serverUrl: string = '';
     //jwt: string = '';
@@ -68,14 +68,14 @@ export class Friends {
             });
     }
 
-    getUnfollowUser() {
+    /*getUnfollowUser() {
         this.dataService.getUnfollowUser()
             .subscribe((users: IUser) => {
-               /* users.forEach((value: any, key: any) => {
+               *//* users.forEach((value: any, key: any) => {
                     users[key].pictures = value.pictures.split(',', 3);
-                });*/
+                });*//*
                 console.log(users);
                 //this.users = users;
             });
-    }
+    }*/
 }

@@ -47,10 +47,6 @@ switch ($requestMethod) {
                 $userId = $payload['uid'];
 
                 $db = getDb();
-               /* $query = $db->prepare("select u.login, u.avatar, u.id, p.filename from user u
-                    inner join picture p on p.user_id = u.id
-                    where u.id not in (select f.friend_id from friend f where f.user_id = ?) and u.id != ?
-                    order by u.id"); */
                 $query = $db->prepare("select u.id, u.login, u.avatar, GROUP_CONCAT(p.filename) pictures, count(u.id) as cnt_picture  from user u
                     inner join picture p on p.user_id = u.id
                     where u.id not in (select f.friend_id from friend f where f.user_id = ?) and u.id != ?
@@ -61,7 +57,6 @@ switch ($requestMethod) {
 
                 if ($query->rowCount() > 0) {
                     $users = $query->fetchAll(PDO::FETCH_ASSOC);
-
                     echo json_encode($users);
                 } else {
                     echo json_encode(array('error' => 'Something wrong'));
@@ -149,13 +144,7 @@ switch ($requestMethod) {
                 $db = getDb();
                 $query = $db->prepare("insert into friend(user_id, friend_id) values(?, ?)");
                 $response = $query->execute(array($userId, $friendId));
-
-                if ($response) {
-                    echo json_encode(array('response' => $response));
-                } else {
-                    echo json_encode(array('response' => 'Something wrong'));
-                }
-                //echo json_encode(array('response' => true));
+                echo json_encode(array('response' => $response));
             } else {
                 header('HTTP/1.1 401 Unauthorized');
             }
