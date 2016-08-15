@@ -6,7 +6,8 @@
         'rxjs':                       'node_modules/rxjs',
         '@angular':                   'node_modules/@angular',
         'angular2-localstorage':      'node_modules/angular2-localstorage',
-        'angular2-jwt':               'node_modules/angular2-jwt'
+        'angular2-jwt':               'node_modules/angular2-jwt',
+        'angular2-image-popup':       'node_modules/angular2-image-popup/directives/angular2-image-popup'
     };
 
     // packages tells the System loader how to load when no filename and/or no extension
@@ -17,6 +18,9 @@
             defaultExtension: "js"
         },
         'angular2-jwt': {
+            defaultExtension: "js"
+        },
+        'angular2-image-popup': {
             defaultExtension: "js"
         }
     };

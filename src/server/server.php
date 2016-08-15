@@ -7,6 +7,7 @@ header('Access-Control-Allow-Headers: Origin, Content-Type, X-Auth-Token, Accept
 $requestMethod = $_SERVER['REQUEST_METHOD'];
 $requestUri = $_SERVER['REQUEST_URI'];
 $encAlgorithm = 'RS256';
+define('ENC_ALG' , 'RS256');
 
 switch ($requestMethod) {
     case "GET":
@@ -33,16 +34,16 @@ switch ($requestMethod) {
 
                 if ($query->rowCount() > 0) {
                     $pictures = $query->fetchAll(PDO::FETCH_ASSOC);
-                    echo json_encode($pictures);
+                    echo json_encode(array('response' => true, 'pictures' => $pictures));
                 } else {
-                    echo json_encode(array('error' => 'Something wrong'));
+                    echo json_encode(array('response' => false));
                     return;
                 }
             } else {
                 header('HTTP/1.1 401 Unauthorized ');
             }
         } elseif ($action == 'get_unfollow_users') {
-            if ($jws->isValid($publicKey, $encAlgorithm)) {
+            if (isValidToken($token)) {
                 $payload = $jws->getPayload();
                 $userId = $payload['uid'];
 
@@ -57,9 +58,9 @@ switch ($requestMethod) {
 
                 if ($query->rowCount() > 0) {
                     $users = $query->fetchAll(PDO::FETCH_ASSOC);
-                    echo json_encode($users);
+                    echo json_encode(array('response' => true, 'users' => $users));
                 } else {
-                    echo json_encode(array('error' => 'Something wrong'));
+                    echo json_encode(array('response' => false));
                     return;
                 }
             } else {
@@ -176,4 +177,10 @@ function getPublicKey() {
 function getPrivateKey() {
     $serverFolder = dirname(__FILE__);
     return openssl_pkey_get_private('file://' . $serverFolder . '/key/private.pem', 'pass');
+}
+
+function isValidToken($token) {
+    $jws = \Namshi\JOSE\SimpleJWS::load($token);
+    $publicKey = getPublicKey();
+    return $jws->isValid($publicKey, ENC_ALG);
 }

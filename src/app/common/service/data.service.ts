@@ -7,21 +7,22 @@ import 'rxjs/add/operator/catch';
 import { AuthHttp } from 'angular2-jwt/angular2-jwt';
 import { contentHeaders } from '../headers';
 import { IPicture, IUser } from '../interfaces';
+import { GlobalService } from './global.service';
 
 @Injectable()
 export class DataService {
 
     _baseUrl: string = '';
-    _serverUrl: string = '';
+    _apiUrl: string = '';
     pictures: IPicture[];
     users: IUser[];
 
-    constructor(private http: Http, private authHttp: AuthHttp) {
-        this._serverUrl = 'http://localhost:80/project_angular2';
+    constructor(private http: Http, private authHttp: AuthHttp, private globalService: GlobalService) {
+        this._apiUrl = this.globalService.getApiUrl();
     }
 
     getFriendsPictures() : Observable<IPicture[]> {
-        return this.authHttp.get(this._serverUrl + '/api/get_friends_pictures')
+        return this.authHttp.get(this._apiUrl + '/get_friends_pictures')
             .map((response: Response) => {
                 this.pictures = response.json();
                 //console.log(this.pictures);
@@ -31,7 +32,7 @@ export class DataService {
     }
 
     getUnfollowUsers() : Observable<IUser[]> {
-        return this.authHttp.get(this._serverUrl + '/api/get_unfollow_users')
+        return this.authHttp.get(this._apiUrl + '/get_unfollow_users')
             .map((response: Response) => {
                 this.users = response.json();
                 //console.log(this.users);
@@ -42,7 +43,7 @@ export class DataService {
 
     followUser(id: number) : Observable<boolean> {
         let body = JSON.stringify({ id });
-        return this.authHttp.post(this._serverUrl + '/api/follow_user', body, { headers: contentHeaders })
+        return this.authHttp.post(this._apiUrl + '/follow_user', body, { headers: contentHeaders })
             .map((response: Response) => {
                 return response.json();
             })
@@ -50,7 +51,7 @@ export class DataService {
     }
 
     getUnfollowUser() : Observable<IUser> {
-        return this.authHttp.get(this._serverUrl + '/api/get_unfollow_users')
+        return this.authHttp.get(this._apiUrl + '/get_unfollow_users')
             .map((response: Response) => {
                 this.users = response.json();
                 //console.log(this.users);
