@@ -60,6 +60,15 @@ export class DataService {
             .catch(this.handleError);
     }
 
+    likePicture(pictureId: number) : Observable<boolean> {
+        let body = JSON.stringify({ pictureId });
+        return this.authHttp.post(this._apiUrl + '/likes', body, { headers: contentHeaders })
+            .map((response: Response) => {
+                return response.json();
+            })
+            .catch(this.handleError);
+    }
+
     private handleError(error: any) {
         console.error(error);
         return Observable.throw(error.json().error || 'Server error');

@@ -23,8 +23,10 @@ export class Friends {
 
     pictures: IPicture[];
     users: IUser[];
+    _selectedPicture: string = '';
+    _isLiked: boolean = false;
 
-    openModalWindow:boolean=false;
+    openModalWindow: boolean = false;
     imagePointer:number;
     images = [
         { thumb: '', img: '../../uploads/pictures/1.jpg', description: 'Image 1' }
@@ -67,7 +69,7 @@ export class Friends {
 
     followUser(event, userId) {
         event.preventDefault();
-        console.log(userId);
+        //console.log(userId);
         this.dataService.followUser(userId)
             .subscribe((response: boolean) => {
                 console.log(response);
@@ -77,39 +79,29 @@ export class Friends {
             });
     }
 
-
-
-    OpenImageModel(imageSrc,images) {
-        //alert('OpenImages');
-        var imageModalPointer;
-        for (var i = 0; i < images.length; i++) {
-            if (imageSrc === images[i].img) {
-                imageModalPointer = i;
-                console.log('jhhl',i);
-                break;
-            }
-        }
-        this.openModalWindow = true;
-        this.images = images;
-        this.imagePointer  = imageModalPointer;
-    }
-
     closePopup() {
         this.openModalWindow = false;
     }
 
-    openPopup() {
+    openPopup(picture) {
+        this._selectedPicture = picture;
         this.openModalWindow = true;
     }
 
-    /*getUnfollowUser() {
-        this.dataService.getUnfollowUser()
-            .subscribe((users: IUser) => {
-               *//* users.forEach((value: any, key: any) => {
-                    users[key].pictures = value.pictures.split(',', 3);
-                });*//*
-                console.log(users);
-                //this.users = users;
-            });
-    }*/
+    likePicture(event, picture) {
+        event.preventDefault();
+        console.log(picture);
+        //if (picture.id == 1) {
+            picture.is_liked = true;
+       // }
+
+        /*this.dataService.likePicture(pictureId)
+            .subscribe((response: boolean) => {
+                console.log(response);
+                if (response.response) {
+                    console.log(event);
+                    this._isLiked = true;
+                }
+            });*/
+    }
 }

@@ -25,10 +25,12 @@ switch ($requestMethod) {
                 $userId = $payload['uid'];
 
                 $db = getDb();
-                $query = $db->prepare("select p.filename, p.name,  datediff(NOW(), p.date_upload) as days_ago, p.cnt_like, u.login as user_login, u.avatar as user_avatar from friend f
+                $query = $db->prepare("select p.id as picture_id, p.filename, p.name, datediff(NOW(), p.date_upload) as days_ago, COUNT(pl.id) as cnt_like, u.login as user_login, u.avatar as user_avatar from friend f
                     inner join picture p on p.user_id = f.friend_id
                     inner join user u on u.id = f.friend_id
+                    left join picture_like pl on p.id = pl.picture_id
                     where f.user_id = ?
+                    group by p.id
                     order by p.date_upload desc");
                 $query->execute(array($userId));
 
@@ -148,6 +150,22 @@ switch ($requestMethod) {
                 echo json_encode(array('response' => $response));
             } else {
                 header('HTTP/1.1 401 Unauthorized');
+            }
+        } elseif ($action == 'likes') {
+            if (!$post->pictureId) {
+                header('HTTP/1.1 400 You must send the picture id');
+                return;
+            }
+
+            if ($jws->isValid($publicKey, $encAlgorithm)) {
+                $payload = $jws->getPayload();
+                $userId = $payload['uid'];
+                $pictureId = $post->pictureId;
+
+                $db = getDb();
+                $query = $db->prepare("insert into picture_like(user_id, picture_id) values(?, ?)");
+                $response = $query->execute(array($userId, $pictureId));
+                echo json_encode(array('response' => $response));
             }
         }
         //var_dump($action);die;
