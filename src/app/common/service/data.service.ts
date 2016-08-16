@@ -16,6 +16,7 @@ export class DataService {
     _apiUrl: string = '';
     pictures: IPicture[];
     users: IUser[];
+    comments: IComment[];
 
     constructor(private http: Http, private authHttp: AuthHttp, private globalService: GlobalService) {
         this._apiUrl = this.globalService.getApiUrl();
@@ -65,6 +66,24 @@ export class DataService {
         return this.authHttp.post(this._apiUrl + '/likes', body, { headers: contentHeaders })
             .map((response: Response) => {
                 return response.json();
+            })
+            .catch(this.handleError);
+    }
+
+    unlikePicture(pictureId: number) : Observable<boolean> {
+        return this.authHttp.delete(this._apiUrl + '/likes/' + pictureId, { headers: contentHeaders })
+            .map((response: Response) => {
+                return response.json();
+            })
+            .catch(this.handleError);
+    }
+
+    getPictureComments(pictureId: number) : Observable<IComment[]> {
+        return this.authHttp.get(this._apiUrl + '/comments/' + pictureId)
+            .map((response: Response) => {
+                this.comments = response.json();
+                //console.log(this.users);
+                return this.comments;
             })
             .catch(this.handleError);
     }

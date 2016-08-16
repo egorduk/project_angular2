@@ -11,8 +11,8 @@ define('ENC_ALG' , 'RS256');
 
 switch ($requestMethod) {
     case "GET":
-        $data = explode('/api/', $requestUri);
-        $action = $data[1];
+        $data = explode('/', $requestUri);
+        $action = $data[3];
         require_once "JOSE/autoloader.php";
         $headers = apache_request_headers();
         $token = getFormattedToken($headers['Authorization']);
@@ -25,7 +25,8 @@ switch ($requestMethod) {
                 $userId = $payload['uid'];
 
                 $db = getDb();
-                $query = $db->prepare("select p.id as picture_id, p.filename, p.name, datediff(NOW(), p.date_upload) as days_ago, COUNT(pl.id) as cnt_like, u.login as user_login, u.avatar as user_avatar from friend f
+                $query = $db->prepare("select p.id as picture_id, p.filename, p.name, datediff(NOW(), p.date_upload) as days_ago, COUNT(pl.id) as cnt_like, u.login as user_login, u.avatar as user_avatar, EXISTS (select pl1.id from picture_like pl1 where pl1.user_id = f.user_id and pl1.picture_id = p.id) as is_liked
+                    from friend f
                     inner join picture p on p.user_id = f.friend_id
                     inner join user u on u.id = f.friend_id
                     left join picture_like pl on p.id = pl.picture_id
@@ -68,6 +69,24 @@ switch ($requestMethod) {
             } else {
                 header('HTTP/1.1 401 Unauthorized ');
             }
+        } elseif ($action == 'comments') {
+            $pictureId = $data[4];
+
+            $db = getDb();
+            $query = $db->prepare("select pc.date_comment, pc.comment, u.login as user_login, u.avatar as user_avatar  from picture_comment pc
+                    inner join user u on u.id = pc.user_id
+                    where pc.picture_id = ?
+                    order by pc.date_comment desc");
+            $query->execute(array($pictureId));
+
+            if ($query->rowCount() > 0) {
+                $comments = $query->fetchAll(PDO::FETCH_ASSOC);
+                echo json_encode(array('response' => true, 'comments' => $comments));
+            } else {
+                echo json_encode(array('response' => false));
+            }
+
+            return;
         }
 
         break;
@@ -76,6 +95,7 @@ switch ($requestMethod) {
         //var_dump($post->username);die;
         $data = explode('/api/', $requestUri);
         $action = $data[1];
+
         require_once "JOSE/autoloader.php";
         $headers = apache_request_headers();
         $token = getFormattedToken($headers['Authorization']);
@@ -171,7 +191,29 @@ switch ($requestMethod) {
         //var_dump($action);die;
         break;
     case "DELETE":
-        // delete stuff
+        require_once "JOSE/autoloader.php";
+        $headers = apache_request_headers();
+        $token = getFormattedToken($headers['Authorization']);
+        $jws = \Namshi\JOSE\SimpleJWS::load($token);
+        $publicKey = getPublicKey();
+
+        $data = explode('/', $requestUri);
+        $action = $data[3];
+        $id = $data[4];
+        //var_dump($data);
+        if ($action == 'likes') {
+            if ($jws->isValid($publicKey, $encAlgorithm)) {
+                $payload = $jws->getPayload();
+                $userId = $payload['uid'];
+
+                $db = getDb();
+                $query = $db->prepare("delete from picture_like where user_id = ? and picture_id = ? ");
+                $response = $query->execute(array($userId, $id));
+                echo json_encode(array('response' => $response));
+            }
+        }
+
+
         break;
     case "OPTIONS":
         var_dump($_POST);die;
