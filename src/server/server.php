@@ -73,7 +73,7 @@ switch ($requestMethod) {
             $pictureId = $data[4];
 
             $db = getDb();
-            $query = $db->prepare("select pc.date_comment, pc.comment, u.login as user_login, u.avatar as user_avatar  from picture_comment pc
+            $query = $db->prepare("select datediff(NOW(), pc.date_comment) as days_ago, pc.comment, u.login as user_login, u.avatar as user_avatar  from picture_comment pc
                     inner join user u on u.id = pc.user_id
                     where pc.picture_id = ?
                     order by pc.date_comment desc");
@@ -185,6 +185,23 @@ switch ($requestMethod) {
                 $db = getDb();
                 $query = $db->prepare("insert into picture_like(user_id, picture_id) values(?, ?)");
                 $response = $query->execute(array($userId, $pictureId));
+                echo json_encode(array('response' => $response));
+            }
+        } elseif ($action == 'comments') {
+            if (!$post->pictureId || !$post->comment) {
+                header('HTTP/1.1 400 You must send the picture id and comment text');
+                return;
+            }
+
+            if ($jws->isValid($publicKey, $encAlgorithm)) {
+                $payload = $jws->getPayload();
+                $userId = $payload['uid'];
+                $pictureId = $post->pictureId;
+                $comment = $post->comment;
+
+                $db = getDb();
+                $query = $db->prepare("insert into picture_comment(user_id, picture_id, comment) values(?, ?, ?)");
+                $response = $query->execute(array($userId, $pictureId, $comment));
                 echo json_encode(array('response' => $response));
             }
         }

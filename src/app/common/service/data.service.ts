@@ -63,6 +63,7 @@ export class DataService {
 
     likePicture(pictureId: number) : Observable<boolean> {
         let body = JSON.stringify({ pictureId });
+
         return this.authHttp.post(this._apiUrl + '/likes', body, { headers: contentHeaders })
             .map((response: Response) => {
                 return response.json();
@@ -84,6 +85,16 @@ export class DataService {
                 this.comments = response.json();
                 //console.log(this.users);
                 return this.comments;
+            })
+            .catch(this.handleError);
+    }
+
+    addPictureComment(comment: string, pictureId: number) : Observable<boolean> {
+        let body = JSON.stringify({ comment, pictureId });
+
+        return this.authHttp.post(this._apiUrl + '/comments', body, { headers: contentHeaders })
+            .map((response: Response) => {
+                return response.json();
             })
             .catch(this.handleError);
     }

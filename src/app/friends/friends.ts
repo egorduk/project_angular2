@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ElementRef, Directive, Injectable } from '@angular/core';
 import { Router, ROUTER_DIRECTIVES } from '@angular/router';
 import { CORE_DIRECTIVES } from '@angular/common';
 import { Http, Headers } from '@angular/http';
@@ -10,12 +10,28 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 import { DataService } from '../common/service/data.service';
 import { IPicture, IUser } from '../common/interfaces';
-import {ImageModal} from 'angular2-image-popup/image-modal-popup';
-//import {ImageModal} from 'angular2-image-popup/angular2-image-popup';
+
+@Directive({
+    selector: '[focus]'
+})
+class FocusDirective {
+@Input()
+    focus: boolean;
+
+    constructor(private element: ElementRef) {}
+
+    protected ngOnChanges() {
+        console.log(this.focus);
+        //(this.focus) ? this.element.nativeElement.focus() : this.element.nativeElement.blur();
+        if (this.focus) {
+            this.element.nativeElement.focus();
+        }
+    }
+}
 
 @Component({
     selector: 'friends',
-    directives: [ ROUTER_DIRECTIVES, CORE_DIRECTIVES, ImageModal ],
+    directives: [ ROUTER_DIRECTIVES, CORE_DIRECTIVES, FocusDirective ],
     templateUrl: 'app/friends/friends.html'
 })
 
@@ -26,8 +42,9 @@ export class Friends {
     comments: IComment[];
     _selectedPicture: string = '';
     _isLiked: boolean = false;
+    _openModalWindow: boolean = false;
+    _setFocusCommentInput: boolean = false;
 
-    openModalWindow: boolean = false;
     constructor(public router: Router, public http: Http, private authHttp: AuthHttp, private dataService: DataService) {
         //this.jwt = localStorage.getItem('id_token');
         this.getFriendsPictures();
@@ -75,13 +92,19 @@ export class Friends {
     }
 
     closePopup() {
-        this.openModalWindow = false;
+        this._openModalWindow = false;
+        this._setFocusCommentInput = false;
     }
 
     openPopup(picture) {
         this._selectedPicture = picture;
         this.getPictureComments(this._selectedPicture);
-        this.openModalWindow = true;
+        this._openModalWindow = true;
+    }
+
+    openPopupAddComment(picture) {
+        this.openPopup(picture);
+        this._setFocusCommentInput = true;
     }
 
     likePicture(event, picture) {
@@ -119,5 +142,19 @@ export class Friends {
                     this.comments = comments.comments;
                 }
             });
+    }
+
+    addComment(picture, elInputComment) {
+        let comment = elInputComment.value;
+
+        if (comment) {
+            this.dataService.addPictureComment(comment, picture.picture_id)
+                .subscribe((response: boolean) => {
+                    if (response.response) {
+                        elInputComment.value = '';
+                        this.getPictureComments(picture);
+                    }
+                });
+        }
     }
 }
