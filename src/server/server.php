@@ -25,7 +25,7 @@ switch ($requestMethod) {
                 $userId = $payload['uid'];
 
                 $db = getDb();
-                $query = $db->prepare("select p.id as picture_id, p.filename, p.name, datediff(NOW(), p.date_upload) as days_ago, COUNT(pl.id) as cnt_like, u.login as user_login, u.avatar as user_avatar, EXISTS (select pl1.id from picture_like pl1 where pl1.user_id = f.user_id and pl1.picture_id = p.id) as is_liked
+                $query = $db->prepare("select p.id as picture_id, p.filename, p.name, datediff(NOW(), p.date_upload) as days_ago, COUNT(pl.id) as cnt_like, u.login as user_login, u.avatar as user_avatar, u.id as user_id, EXISTS (select pl1.id from picture_like pl1 where pl1.user_id = f.user_id and pl1.picture_id = p.id) as is_liked
                     from friend f
                     inner join picture p on p.user_id = f.friend_id
                     inner join user u on u.id = f.friend_id
@@ -236,6 +236,16 @@ switch ($requestMethod) {
 
                 $db = getDb();
                 $query = $db->prepare("delete from picture_comment where user_id = ? and id = ? ");
+                $response = $query->execute(array($userId, $id));
+                echo json_encode(array('response' => $response));
+            }
+        } elseif ($action == 'users') {
+            if ($jws->isValid($publicKey, $encAlgorithm)) {
+                $payload = $jws->getPayload();
+                $userId = $payload['uid'];
+
+                $db = getDb();
+                $query = $db->prepare("delete from friend where user_id = ? and friend_id = ? ");
                 $response = $query->execute(array($userId, $id));
                 echo json_encode(array('response' => $response));
             }

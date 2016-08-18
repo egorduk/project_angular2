@@ -43,7 +43,7 @@
                         <p>
                             <img src="../../uploads/avatars/{{ user.avatar }}" alt="user_avatar" class="img-circle" style="width: 40px; height: 40px;">
                             <span><a href="#">{{ user.login }}</a></span>
-                            <a href="#" class="btn btn-default" role="button" (click)="followUser($event, user.id)">Follow</a><br>
+                            <a href="#" class="btn btn-default" role="button" (click)="followUser($event, user.id, 'feed')">Follow</a><br>
                             <span>{{ user.pictures.length }} photos</span>
                         </p>
                         <div class="media">
@@ -75,7 +75,8 @@
                                 <a href="#">{{ _selectedPicture.user_login }}</a>
                             </p>
                             <p>
-                                <a href="#" class="btn btn-default" role="button" (click)="followUser($event, user.id)">Follow</a>
+                                <a href="#" *ngIf="_unfollowed" class="btn btn-default" role="button" (click)="followUser($event, _selectedPicture.user_id, 'picture')">Follow</a>
+                                <a href="#" *ngIf="!_unfollowed" class="btn btn-default" role="button" (click)="unfollowUser($event, _selectedPicture.user_id)">Unfollow</a>
                             </p>
                             <p>
                                 <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-plus" aria-hidden="true">&nbsp;Add</span></button>

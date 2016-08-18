@@ -28,6 +28,7 @@ export class Friends {
     _isLiked: boolean = false;
     _openModalWindow: boolean = false;
     _setFocusCommentInput: boolean = false;
+    _unfollowed: boolean = false;
     _userId: number;
 
     constructor(public router: Router, public http: Http, private authHttp: AuthHttp, private dataService: DataService) {
@@ -66,14 +67,18 @@ export class Friends {
             });
     }
 
-    followUser(event, userId) {
+    followUser(event, userId, mode) {
         event.preventDefault();
         //console.log(userId);
         this.dataService.followUser(userId)
             .subscribe((response: boolean) => {
                 console.log(response);
                 if (response.response) {
-                    this.getFriendsPictures();
+                    if (mode == 'feed') {
+                        this.getFriendsPictures();
+                    } else if (mode == 'picture') {
+                        this._unfollowed = false;
+                    }
                 }
             });
     }
@@ -152,6 +157,17 @@ export class Friends {
             .subscribe((response: boolean) => {
                 if (response.response) {
                     this.getPictureComments(picture);
+                }
+            });
+    }
+
+    unfollowUser(event, userId) {
+        event.preventDefault();
+
+        this.dataService.unfollowUser(userId)
+            .subscribe((response: boolean) => {
+                if (response.response) {
+                    this._unfollowed = true;
                 }
             });
     }

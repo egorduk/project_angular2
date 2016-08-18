@@ -107,6 +107,14 @@ export class DataService {
             .catch(this.handleError);
     }
 
+    unfollowUser(userId: number) : Observable<boolean> {
+        return this.authHttp.delete(this._apiUrl + '/users/' + userId, { headers: contentHeaders })
+            .map((response: Response) => {
+                return response.json();
+            })
+            .catch(this.handleError);
+    }
+
     private handleError(error: any) {
         console.error(error);
         return Observable.throw(error.json().error || 'Server error');
