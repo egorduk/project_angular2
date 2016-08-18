@@ -85,7 +85,7 @@
                                 </button>
                             </p>
                             <p>
-                                <input type="text" placeholder="Add comment" [focus]="_setFocusCommentInput" size="17" class="form-control" #elInputComment (keyup.enter)="addComment(_selectedPicture, elInputComment)">
+                                <input type="text" [focus]="_setFocusCommentInput" placeholder="Add comment" size="17" class="form-control" #elInputComment (keyup.enter)="addComment(_selectedPicture, elInputComment)" />
                             </p>
                             <div class="" *ngFor="let comment of comments">
                                 <img src="../../uploads/avatars/{{ comment.user_avatar }}" alt="user_avatar" class="img-circle" style="width: 40px; height: 40px;">
@@ -95,6 +95,7 @@
                                     <span  style="font-size: 15px" [ngSwitch]="comment.days_ago">
                                         <span *ngSwitchCase = "'0'">today</span>
                                         <span *ngSwitchDefault>{{ comment.days_ago }} d. ago</span>
+                                        <span *ngIf="_userId == comment.user_id" aria-hidden="true">&times;</span>
                                     </span>
                                 </p>
                             </div>
@@ -110,38 +111,3 @@
         </div>
     </div>
 </div>
-<style>
-    .modal-dialog {
-        width: 100%;
-        height: 100%;
-        margin: 0;
-        padding: 0;
-    }
-    .modal-content {
-        height: auto;
-        min-height: 100%;
-        border-radius: 0;
-    }
-    #imagemodal {
-        display: block;
-    }
-    .following-feeds .thumbnail img:hover {
-        cursor: zoom-in;
-    }
-    .following-feeds .badge, .modal .badge {
-        background-color: red
-    }
-    .following-feeds .glyphicon-heart, .modal .glyphicon-heart {
-        color: red
-    }
-    .picture-liked .badge {
-        background-color: #333
-    }
-    .picture-liked .glyphicon-heart {
-        color: #333
-    }
-    .jumbotron {
-        padding-left: 15px;
-        padding-right: 15px;
-    }
-</style>

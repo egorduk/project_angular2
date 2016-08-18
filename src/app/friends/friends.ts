@@ -1,4 +1,4 @@
-import { Component, Input, ElementRef, Directive, Injectable } from '@angular/core';
+import { Component, Input, ViewChild } from '@angular/core';
 import { Router, ROUTER_DIRECTIVES } from '@angular/router';
 import { CORE_DIRECTIVES } from '@angular/common';
 import { Http, Headers } from '@angular/http';
@@ -10,28 +10,12 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 import { DataService } from '../common/service/data.service';
 import { IPicture, IUser } from '../common/interfaces';
-
-@Directive({
-    selector: '[focus]'
-})
-class FocusDirective {
-@Input()
-    focus: boolean;
-
-    constructor(private element: ElementRef) {}
-
-    protected ngOnChanges() {
-        console.log(this.focus);
-        //(this.focus) ? this.element.nativeElement.focus() : this.element.nativeElement.blur();
-        if (this.focus) {
-            this.element.nativeElement.focus();
-        }
-    }
-}
+import { FocusDirective } from '../common/directive/focus.directive';
 
 @Component({
     selector: 'friends',
     directives: [ ROUTER_DIRECTIVES, CORE_DIRECTIVES, FocusDirective ],
+    styleUrls: ['app/friends/style.css'],
     templateUrl: 'app/friends/friends.html'
 })
 
@@ -44,9 +28,12 @@ export class Friends {
     _isLiked: boolean = false;
     _openModalWindow: boolean = false;
     _setFocusCommentInput: boolean = false;
+    _userId: number;
 
     constructor(public router: Router, public http: Http, private authHttp: AuthHttp, private dataService: DataService) {
-        //this.jwt = localStorage.getItem('id_token');
+        let token = localStorage.getItem('id_token');
+        let data = window.jwt_decode(token);
+        this._userId = data.uid;
         this.getFriendsPictures();
         //console.log();
     }

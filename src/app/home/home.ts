@@ -35,14 +35,6 @@ export class Home {
         this.router.navigate(['/login']);
     }
 
-    callAnonymousApi() {
-        this._callApi('Anonymous', 'http://localhost:3001/api/random-quote');
-    }
-
-    callSecuredApi() {
-        this._callApi('Secured', 'http://localhost:3001/api/protected/random-quote');
-    }
-
     _callApi(type, url) {
         this.response = null;
         if (type === 'Anonymous') {

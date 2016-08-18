@@ -1,0 +1,33 @@
+.modal-dialog {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+.modal-content {
+    height: auto;
+    min-height: 100%;
+    border-radius: 0;
+}
+#imagemodal {
+    display: block;
+}
+.following-feeds .thumbnail img:hover {
+    cursor: zoom-in;
+}
+.following-feeds .badge, .modal .badge {
+    background-color: red
+}
+.following-feeds .glyphicon-heart, .modal .glyphicon-heart {
+    color: red
+}
+.picture-liked .badge {
+    background-color: #333
+}
+.picture-liked .glyphicon-heart {
+    color: #333
+}
+.jumbotron {
+    padding-left: 15px;
+    padding-right: 15px;
+}

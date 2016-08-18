@@ -73,7 +73,8 @@ switch ($requestMethod) {
             $pictureId = $data[4];
 
             $db = getDb();
-            $query = $db->prepare("select datediff(NOW(), pc.date_comment) as days_ago, pc.comment, u.login as user_login, u.avatar as user_avatar  from picture_comment pc
+            $query = $db->prepare("select datediff(NOW(), pc.date_comment) as days_ago, pc.comment, u.login as user_login, u.avatar as user_avatar, u.id as user_id
+                    from picture_comment pc
                     inner join user u on u.id = pc.user_id
                     where pc.picture_id = ?
                     order by pc.date_comment desc");

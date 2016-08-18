@@ -5,12 +5,13 @@ import { Sorter } from './shared/utils/sorter';
 import { DataService } from './common/service/data.service';
 import { GlobalService } from './common/service/global.service';
 import { TrackByService } from './shared/services/trackby.service';
+import { FocusDirective } from './common/directive/focus.directive';
 
 export const APP_PROVIDERS = [
     Sorter,
     DataService,
     TrackByService,
     HTTP_PROVIDERS,
-    GlobalService
-    //bind(LocationStrategy).toClass(HashLocationStrategy)
+    GlobalService,
+    FocusDirective
 ];
