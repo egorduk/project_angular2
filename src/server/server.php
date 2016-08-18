@@ -73,7 +73,7 @@ switch ($requestMethod) {
             $pictureId = $data[4];
 
             $db = getDb();
-            $query = $db->prepare("select datediff(NOW(), pc.date_comment) as days_ago, pc.comment, u.login as user_login, u.avatar as user_avatar, u.id as user_id
+            $query = $db->prepare("select datediff(NOW(), pc.date_comment) as days_ago, pc.id as comment_id, pc.comment, u.login as user_login, u.avatar as user_avatar, u.id as user_id
                     from picture_comment pc
                     inner join user u on u.id = pc.user_id
                     where pc.picture_id = ?
@@ -226,6 +226,16 @@ switch ($requestMethod) {
 
                 $db = getDb();
                 $query = $db->prepare("delete from picture_like where user_id = ? and picture_id = ? ");
+                $response = $query->execute(array($userId, $id));
+                echo json_encode(array('response' => $response));
+            }
+        } elseif ($action == 'comments') {
+            if ($jws->isValid($publicKey, $encAlgorithm)) {
+                $payload = $jws->getPayload();
+                $userId = $payload['uid'];
+
+                $db = getDb();
+                $query = $db->prepare("delete from picture_comment where user_id = ? and id = ? ");
                 $response = $query->execute(array($userId, $id));
                 echo json_encode(array('response' => $response));
             }

@@ -95,7 +95,7 @@
                                     <span  style="font-size: 15px" [ngSwitch]="comment.days_ago">
                                         <span *ngSwitchCase = "'0'">today</span>
                                         <span *ngSwitchDefault>{{ comment.days_ago }} d. ago</span>
-                                        <span *ngIf="_userId == comment.user_id" aria-hidden="true">&times;</span>
+                                        <a (click)="deleteComment($event, comment, _selectedPicture)" href="#"><span *ngIf="_userId == comment.user_id" aria-hidden="true">&times;</span></a>
                                     </span>
                                 </p>
                             </div>

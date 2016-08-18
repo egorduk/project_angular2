@@ -144,4 +144,15 @@ export class Friends {
                 });
         }
     }
+
+    deleteComment(event, comment, picture) {
+        event.preventDefault();
+
+        this.dataService.deletePictureComment(comment.comment_id)
+            .subscribe((response: boolean) => {
+                if (response.response) {
+                    this.getPictureComments(picture);
+                }
+            });
+    }
 }

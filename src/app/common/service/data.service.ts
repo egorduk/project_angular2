@@ -99,6 +99,14 @@ export class DataService {
             .catch(this.handleError);
     }
 
+    deletePictureComment(commentId: number) : Observable<boolean> {
+        return this.authHttp.delete(this._apiUrl + '/comments/' + commentId, { headers: contentHeaders })
+            .map((response: Response) => {
+                return response.json();
+            })
+            .catch(this.handleError);
+    }
+
     private handleError(error: any) {
         console.error(error);
         return Observable.throw(error.json().error || 'Server error');
