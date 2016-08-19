@@ -31,3 +31,8 @@
     padding-left: 15px;
     padding-right: 15px;
 }
+.carousel-control {
+    position: absolute;
+    z-index: 5;
+    display: inline-block;
+}

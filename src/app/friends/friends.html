@@ -67,6 +67,14 @@
                 <div class="row no-margin">
                     <div class="col-xs-9">
                         <img src="../../uploads/pictures/{{ _selectedPicture.filename }}" class="imagepreview" style="width: 100%;" alt="selected_picture">
+                        <div class="image-controls">
+                            <a class="left carousel-control" href="#" role="button" data-slide="prev">
+                                <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                            </a>
+                            <a class="right carousel-control" (click)="getNextPicture($event, _selectedPicture)" href="#" role="button" data-slide="next">
+                                <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                            </a>
+                        </div>
                     </div>
                     <div class="col-xs-3">
                         <div class="jumbotron">
@@ -75,8 +83,8 @@
                                 <a href="#">{{ _selectedPicture.user_login }}</a>
                             </p>
                             <p>
-                                <a href="#" *ngIf="_unfollowed" class="btn btn-default" role="button" (click)="followUser($event, _selectedPicture.user_id, 'picture')">Follow</a>
-                                <a href="#" *ngIf="!_unfollowed" class="btn btn-default" role="button" (click)="unfollowUser($event, _selectedPicture.user_id)">Unfollow</a>
+                                <a href="#" *ngIf="!_selectedPicture.is_followed" class="btn btn-default" role="button" (click)="followUser($event, _selectedPicture.user_id, 'picture')">Follow</a>
+                                <a href="#" *ngIf="_selectedPicture.is_followed" class="btn btn-default" role="button" (click)="unfollowUser($event, _selectedPicture.user_id)">Unfollow</a>
                             </p>
                             <p>
                                 <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-plus" aria-hidden="true">&nbsp;Add</span></button>
@@ -96,7 +104,7 @@
                                     <span  style="font-size: 15px" [ngSwitch]="comment.days_ago">
                                         <span *ngSwitchCase = "'0'">today</span>
                                         <span *ngSwitchDefault>{{ comment.days_ago }} d. ago</span>
-                                        <a (click)="deleteComment($event, comment, _selectedPicture)" href="#"><span *ngIf="_userId == comment.user_id" aria-hidden="true">&times;</span></a>
+                                        <a (click)="deleteComment($event, comment, _selectedPicture)" href="#" style="font-size: 20px"><span *ngIf="_userId == comment.user_id" aria-hidden="true">&times;</span></a>
                                     </span>
                                 </p>
                             </div>
@@ -106,7 +114,9 @@
             </div>
             <div class="modal-footer">
                 <div class="col-xs-12">
-                    <p class="text-left"><span class="label label-primary">Primary</span></p>
+                    <p class="text-left">
+                        <a href="#" *ngFor="let tag of _selectedPicture.tags"><span class="label label-primary" style="margin-right: 10px">{{ tag }}</span></a>
+                    </p>
                 </div>
             </div>
         </div>

@@ -25,10 +25,10 @@ export class Friends {
     users: IUser[];
     comments: IComment[];
     _selectedPicture: string = '';
-    _isLiked: boolean = false;
+    //_isLiked: boolean = false;
     _openModalWindow: boolean = false;
     _setFocusCommentInput: boolean = false;
-    _unfollowed: boolean = false;
+    //_isFollowed: boolean = true;
     _userId: number;
 
     constructor(public router: Router, public http: Http, private authHttp: AuthHttp, private dataService: DataService) {
@@ -43,11 +43,7 @@ export class Friends {
         this.dataService.getFriendsPictures()
             .subscribe((pictures: IPicture[]) => {
                 //console.log(pictures);
-                if (pictures.response) {
-                    this.pictures = pictures.pictures;
-                } else {
-                    this.pictures = null;
-                }
+                this.pictures = (pictures.response) ? pictures.pictures : null;
             });
         this.getUnfollowUsers();
     }
@@ -69,7 +65,7 @@ export class Friends {
 
     followUser(event, userId, mode) {
         event.preventDefault();
-        //console.log(userId);
+        //console.log(this._selectedPicture);
         this.dataService.followUser(userId)
             .subscribe((response: boolean) => {
                 console.log(response);
@@ -77,7 +73,7 @@ export class Friends {
                     if (mode == 'feed') {
                         this.getFriendsPictures();
                     } else if (mode == 'picture') {
-                        this._unfollowed = false;
+                        this._selectedPicture.is_followed = true;
                     }
                 }
             });
@@ -86,11 +82,19 @@ export class Friends {
     closePopup() {
         this._openModalWindow = false;
         this._setFocusCommentInput = false;
+        this.getFriendsPictures();
+        this.getUnfollowUsers();
     }
 
     openPopup(picture) {
         this._selectedPicture = picture;
+        this._selectedPicture.is_followed = true;
         this.getPictureComments(this._selectedPicture);
+
+        if (this._selectedPicture.tags) {
+            this._selectedPicture.tags = this._selectedPicture.tags.split(',');
+        }
+
         this._openModalWindow = true;
     }
 
@@ -163,12 +167,17 @@ export class Friends {
 
     unfollowUser(event, userId) {
         event.preventDefault();
+        console.log(this._selectedPicture);
 
         this.dataService.unfollowUser(userId)
             .subscribe((response: boolean) => {
                 if (response.response) {
-                    this._unfollowed = true;
+                    this._selectedPicture.is_followed = false;
                 }
             });
+    }
+
+    getNextPicture(event, picture) {
+        event.preventDefault();
     }
 }

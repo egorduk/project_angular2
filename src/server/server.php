@@ -25,11 +25,15 @@ switch ($requestMethod) {
                 $userId = $payload['uid'];
 
                 $db = getDb();
-                $query = $db->prepare("select p.id as picture_id, p.filename, p.name, datediff(NOW(), p.date_upload) as days_ago, COUNT(pl.id) as cnt_like, u.login as user_login, u.avatar as user_avatar, u.id as user_id, EXISTS (select pl1.id from picture_like pl1 where pl1.user_id = f.user_id and pl1.picture_id = p.id) as is_liked
+                $query = $db->prepare("select p.id as picture_id, p.filename, p.name, datediff(NOW(), p.date_upload) as days_ago,
+                   (select count(id) from picture_like pl1 where pl1.picture_id = p.id) as cnt_like, u.login as user_login, u.avatar as user_avatar, u.id as user_id,
+                    EXISTS (select pl1.id from picture_like pl1 where pl1.user_id = f.user_id and pl1.picture_id = p.id) as is_liked, GROUP_CONCAT(distinct t.name) as tags
                     from friend f
                     inner join picture p on p.user_id = f.friend_id
                     inner join user u on u.id = f.friend_id
                     left join picture_like pl on p.id = pl.picture_id
+                    left join picture_tag pt on p.id = pt.picture_id
+                    left join tag t on t.id = pt.tag_id
                     where f.user_id = ?
                     group by p.id
                     order by p.date_upload desc");
