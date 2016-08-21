@@ -25,10 +25,8 @@ export class Friends {
     users: IUser[];
     comments: IComment[];
     _selectedPicture: string = '';
-    //_isLiked: boolean = false;
     _openModalWindow: boolean = false;
     _setFocusCommentInput: boolean = false;
-    //_isFollowed: boolean = true;
     _userId: number;
 
     constructor(public router: Router, public http: Http, private authHttp: AuthHttp, private dataService: DataService) {
@@ -167,7 +165,7 @@ export class Friends {
 
     unfollowUser(event, userId) {
         event.preventDefault();
-        console.log(this._selectedPicture);
+        //console.log(this._selectedPicture);
 
         this.dataService.unfollowUser(userId)
             .subscribe((response: boolean) => {
@@ -178,6 +176,25 @@ export class Friends {
     }
 
     getNextPicture(event, picture) {
+        event.preventDefault();
+
+        //console.log(this.pictures);
+        //console.log(picture);
+        const filteredPicture = this.pictures.filter((pic) => pic === picture);
+        //console.log(filteredStates);
+
+        let index = this.pictures.indexOf(filteredPicture[0]);
+
+        if (index == this.pictures.length - 1) {
+            index = -1;
+        }
+        //console.log(index);
+
+        this._selectedPicture = this.pictures[index + 1];
+        this.getPictureComments(this._selectedPicture);
+    }
+
+    getPrevPicture(event, picture) {
         event.preventDefault();
     }
 }

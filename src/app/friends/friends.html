@@ -19,14 +19,27 @@
                             <img src="../../uploads/avatars/{{ picture.user_avatar }}" alt="..." class="img-circle" style="width: 40px; height: 40px;">
                             <span><a href="#">{{ picture.user_login }}</a></span>
                         </p>
-                        <p>
+                       <!-- <p>-->
                             <button type="button" (click)="openPopupAddComment(picture)" class="btn btn-default"><span class="glyphicon glyphicon-pencil" aria-hidden="true">&nbsp;Comment</span></button>
-                            <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-plus" aria-hidden="true">&nbsp;Add</span></button>
+                            <!--<button type="button" class="btn btn-default"><span class="glyphicon glyphicon-plus" aria-hidden="true">&nbsp;Add</span></button>-->
+                        <!--</p>-->
+                        <div class="dropdown">
+                            <button class="btn btn-default" id="dLabel" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="glyphicon glyphicon-plus" aria-hidden="true">&nbsp;Add</span>
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dLabel">
+                                <li><a href="#">1</a></li>
+                                <li><a href="#">11</a></li>
+                                <li><a href="#">111</a></li>
+                                <li><a href="#">1111</a></li>
+                            </ul>
+                        </div>
                             <button type="button" [ngClass]="{ 'picture-liked': picture.is_liked == '1' }" class="btn btn-default" (click)="likePicture($event, picture)">
                                 <span class="badge">{{ picture.cnt_like }}</span>
                                 <span class="glyphicon glyphicon-heart" aria-hidden="true"></span>
                             </button>
-                        </p>
+
                     </div>
                 </div>
             </div>
@@ -68,7 +81,7 @@
                     <div class="col-xs-9">
                         <img src="../../uploads/pictures/{{ _selectedPicture.filename }}" class="imagepreview" style="width: 100%;" alt="selected_picture">
                         <div class="image-controls">
-                            <a class="left carousel-control" href="#" role="button" data-slide="prev">
+                            <a class="left carousel-control" (click)="getPrevPicture($event, _selectedPicture)" href="#" role="button" data-slide="prev">
                                 <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
                             </a>
                             <a class="right carousel-control" (click)="getNextPicture($event, _selectedPicture)" href="#" role="button" data-slide="next">
@@ -85,6 +98,9 @@
                             <p>
                                 <a href="#" *ngIf="!_selectedPicture.is_followed" class="btn btn-default" role="button" (click)="followUser($event, _selectedPicture.user_id, 'picture')">Follow</a>
                                 <a href="#" *ngIf="_selectedPicture.is_followed" class="btn btn-default" role="button" (click)="unfollowUser($event, _selectedPicture.user_id)">Unfollow</a>
+                            </p>
+                            <p>
+                                {{ _selectedPicture.name }}
                             </p>
                             <p>
                                 <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-plus" aria-hidden="true">&nbsp;Add</span></button>
@@ -122,3 +138,6 @@
         </div>
     </div>
 </div>
+        <script>
+            $('.dropdown-toggle').dropdown();
+        </script>
