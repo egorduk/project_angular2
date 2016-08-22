@@ -6,7 +6,7 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 import { AuthHttp } from 'angular2-jwt/angular2-jwt';
 import { contentHeaders } from '../headers';
-import { IPicture, IUser } from '../interfaces';
+import { IPicture, IUser, IGallery, IComment } from '../interfaces';
 import { GlobalService } from './global.service';
 
 @Injectable()
@@ -17,6 +17,7 @@ export class DataService {
     pictures: IPicture[];
     users: IUser[];
     comments: IComment[];
+    galleries: IGallery[];
 
     constructor(private http: Http, private authHttp: AuthHttp, private globalService: GlobalService) {
         this._apiUrl = this.globalService.getApiUrl();
@@ -99,6 +100,16 @@ export class DataService {
             .catch(this.handleError);
     }
 
+    addUserGallery(gallery: string, pictureId: number) : Observable<boolean> {
+        let body = JSON.stringify({ gallery, pictureId });
+
+        return this.authHttp.post(this._apiUrl + '/galleries', body, { headers: contentHeaders })
+            .map((response: Response) => {
+                return response.json();
+            })
+            .catch(this.handleError);
+    }
+
     deletePictureComment(commentId: number) : Observable<boolean> {
         return this.authHttp.delete(this._apiUrl + '/comments/' + commentId, { headers: contentHeaders })
             .map((response: Response) => {
@@ -111,6 +122,16 @@ export class DataService {
         return this.authHttp.delete(this._apiUrl + '/users/' + userId, { headers: contentHeaders })
             .map((response: Response) => {
                 return response.json();
+            })
+            .catch(this.handleError);
+    }
+
+    getUserGalleries() : Observable<IGallery[]> {
+        return this.authHttp.get(this._apiUrl + '/galleries/')
+            .map((response: Response) => {
+                this.galleries = response.json();
+                //console.log(this.users);
+                return this.galleries;
             })
             .catch(this.handleError);
     }

@@ -27,13 +27,17 @@ switch ($requestMethod) {
                 $db = getDb();
                 $query = $db->prepare("select p.id as picture_id, p.filename, p.name, datediff(NOW(), p.date_upload) as days_ago,
                    (select count(id) from picture_like pl1 where pl1.picture_id = p.id) as cnt_like, u.login as user_login, u.avatar as user_avatar, u.id as user_id,
-                    EXISTS (select pl1.id from picture_like pl1 where pl1.user_id = f.user_id and pl1.picture_id = p.id) as is_liked, GROUP_CONCAT(distinct t.name) as tags
+                    EXISTS (select pl1.id from picture_like pl1 where pl1.user_id = f.user_id and pl1.picture_id = p.id) as is_liked, GROUP_CONCAT(distinct t.name) as tags,
+                    /*IF (ISNULL(ghp.picture_id), 0, 1) as is_marked*/ghp.gallery_id as gallery_marked_id
                     from friend f
                     inner join picture p on p.user_id = f.friend_id
                     inner join user u on u.id = f.friend_id
                     left join picture_like pl on p.id = pl.picture_id
                     left join picture_tag pt on p.id = pt.picture_id
                     left join tag t on t.id = pt.tag_id
+                    left join gallery_has_picture ghp on ghp.picture_id = p.id
+                    left join user_has_gallery uhg on uhg.gallery_id = ghp.gallery_id
+                    /*left join picture_gallery pg on pg.id = ghp.gallery_id*/
                     where f.user_id = ?
                     group by p.id
                     order by p.date_upload desc");
@@ -89,6 +93,28 @@ switch ($requestMethod) {
                 echo json_encode(array('response' => true, 'comments' => $comments));
             } else {
                 echo json_encode(array('response' => false));
+            }
+
+            return;
+        } elseif ($action == 'galleries') {
+            if (isValidToken($token)) {
+                $payload = $jws->getPayload();
+                $userId = $payload['uid'];
+
+                $db = getDb();
+                $query = $db->prepare("select pg.name, pg.id as gallery_id
+                    from user_has_gallery uhg
+                    inner join picture_gallery pg on pg.id = uhg.gallery_id
+                    where uhg.user_id = ?
+                    order by pg.name asc");
+                $query->execute(array($userId));
+
+                if ($query->rowCount() > 0) {
+                    $galleries = $query->fetchAll(PDO::FETCH_ASSOC);
+                    echo json_encode(array('response' => true, 'galleries' => $galleries));
+                } else {
+                    echo json_encode(array('response' => false));
+                }
             }
 
             return;
@@ -207,6 +233,28 @@ switch ($requestMethod) {
                 $db = getDb();
                 $query = $db->prepare("insert into picture_comment(user_id, picture_id, comment) values(?, ?, ?)");
                 $response = $query->execute(array($userId, $pictureId, $comment));
+                echo json_encode(array('response' => $response));
+            }
+        } elseif ($action == 'galleries') {
+            if (!$post->pictureId || !$post->gallery) {
+                header('HTTP/1.1 400 You must send the picture id and gallery text');
+                return;
+            }
+
+            if ($jws->isValid($publicKey, $encAlgorithm)) {
+                $payload = $jws->getPayload();
+                $userId = $payload['uid'];
+                $pictureId = $post->pictureId;
+                $gallery = $post->gallery;
+
+                $db = getDb();
+                $queryCreateGallery = $db->prepare("insert into picture_gallery(name) values(?)");
+                $queryCreateRelationsGHP = $db->prepare("insert into gallery_has_picture(picture_id, gallery_id) values(?, ?)");
+                $queryCreateRelationsUHG = $db->prepare("insert into user_has_gallery(user_id, gallery_id) values(?, ?)");
+                $response = $queryCreateGallery->execute(array($gallery));
+                $galleryId = $db->lastInsertId();
+                $response = $response && $queryCreateRelationsGHP->execute(array($pictureId, $galleryId)) && $queryCreateRelationsUHG->execute(array($userId, $galleryId));
+
                 echo json_encode(array('response' => $response));
             }
         }

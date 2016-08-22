@@ -9,7 +9,7 @@ import {Observer} from 'rxjs/Observer';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 import { DataService } from '../common/service/data.service';
-import { IPicture, IUser } from '../common/interfaces';
+import { IPicture, IUser, IComment, IGallery } from '../common/interfaces';
 import { FocusDirective } from '../common/directive/focus.directive';
 
 @Component({
@@ -24,10 +24,12 @@ export class Friends {
     pictures: IPicture[];
     users: IUser[];
     comments: IComment[];
+    galleries: IGallery[];
     _selectedPicture: string = '';
     _openModalWindow: boolean = false;
     _setFocusCommentInput: boolean = false;
     _userId: number;
+    _newGallery: IGallery[];
 
     constructor(public router: Router, public http: Http, private authHttp: AuthHttp, private dataService: DataService) {
         let token = localStorage.getItem('id_token');
@@ -44,6 +46,7 @@ export class Friends {
                 this.pictures = (pictures.response) ? pictures.pictures : null;
             });
         this.getUnfollowUsers();
+        this.getUserGallery();
     }
 
     getUnfollowUsers() {
@@ -88,11 +91,7 @@ export class Friends {
         this._selectedPicture = picture;
         this._selectedPicture.is_followed = true;
         this.getPictureComments(this._selectedPicture);
-
-        if (this._selectedPicture.tags) {
-            this._selectedPicture.tags = this._selectedPicture.tags.split(',');
-        }
-
+        this.getPictureTags();
         this._openModalWindow = true;
     }
 
@@ -178,23 +177,77 @@ export class Friends {
     getNextPicture(event, picture) {
         event.preventDefault();
 
-        //console.log(this.pictures);
-        //console.log(picture);
-        const filteredPicture = this.pictures.filter((pic) => pic === picture);
-        //console.log(filteredStates);
-
-        let index = this.pictures.indexOf(filteredPicture[0]);
+        let index = this.getSelectedPictureIndex(picture);
 
         if (index == this.pictures.length - 1) {
             index = -1;
         }
-        //console.log(index);
 
         this._selectedPicture = this.pictures[index + 1];
         this.getPictureComments(this._selectedPicture);
+        this.getPictureTags();
     }
 
     getPrevPicture(event, picture) {
         event.preventDefault();
+
+        let index = this.getSelectedPictureIndex(picture);
+
+        if (index == 0) {
+            index = this.pictures.length - 1;
+        }
+
+        this._selectedPicture = this.pictures[index - 1];
+        console.log(this._selectedPicture);
+        this.getPictureComments(this._selectedPicture);
+        this.getPictureTags();
+    }
+
+    getSelectedPictureIndex(picture) {
+        let filteredPicture = this.pictures.filter((pic) => pic === picture);
+        return this.pictures.indexOf(filteredPicture[0]);
+    }
+
+    getPictureTags() {
+        //console.log(this._selectedPicture.tags);
+        if (typeof this._selectedPicture.tags === 'string') {
+            this._selectedPicture.tags = this._selectedPicture.tags.split(',');
+        }
+    }
+
+    addUserGallery(event, elInputGallery, picture) {
+        event.preventDefault();
+
+        let galleryName = elInputGallery.value;
+
+        if (galleryName) {
+            this.dataService.addUserGallery(galleryName, picture.picture_id)
+                .subscribe((response: boolean) => {
+                    if (response.response) {
+                        elInputGallery.value = '';
+                        //let newGallery = new IGallery;
+                        console.log(this._newGallery);
+                        this._newGallery.name = galleryName;
+                        this._newGallery.id = 0;
+                        this.galleries.push(this._newGallery);
+                        //this.getPictureComments(picture);
+                    }
+                });
+        }
+    }
+
+    getUserGallery() {
+        this.galleries = null;
+
+        this.dataService.getUserGalleries()
+            .subscribe((galleries: IGallery[]) => {
+                console.log(galleries);
+                if (galleries.response) {
+                    this.galleries = galleries.galleries;
+                }
+            });
+    }
+
+    addPictureToGallery(event) {
     }
 }
