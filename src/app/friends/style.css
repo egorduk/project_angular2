@@ -36,3 +36,7 @@
     z-index: 5;
     display: inline-block;
 }
+
+.dropdown-menu>li>a {
+    display: inline; !important;
+}

@@ -126,8 +126,8 @@ export class DataService {
             .catch(this.handleError);
     }
 
-    getUserGalleries() : Observable<IGallery[]> {
-        return this.authHttp.get(this._apiUrl + '/galleries/')
+    getUserGalleriesWithCheckedPictures() : Observable<IGallery[]> {
+        return this.authHttp.get(this._apiUrl + '/galleries/users/')
             .map((response: Response) => {
                 this.galleries = response.json();
                 //console.log(this.users);

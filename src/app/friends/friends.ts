@@ -244,12 +244,24 @@ export class Friends {
     getUserGallery() {
         this.galleries = null;
 
-        this.dataService.getUserGalleries()
+        this.dataService.getUserGalleriesWithCheckedPictures()
             .subscribe((galleries: IGallery[]) => {
                 console.log('getUserGalleries', galleries);
                 if (galleries.response) {
+                    if (galleries.galleries) {
+                        //if (typeof galleries.galleries.picture_ids === 'string') {
+                            galleries.galleries.forEach((value: any, key: any) => {
+                                galleries.galleries[key].picture_ids = value.picture_ids.split(',');
+                            });
+                       // }
+                    } else {
+
+                    }
+
                     this.galleries = galleries.galleries;
                 }
+
+                console.log('this.galleries', this.galleries);
             });
     }
 

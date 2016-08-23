@@ -39,7 +39,11 @@
                                             </div>
                                         </li>
                                         <li *ngFor="let gallery of galleries">
-                                            <a href="#" check-picture [picture]="picture" [gallery]="gallery" (response)="test($event)" (click)="addPictureToGallery($event)">{{ gallery.name }}<span [ngClass]="{ 'glyphicon glyphicon-ok': _isChecked }" ></span></a>
+                                            <!--<a href="#" check-picture [picture]="picture" [gallery]="gallery" (response)="test($event)" (click)="addPictureToGallery($event)">{{ gallery.name }}<span [ngClass]="{ 'glyphicon glyphicon-ok': _isChecked }" ></span></a>-->
+                                            <span *ngFor="let picture_id of gallery.picture_ids">
+                                                <span *ngIf="picture_id == picture.picture_id" class="glyphicon glyphicon-ok"></span><!--<span [ngClass]="{ 'glyphicon glyphicon-ok': picture_id == picture.picture_id }" ></span>-->
+                                            </span>
+                                            <a href="#" (click)="addPictureToGallery($event)">{{ gallery.name }}</a>
                                         </li>
                                     </ul>
                                 </div>

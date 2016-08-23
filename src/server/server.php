@@ -97,23 +97,33 @@ switch ($requestMethod) {
 
             return;
         } elseif ($action == 'galleries') {
-            if (isValidToken($token)) {
-                $payload = $jws->getPayload();
-                $userId = $payload['uid'];
+            if ($data[4] == 'users') {
+                if (isValidToken($token)) {
+                    $payload = $jws->getPayload();
+                    $userId = $payload['uid'];
 
-                $db = getDb();
-                $query = $db->prepare("select pg.name, pg.id as gallery_id
+                    $db = getDb();
+                    /*$query = $db->prepare("select pg.name, pg.id as gallery_id
                     from user_has_gallery uhg
                     inner join picture_gallery pg on pg.id = uhg.gallery_id
                     where uhg.user_id = ?
+                    order by pg.name asc");*/
+                    $query = $db->prepare("select pg.name, pg.id as gallery_id, GROUP_CONCAT(p.id) as picture_ids
+                    from user_has_gallery uhg
+                    inner join picture_gallery pg on pg.id = uhg.gallery_id
+                    left join gallery_has_picture ghp on ghp.gallery_id = pg.id
+                    left join picture p on p.id = ghp.picture_id
+                    where uhg.user_id = ?
+                    group by pg.id
                     order by pg.name asc");
-                $query->execute(array($userId));
+                    $query->execute(array($userId));
 
-                if ($query->rowCount() > 0) {
-                    $galleries = $query->fetchAll(PDO::FETCH_ASSOC);
-                    echo json_encode(array('response' => true, 'galleries' => $galleries));
-                } else {
-                    echo json_encode(array('response' => false));
+                    if ($query->rowCount() > 0) {
+                        $galleries = $query->fetchAll(PDO::FETCH_ASSOC);
+                        echo json_encode(array('response' => true, 'galleries' => $galleries));
+                    } else {
+                        echo json_encode(array('response' => false));
+                    }
                 }
             }
 
@@ -130,7 +140,11 @@ switch ($requestMethod) {
         require_once "JOSE/autoloader.php";
         $headers = apache_request_headers();
         $token = getFormattedToken($headers['Authorization']);
-        $jws = \Namshi\JOSE\SimpleJWS::load($token);
+
+        if ($token) {
+            $jws = \Namshi\JOSE\SimpleJWS::load($token);
+        }
+
         $publicKey = getPublicKey();
 
         if ($action == 'create_session') {
