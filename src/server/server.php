@@ -28,7 +28,7 @@ switch ($requestMethod) {
                 $query = $db->prepare("select p.id as picture_id, p.filename, p.name, datediff(NOW(), p.date_upload) as days_ago,
                    (select count(id) from picture_like pl1 where pl1.picture_id = p.id) as cnt_like, u.login as user_login, u.avatar as user_avatar, u.id as user_id,
                     EXISTS (select pl1.id from picture_like pl1 where pl1.user_id = f.user_id and pl1.picture_id = p.id) as is_liked, GROUP_CONCAT(distinct t.name) as tags,
-                    /*IF (ISNULL(ghp.picture_id), 0, 1) as is_marked*/ghp.gallery_id as gallery_marked_id
+                    /*IF (ISNULL(ghp.picture_id), 0, 1) as is_marked*/ GROUP_CONCAT(distinct ghp.gallery_id) as gallery_ids
                     from friend f
                     inner join picture p on p.user_id = f.friend_id
                     inner join user u on u.id = f.friend_id
@@ -254,8 +254,9 @@ switch ($requestMethod) {
                 $response = $queryCreateGallery->execute(array($gallery));
                 $galleryId = $db->lastInsertId();
                 $response = $response && $queryCreateRelationsGHP->execute(array($pictureId, $galleryId)) && $queryCreateRelationsUHG->execute(array($userId, $galleryId));
+                $gallery = array('id' => $galleryId);
 
-                echo json_encode(array('response' => $response));
+                echo json_encode(array('response' => $response, 'gallery' => $gallery));
             }
         }
         //var_dump($action);die;

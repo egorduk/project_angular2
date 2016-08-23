@@ -38,7 +38,9 @@
                                                 </div>
                                             </div>
                                         </li>
-                                        <li *ngFor="let gallery of galleries"><a href="#" (click)="addPictureToGallery($event)">{{ gallery.name }}<span class="glyphicon glyphicon-ok" *ngIf="gallery.gallery_id == picture.gallery_marked_id"></span></a></li>
+                                        <li *ngFor="let gallery of galleries">
+                                            <a href="#" check-picture [picture]="picture" [gallery]="gallery" (response)="test($event)" (click)="addPictureToGallery($event)">{{ gallery.name }}<span [ngClass]="{ 'glyphicon glyphicon-ok': _isChecked }" ></span></a>
+                                        </li>
                                     </ul>
                                 </div>
                             </div>

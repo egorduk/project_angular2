@@ -11,10 +11,11 @@ import 'rxjs/add/operator/catch';
 import { DataService } from '../common/service/data.service';
 import { IPicture, IUser, IComment, IGallery } from '../common/interfaces';
 import { FocusDirective } from '../common/directive/focus.directive';
+import { CheckGalleryDirective } from '../common/directive/checkGallery.directive';
 
 @Component({
     selector: 'friends',
-    directives: [ ROUTER_DIRECTIVES, CORE_DIRECTIVES, FocusDirective ],
+    directives: [ ROUTER_DIRECTIVES, CORE_DIRECTIVES, FocusDirective, CheckGalleryDirective ],
     styleUrls: ['app/friends/style.css'],
     templateUrl: 'app/friends/friends.html'
 })
@@ -24,26 +25,34 @@ export class Friends {
     pictures: IPicture[];
     users: IUser[];
     comments: IComment[];
-    galleries: IGallery[];
+    galleries: IGallery[] = [];
     _selectedPicture: string = '';
     _openModalWindow: boolean = false;
     _setFocusCommentInput: boolean = false;
     _userId: number;
-    _newGallery: IGallery[];
+    _isChecked: boolean = false;
 
     constructor(public router: Router, public http: Http, private authHttp: AuthHttp, private dataService: DataService) {
         let token = localStorage.getItem('id_token');
         let data = window.jwt_decode(token);
         this._userId = data.uid;
         this.getFriendsPictures();
-        //console.log();
     }
 
     getFriendsPictures() {
         this.dataService.getFriendsPictures()
             .subscribe((pictures: IPicture[]) => {
-                //console.log(pictures);
                 this.pictures = (pictures.response) ? pictures.pictures : null;
+
+                if (this.pictures) {
+                    this.pictures.forEach((value: any, key: any) => {
+                        if (value.gallery_ids) {
+                            this.pictures[key].gallery_ids = value.gallery_ids.split(',');
+                        }
+                    });
+                }
+
+                //console.log('this.pictures', this.pictures);
             });
         this.getUnfollowUsers();
         this.getUserGallery();
@@ -59,6 +68,7 @@ export class Friends {
                     users.users.forEach((value: any, key: any) => {
                         users.users[key].pictures = value.pictures.split(',', 3);
                     });
+
                     this.users = users.users;
                 }
             });
@@ -222,15 +232,10 @@ export class Friends {
 
         if (galleryName) {
             this.dataService.addUserGallery(galleryName, picture.picture_id)
-                .subscribe((response: boolean) => {
+                .subscribe((response: IGallery[]) => {
                     if (response.response) {
+                        this.getUserGallery();
                         elInputGallery.value = '';
-                        //let newGallery = new IGallery;
-                        console.log(this._newGallery);
-                        this._newGallery.name = galleryName;
-                        this._newGallery.id = 0;
-                        this.galleries.push(this._newGallery);
-                        //this.getPictureComments(picture);
                     }
                 });
         }
@@ -241,7 +246,7 @@ export class Friends {
 
         this.dataService.getUserGalleries()
             .subscribe((galleries: IGallery[]) => {
-                console.log(galleries);
+                console.log('getUserGalleries', galleries);
                 if (galleries.response) {
                     this.galleries = galleries.galleries;
                 }
@@ -249,5 +254,17 @@ export class Friends {
     }
 
     addPictureToGallery(event) {
+    }
+
+    test(event) {
+       // console.log(event);
+
+        if (event.value) {
+            this._isChecked = true;
+        } else {
+            this._isChecked = false;
+        }
+
+        console.log(this._isChecked);
     }
 }

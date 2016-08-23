@@ -100,7 +100,7 @@ export class DataService {
             .catch(this.handleError);
     }
 
-    addUserGallery(gallery: string, pictureId: number) : Observable<boolean> {
+    addUserGallery(gallery: string, pictureId: number) : Observable<IGallery[]> {
         let body = JSON.stringify({ gallery, pictureId });
 
         return this.authHttp.post(this._apiUrl + '/galleries', body, { headers: contentHeaders })
