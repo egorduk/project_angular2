@@ -12,6 +12,6 @@ export const routes: RouterConfig = [
     { path: 'signup', component: Signup },
     { path: 'home',   component: Home, canActivate: [AuthGuard] },
     { path: 'friends', component: Friends },
-    { path: 'user/:login', component: User },
+    { path: 'user/:id', component: User },
     { path: '**',     component: Login }
 ];

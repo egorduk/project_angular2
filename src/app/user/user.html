@@ -1,12 +1,18 @@
-<link rel="stylesheet" type="text/css" href="../../node_modules/angular2-image-popup/directives/angular2-image-popup/css/style.css">
-<link rel="stylesheet" type="text/css" href="../../node_modules/font-awesome/css/font-awesome.css">
-<link rel="stylesheet" type="text/css" href="../../node_modules/angular2-image-popup/app/assets/css/main.css">
 <div class="jumbotron center-block user">
     <h1></h1>
     <div class="">
         <div class="row">
             <div class="col-md-12">
-piy
+                <div>
+                    <div class="panel panel-default panel-profile m-b-0">
+                        <div class="panel-heading" style="background-image: url(//cdn.shopify.com/s/files/1/0691/5403/t/125/assets/insta-1.jpg?15449168607105533524);"></div>
+                        <div class="panel-body text-center">
+                            <img *ngIf="user?.avatar" class="panel-profile-img" src="../../uploads/avatars/{{ user?.avatar }}">
+                            <h5 class="panel-title">{{ user?.login }}</h5>
+                            <p class="m-b">{{ user?.info }}</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

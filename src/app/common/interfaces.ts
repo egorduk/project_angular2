@@ -12,7 +12,6 @@ export interface IUser {
     avatar: string;
     password: string;
     pictures: IPicture[];
-    is_liked: boolean;
 }
 
 export interface IComment {

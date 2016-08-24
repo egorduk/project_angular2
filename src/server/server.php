@@ -126,6 +126,23 @@ switch ($requestMethod) {
             }
 
             return;
+        }  elseif ($action == 'users') {
+            if ($data[4] == 'login') {
+                $login = $data[5];
+
+                $db = getDb();
+                $query = $db->prepare("select u.login, u.avatar, u.id
+                        from user u
+                        where u.login = ?");
+                $query->execute(array($login));
+
+                if ($query->rowCount() > 0) {
+                    $user = $query->fetch(PDO::FETCH_ASSOC);
+                    echo json_encode(array('response' => true, 'user' => $user));
+                } else {
+                    echo json_encode(array('response' => false));
+                }
+            }
         }
 
         break;

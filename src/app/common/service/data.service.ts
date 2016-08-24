@@ -146,6 +146,15 @@ export class DataService {
             .catch(this.handleError);
     }
 
+    getUserInfo(login: string) : Observable<IUser[]> {
+        return this.authHttp.get(this._apiUrl + '/users/login/' + login)
+            .map((response: Response) => {
+                console.log(response.json());
+                return response.json();
+            })
+            .catch(this.handleError);
+    }
+
     private handleError(error: any) {
         console.error(error);
         return Observable.throw(error.json().error || 'Server error');
