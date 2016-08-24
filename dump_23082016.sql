@@ -20,7 +20,9 @@ CREATE TABLE IF NOT EXISTS `friend` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL DEFAULT '0',
   `friend_id` int(11) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `FK_friend_user_id` (`user_id`),
+  CONSTRAINT `FK_friend_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=69 DEFAULT CHARSET=utf8;
 
 -- Дамп данных таблицы project_angular2.friend: ~2 rows (приблизительно)
@@ -35,20 +37,31 @@ INSERT INTO `friend` (`id`, `user_id`, `friend_id`) VALUES
 CREATE TABLE IF NOT EXISTS `gallery_has_picture` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `gallery_id` int(11) NOT NULL,
-  `picture_id` int(11) NOT NULL,
+  `picture_id` int(11) DEFAULT NULL,
+  `user_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_gallery_has_picture_picture_gallery` (`gallery_id`),
   KEY `FK_gallery_has_picture_picture` (`picture_id`),
+  KEY `FK_gallery_has_picture_user_id` (`user_id`),
   CONSTRAINT `FK_gallery_has_picture_picture` FOREIGN KEY (`picture_id`) REFERENCES `picture` (`id`),
-  CONSTRAINT `FK_gallery_has_picture_picture_gallery` FOREIGN KEY (`gallery_id`) REFERENCES `picture_gallery` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+  CONSTRAINT `FK_gallery_has_picture_picture_gallery` FOREIGN KEY (`gallery_id`) REFERENCES `picture_gallery` (`id`),
+  CONSTRAINT `FK_gallery_has_picture_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=utf8;
 
--- Дамп данных таблицы project_angular2.gallery_has_picture: ~0 rows (приблизительно)
+-- Дамп данных таблицы project_angular2.gallery_has_picture: ~4 rows (приблизительно)
 /*!40000 ALTER TABLE `gallery_has_picture` DISABLE KEYS */;
-INSERT INTO `gallery_has_picture` (`id`, `gallery_id`, `picture_id`) VALUES
-	(1, 37, 6),
-	(2, 38, 6),
-	(3, 37, 5);
+INSERT INTO `gallery_has_picture` (`id`, `gallery_id`, `picture_id`, `user_id`) VALUES
+	(3, 37, 5, 6),
+	(13, 39, NULL, 6),
+	(18, 40, NULL, 6),
+	(20, 41, NULL, 6),
+	(21, 40, 4, 6),
+	(42, 48, NULL, 6),
+	(44, 49, NULL, 6),
+	(46, 50, NULL, 6),
+	(47, 51, 6, 6),
+	(48, 51, NULL, 6),
+	(52, 52, NULL, 6);
 /*!40000 ALTER TABLE `gallery_has_picture` ENABLE KEYS */;
 
 
@@ -81,7 +94,9 @@ CREATE TABLE IF NOT EXISTS `picture_comment` (
   `picture_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `comment` varchar(50) NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `FK_picture_comment_picture_id` (`picture_id`),
+  CONSTRAINT `FK_picture_comment_picture_id` FOREIGN KEY (`picture_id`) REFERENCES `picture` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8;
 
 -- Дамп данных таблицы project_angular2.picture_comment: ~6 rows (приблизительно)
@@ -101,13 +116,22 @@ CREATE TABLE IF NOT EXISTS `picture_gallery` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=utf8;
 
--- Дамп данных таблицы project_angular2.picture_gallery: ~19 rows (приблизительно)
+-- Дамп данных таблицы project_angular2.picture_gallery: ~3 rows (приблизительно)
 /*!40000 ALTER TABLE `picture_gallery` DISABLE KEYS */;
 INSERT INTO `picture_gallery` (`id`, `name`) VALUES
 	(37, 'gal1'),
-	(38, 'gal2');
+	(38, 'gal2'),
+	(39, 'gal3'),
+	(40, 'gal4'),
+	(41, 'gal5'),
+	(42, 'gal6'),
+	(48, 'gal6'),
+	(49, 'gg'),
+	(50, 'gal7'),
+	(51, 'gal8'),
+	(52, 'gal9');
 /*!40000 ALTER TABLE `picture_gallery` ENABLE KEYS */;
 
 
@@ -116,10 +140,14 @@ CREATE TABLE IF NOT EXISTS `picture_like` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
   `picture_id` int(11) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8;
+  PRIMARY KEY (`id`),
+  KEY `FK_picture_like_picture_id` (`picture_id`),
+  KEY `FK_picture_like_user_id` (`user_id`),
+  CONSTRAINT `FK_picture_like_picture_id` FOREIGN KEY (`picture_id`) REFERENCES `picture` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `FK_picture_like_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8;
 
--- Дамп данных таблицы project_angular2.picture_like: ~8 rows (приблизительно)
+-- Дамп данных таблицы project_angular2.picture_like: ~7 rows (приблизительно)
 /*!40000 ALTER TABLE `picture_like` DISABLE KEYS */;
 INSERT INTO `picture_like` (`id`, `user_id`, `picture_id`) VALUES
 	(2, 7, 6),
@@ -128,8 +156,8 @@ INSERT INTO `picture_like` (`id`, `user_id`, `picture_id`) VALUES
 	(9, 8, 2),
 	(20, 6, 4),
 	(33, 6, 3),
-	(35, 6, 6),
-	(36, 6, 2);
+	(36, 6, 2),
+	(40, 6, 5);
 /*!40000 ALTER TABLE `picture_like` ENABLE KEYS */;
 
 
@@ -192,26 +220,6 @@ INSERT INTO `user` (`id`, `email`, `password`, `login`, `avatar`) VALUES
 	(7, 'e2@tut.by', '', 'e2', 'av3.jpg'),
 	(8, 'e3@tut.by', '', 'e3', 'av4.jpg');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
-
-
--- Дамп структуры для таблица project_angular2.user_has_gallery
-CREATE TABLE IF NOT EXISTS `user_has_gallery` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NOT NULL,
-  `gallery_id` int(11) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `FK_user_has_gallery_user` (`user_id`),
-  KEY `FK_user_has_gallery_picture_gallery` (`gallery_id`),
-  CONSTRAINT `FK_user_has_gallery_picture_gallery` FOREIGN KEY (`gallery_id`) REFERENCES `picture_gallery` (`id`),
-  CONSTRAINT `FK_user_has_gallery_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
-
--- Дамп данных таблицы project_angular2.user_has_gallery: ~0 rows (приблизительно)
-/*!40000 ALTER TABLE `user_has_gallery` DISABLE KEYS */;
-INSERT INTO `user_has_gallery` (`id`, `user_id`, `gallery_id`) VALUES
-	(4, 6, 37),
-	(5, 6, 38);
-/*!40000 ALTER TABLE `user_has_gallery` ENABLE KEYS */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
