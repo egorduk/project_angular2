@@ -32,18 +32,17 @@
                                     <ul class="dropdown-menu" aria-labelledby="dLabel">
                                         <li>
                                             <div class="input-group">
-                                                <input type="text" #elInputGallery class="form-control" placeholder="Album name">
+                                                <input type="text" #elInputGallery (keyup.enter)="addUserGallery($event, elInputGallery, picture)" class="form-control" placeholder="Album name">
                                                 <div class="input-group-addon">
                                                     <a href="#" (click)="addUserGallery($event, elInputGallery, picture)"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a>
                                                 </div>
                                             </div>
                                         </li>
                                         <li *ngFor="let gallery of galleries">
-                                            <!--<a href="#" check-picture [picture]="picture" [gallery]="gallery" (response)="test($event)" (click)="addPictureToGallery($event)">{{ gallery.name }}<span [ngClass]="{ 'glyphicon glyphicon-ok': _isChecked }" ></span></a>-->
                                             <span *ngFor="let picture_id of gallery.picture_ids">
-                                                <span *ngIf="picture_id == picture.picture_id" class="glyphicon glyphicon-ok"></span><!--<span [ngClass]="{ 'glyphicon glyphicon-ok': picture_id == picture.picture_id }" ></span>-->
+                                                <span *ngIf="picture_id == picture.picture_id" class="glyphicon glyphicon-ok"></span>
                                             </span>
-                                            <a href="#" (click)="addPictureToGallery($event)">{{ gallery.name }}</a>
+                                            <a href="#" (click)="addPictureToGallery($event, picture, gallery)">{{ gallery.name }}</a>
                                         </li>
                                     </ul>
                                 </div>
@@ -87,13 +86,15 @@
         </div>
     </div>
 </div>
+
+
 <div *ngIf="_openModalWindow" class="modal <!--fade-->" id="imagemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false">
     <div class="modal-dialog" data-dismiss="modal">
         <div class="modal-content">
             <div class="modal-body">
                 <button type="button" class="close" data-dismiss="modal" (click)="closePopup()"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                 <div class="row no-margin">
-                    <div class="col-xs-9">
+                    <div class="col-xs-10">
                         <img src="../../uploads/pictures/{{ _selectedPicture.filename }}" class="imagepreview" style="width: 100%;" alt="selected_picture">
                         <div class="image-controls">
                             <a class="left carousel-control" (click)="getPrevPicture($event, _selectedPicture)" href="#" role="button">
@@ -104,7 +105,7 @@
                             </a>
                         </div>
                     </div>
-                    <div class="col-xs-3">
+                    <div class="col-xs-2">
                         <div class="jumbotron">
                             <p>
                                 <img src="../../uploads/avatars/{{ _selectedPicture.user_avatar }}" alt="user_avatar" class="img-circle" style="width: 40px; height: 40px;">
@@ -117,27 +118,58 @@
                             <p>
                                 {{ _selectedPicture.name }}
                             </p>
-                            <p>
-                                <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-plus" aria-hidden="true">&nbsp;Add</span></button>
-                                <button type="button" [ngClass]="{ 'picture-liked': _selectedPicture.is_liked == '1' }" class="btn btn-default" (click)="likePicture($event, _selectedPicture)">
-                                    <span class="badge">{{ _selectedPicture.cnt_like }}</span>
-                                    <span class="glyphicon glyphicon-heart" aria-hidden="true"></span>
-                                </button>
-                            </p>
-                            <p>
-                                <input type="text" [focus]="_setFocusCommentInput" placeholder="Add comment" size="17" class="form-control" #elInputComment (keyup.enter)="addComment(_selectedPicture, elInputComment)" />
-                            </p>
-                            <div class="" *ngFor="let comment of comments">
-                                <img src="../../uploads/avatars/{{ comment.user_avatar }}" alt="user_avatar" class="img-circle" style="width: 40px; height: 40px;">
-                                <a href="#">{{ comment.user_login }}</a>
-                                <p>
-                                    <span>{{ comment.comment }}</span><br>
-                                    <span  style="font-size: 15px" [ngSwitch]="comment.days_ago">
-                                        <span *ngSwitchCase = "'0'">today</span>
-                                        <span *ngSwitchDefault>{{ comment.days_ago }} d. ago</span>
-                                        <a (click)="deleteComment($event, comment, _selectedPicture)" href="#" style="font-size: 20px"><span *ngIf="_userId == comment.user_id" aria-hidden="true">&times;</span></a>
-                                    </span>
-                                </p>
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="dropdown">
+                                        <button class="btn btn-default" id="dLabel" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width:100%">
+                                            <span class="glyphicon glyphicon-plus" aria-hidden="true">&nbsp;Add</span>
+                                            <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="dLabel">
+                                            <li>
+                                                <div class="input-group">
+                                                    <input type="text" #elInputGallery (keyup.enter)="addUserGallery($event, elInputGallery, _selectedPicture)" class="form-control" placeholder="Album name">
+                                                    <div class="input-group-addon">
+                                                        <a href="#" (click)="addUserGallery($event, elInputGallery, _selectedPicture)"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li *ngFor="let gallery of galleries">
+                                            <span *ngFor="let picture_id of gallery.picture_ids">
+                                                <span *ngIf="picture_id == _selectedPicture.picture_id" class="glyphicon glyphicon-ok"></span>
+                                            </span>
+                                                <a href="#" (click)="addPictureToGallery($event, _selectedPicture, gallery)">{{ gallery.name }}</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <button type="button" [ngClass]="{ 'picture-liked': _selectedPicture.is_liked == '1' }" class="btn btn-default" (click)="likePicture($event, _selectedPicture)" style="width:100%">
+                                        <span class="badge">{{ _selectedPicture.cnt_like }}</span>
+                                        <span class="glyphicon glyphicon-heart" aria-hidden="true"></span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <input type="text" [focus]="_setFocusCommentInput" placeholder="Add comment" size="17" class="form-control" #elInputComment (keyup.enter)="addComment(_selectedPicture, elInputComment)" />
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top: 15px;">
+                                <div class="col-md-12">
+                                    <div class="" *ngFor="let comment of comments">
+                                        <img src="../../uploads/avatars/{{ comment.user_avatar }}" alt="user_avatar" class="img-circle" style="width: 40px; height: 40px;">
+                                        <a href="#">{{ comment.user_login }}</a>
+                                        <p>
+                                            <span>{{ comment.comment }}</span><br>
+                                            <span  style="font-size: 15px" [ngSwitch]="comment.days_ago">
+                                                <span *ngSwitchCase = "'0'">today</span>
+                                                <span *ngSwitchDefault>{{ comment.days_ago }} d. ago</span>
+                                                <a (click)="deleteComment($event, comment, _selectedPicture)" href="#" style="font-size: 20px"><span *ngIf="_userId == comment.user_id" aria-hidden="true">&times;</span></a>
+                                            </span>
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

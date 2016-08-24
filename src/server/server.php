@@ -36,7 +36,6 @@ switch ($requestMethod) {
                     left join picture_tag pt on p.id = pt.picture_id
                     left join tag t on t.id = pt.tag_id
                     left join gallery_has_picture ghp on ghp.picture_id = p.id
-                    left join user_has_gallery uhg on uhg.gallery_id = ghp.gallery_id
                     /*left join picture_gallery pg on pg.id = ghp.gallery_id*/
                     where f.user_id = ?
                     group by p.id
@@ -109,13 +108,12 @@ switch ($requestMethod) {
                     where uhg.user_id = ?
                     order by pg.name asc");*/
                     $query = $db->prepare("select pg.name, pg.id as gallery_id, GROUP_CONCAT(p.id) as picture_ids
-                    from user_has_gallery uhg
-                    inner join picture_gallery pg on pg.id = uhg.gallery_id
-                    left join gallery_has_picture ghp on ghp.gallery_id = pg.id
-                    left join picture p on p.id = ghp.picture_id
-                    where uhg.user_id = ?
-                    group by pg.id
-                    order by pg.name asc");
+                        from gallery_has_picture ghp
+                        left join picture_gallery pg on pg.id = ghp.gallery_id
+                        left join picture p on p.id = ghp.picture_id
+                        where ghp.user_id = ?
+                        group by pg.id
+                        order by pg.name asc");
                     $query->execute(array($userId));
 
                     if ($query->rowCount() > 0) {
@@ -133,9 +131,9 @@ switch ($requestMethod) {
         break;
     case "POST":
         $post = json_decode(file_get_contents('php://input'));
-        //var_dump($post->username);die;
-        $data = explode('/api/', $requestUri);
-        $action = $data[1];
+        $data = explode('/', $requestUri);
+        $action = $data[3];
+        //var_dump($data);die;
 
         require_once "JOSE/autoloader.php";
         $headers = apache_request_headers();
@@ -250,27 +248,56 @@ switch ($requestMethod) {
                 echo json_encode(array('response' => $response));
             }
         } elseif ($action == 'galleries') {
-            if (!$post->pictureId || !$post->gallery) {
-                header('HTTP/1.1 400 You must send the picture id and gallery text');
-                return;
-            }
+            if ($data[4] == 'pictures') {
+                if (!$post->pictureId || !$post->galleryId) {
+                    header('HTTP/1.1 400 You must send the picture id and gallery id');
+                    return;
+                }
 
-            if ($jws->isValid($publicKey, $encAlgorithm)) {
-                $payload = $jws->getPayload();
-                $userId = $payload['uid'];
-                $pictureId = $post->pictureId;
-                $gallery = $post->gallery;
+                if ($jws->isValid($publicKey, $encAlgorithm)) {
+                    $payload = $jws->getPayload();
+                    $userId = $payload['uid'];
+                    $pictureId = $post->pictureId;
+                    $galleryId = $post->galleryId;
 
-                $db = getDb();
-                $queryCreateGallery = $db->prepare("insert into picture_gallery(name) values(?)");
-                $queryCreateRelationsGHP = $db->prepare("insert into gallery_has_picture(picture_id, gallery_id) values(?, ?)");
-                $queryCreateRelationsUHG = $db->prepare("insert into user_has_gallery(user_id, gallery_id) values(?, ?)");
-                $response = $queryCreateGallery->execute(array($gallery));
-                $galleryId = $db->lastInsertId();
-                $response = $response && $queryCreateRelationsGHP->execute(array($pictureId, $galleryId)) && $queryCreateRelationsUHG->execute(array($userId, $galleryId));
-                $gallery = array('id' => $galleryId);
+                    $db = getDb();
 
-                echo json_encode(array('response' => $response, 'gallery' => $gallery));
+                    $query = $db->prepare("select * from gallery_has_picture where picture_id = ? and gallery_id = ? and user_id = ?");
+                    $query->execute(array($pictureId, $galleryId, $userId));
+
+                    if ($query->rowCount() > 0) {
+                        $row = $query->fetch(PDO::FETCH_ASSOC);
+                        $query = $db->prepare("delete from gallery_has_picture where id = ?");
+                        $response = $query->execute(array($row['id']));
+                    } else {
+                        $query = $db->prepare("insert into gallery_has_picture(picture_id, gallery_id, user_id) values(?, ?, ?)");
+                        $response = $query->execute(array($pictureId, $galleryId, $userId));
+                    }
+
+                    echo json_encode(array('response' => $response));
+                }
+            } else {
+                if (!$post->pictureId || !$post->gallery) {
+                    header('HTTP/1.1 400 You must send the picture id and gallery text');
+                    return;
+                }
+
+                if ($jws->isValid($publicKey, $encAlgorithm)) {
+                    $payload = $jws->getPayload();
+                    $userId = $payload['uid'];
+                    $pictureId = $post->pictureId;
+                    $galleryName = $post->gallery;
+
+                    $db = getDb();
+                    $queryCreateGallery = $db->prepare("insert into picture_gallery(name) values(?)");
+                    $queryCreateRelationsGHP = $db->prepare("insert into gallery_has_picture(picture_id, gallery_id, user_id) values(?, ?, ?)");
+                    $response = $queryCreateGallery->execute(array($galleryName));
+                    $galleryId = $db->lastInsertId();
+                    $query = $db->prepare("insert into gallery_has_picture(gallery_id, user_id) values(?, ?)");
+                    $response = $response && $queryCreateRelationsGHP->execute(array($pictureId, $galleryId, $userId)) && $query->execute(array($galleryId, $userId));
+
+                    echo json_encode(array('response' => $response));
+                }
             }
         }
         //var_dump($action);die;

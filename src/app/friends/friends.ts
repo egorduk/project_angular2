@@ -1,9 +1,7 @@
-import { Component, Input, ViewChild } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Router, ROUTER_DIRECTIVES } from '@angular/router';
 import { CORE_DIRECTIVES } from '@angular/common';
-import { Http, Headers } from '@angular/http';
-import { contentHeaders } from '../common/headers';
-import { AuthHttp } from 'angular2-jwt/angular2-jwt';
+import { Http } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import {Observer} from 'rxjs/Observer';
 import 'rxjs/add/operator/map';
@@ -11,11 +9,10 @@ import 'rxjs/add/operator/catch';
 import { DataService } from '../common/service/data.service';
 import { IPicture, IUser, IComment, IGallery } from '../common/interfaces';
 import { FocusDirective } from '../common/directive/focus.directive';
-import { CheckGalleryDirective } from '../common/directive/checkGallery.directive';
 
 @Component({
     selector: 'friends',
-    directives: [ ROUTER_DIRECTIVES, CORE_DIRECTIVES, FocusDirective, CheckGalleryDirective ],
+    directives: [ ROUTER_DIRECTIVES, CORE_DIRECTIVES, FocusDirective ],
     styleUrls: ['app/friends/style.css'],
     templateUrl: 'app/friends/friends.html'
 })
@@ -30,9 +27,8 @@ export class Friends {
     _openModalWindow: boolean = false;
     _setFocusCommentInput: boolean = false;
     _userId: number;
-    _isChecked: boolean = false;
 
-    constructor(public router: Router, public http: Http, private authHttp: AuthHttp, private dataService: DataService) {
+    constructor(public router: Router, public http: Http, private dataService: DataService) {
         let token = localStorage.getItem('id_token');
         let data = window.jwt_decode(token);
         this._userId = data.uid;
@@ -79,7 +75,6 @@ export class Friends {
         //console.log(this._selectedPicture);
         this.dataService.followUser(userId)
             .subscribe((response: boolean) => {
-                console.log(response);
                 if (response.response) {
                     if (mode == 'feed') {
                         this.getFriendsPictures();
@@ -116,7 +111,7 @@ export class Friends {
         if (picture.is_liked == '1') {
             this.dataService.unlikePicture(picture.picture_id)
                 .subscribe((response: boolean) => {
-                    console.log(response);
+                    //console.log(response);
                     if (response.response) {
                         if (picture.cnt_like != '0') {
                             picture.cnt_like--;
@@ -127,7 +122,7 @@ export class Friends {
         } else {
             this.dataService.likePicture(picture.picture_id)
                 .subscribe((response: boolean) => {
-                    console.log(response);
+                    //console.log(response);
                     if (response.response) {
                         picture.is_liked = '1';
                         picture.cnt_like++;
@@ -246,14 +241,13 @@ export class Friends {
 
         this.dataService.getUserGalleriesWithCheckedPictures()
             .subscribe((galleries: IGallery[]) => {
-                console.log('getUserGalleries', galleries);
                 if (galleries.response) {
                     if (galleries.galleries) {
-                        //if (typeof galleries.galleries.picture_ids === 'string') {
-                            galleries.galleries.forEach((value: any, key: any) => {
+                        galleries.galleries.forEach((value: any, key: any) => {
+                            if (typeof value.picture_ids === 'string') {
                                 galleries.galleries[key].picture_ids = value.picture_ids.split(',');
-                            });
-                       // }
+                            }
+                        });
                     } else {
 
                     }
@@ -261,22 +255,18 @@ export class Friends {
                     this.galleries = galleries.galleries;
                 }
 
-                console.log('this.galleries', this.galleries);
+                //console.log('this.galleries', this.galleries);
             });
     }
 
-    addPictureToGallery(event) {
-    }
+    addPictureToGallery(event, picture, gallery) {
+        event.preventDefault();
 
-    test(event) {
-       // console.log(event);
-
-        if (event.value) {
-            this._isChecked = true;
-        } else {
-            this._isChecked = false;
-        }
-
-        console.log(this._isChecked);
+        this.dataService.addPictureInGallery(gallery.gallery_id, picture.picture_id)
+            .subscribe((response: boolean) => {
+                if (response.response) {
+                    this.getUserGallery();
+                }
+            });
     }
 }

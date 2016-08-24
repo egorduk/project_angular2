@@ -110,6 +110,16 @@ export class DataService {
             .catch(this.handleError);
     }
 
+    addPictureInGallery(galleryId: number, pictureId: number) : Observable<boolean> {
+        let body = JSON.stringify({ galleryId, pictureId });
+
+        return this.authHttp.post(this._apiUrl + '/galleries/pictures', body, { headers: contentHeaders })
+            .map((response: Response) => {
+                return response.json();
+            })
+            .catch(this.handleError);
+    }
+
     deletePictureComment(commentId: number) : Observable<boolean> {
         return this.authHttp.delete(this._apiUrl + '/comments/' + commentId, { headers: contentHeaders })
             .map((response: Response) => {
