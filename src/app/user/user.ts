@@ -49,28 +49,19 @@ export class User implements OnInit {
         //let ul = this.router.url.split('/')[2];
         this.getUserInfo();
 
-
-       // console.log($(this.el).find('#tiles li'));
         let imgs = $(this.el).find('#tiles li');
+
         let options = {
             autoResize: true, // This will auto-update the layout when the browser window is resized.
             container: $('#main'), // Optional, used for some extra CSS styling
             offset: 5, // Optional, the distance between grid items
-            itemWidth: 460 // Optional, the width of a grid item
+            itemWidth: 450 // Optional, the width of a grid item
         };
+
         imgs.wookmark(options);
     }
 
     ngAfterViewInit() {
-        //if (!Component.chosenInitialized) {
-            /*var el:any = elelemtRef.domElement.children[0];
-            $(el).chosen().on('change', (e, args) => {
-                _this.selectedValue = args.selected;
-            });*/
-            //console.log($(this.el/*.domElement.children[0]).find('#tiles li')*/);
-            //console.log($(this.el.nativeElement)/*.find('#tiles li')*/);
-            //Component.chosenInitialized = true;
-        //}
     }
 
     getUserInfo() {
