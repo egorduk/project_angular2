@@ -149,7 +149,14 @@ export class DataService {
     getUserInfo(login: string) : Observable<IUser[]> {
         return this.authHttp.get(this._apiUrl + '/users/login/' + login)
             .map((response: Response) => {
-                console.log(response.json());
+                return response.json();
+            })
+            .catch(this.handleError);
+    }
+
+    getUserPictures(userId: number) : Observable<IPicture[]> {
+        return this.authHttp.get(this._apiUrl + '/pictures/users/' + userId)
+            .map((response: Response) => {
                 return response.json();
             })
             .catch(this.handleError);

@@ -1,19 +1,116 @@
 <div class="jumbotron center-block user">
     <h1></h1>
-    <div class="">
         <div class="row">
             <div class="col-md-12">
-                <div>
-                    <div class="panel panel-default panel-profile m-b-0">
-                        <div class="panel-heading" style="background-image: url(//cdn.shopify.com/s/files/1/0691/5403/t/125/assets/insta-1.jpg?15449168607105533524);"></div>
-                        <div class="panel-body text-center">
-                            <img *ngIf="user?.avatar" class="panel-profile-img" src="../../uploads/avatars/{{ user?.avatar }}">
-                            <h5 class="panel-title">{{ user?.login }}</h5>
-                            <p class="m-b">{{ user?.info }}</p>
-                        </div>
+                <!--<div class="row panel panel-default panel-profile m-b-0">-->
+                    <!--<div class="panel-heading" [style.background-image]="user?.page_photo | safeBg"></div>-->
+                    <!--<div class="panel-body text-center">-->
+                        <!--<img *ngIf="user?.avatar" class="panel-profile-img" src="../../uploads/avatars/{{ user?.avatar }}">-->
+                        <!--<h5 class="panel-title">{{ user?.login }}</h5>-->
+                        <!--<p class="m-b">{{ user?.info }}</p>-->
+                    <!--</div>-->
+                    <!--<div class="row">-->
+                        <!--<div class=".col-md-6"></div>-->
+                        <!--<div class=".col-md-6 col-md-offset-5">-->
+                            <!--<ul class="nav nav-tabs centered">-->
+                                <!--<li class="active"><a href="#">Pictures <span class="sr-only"></span></a></li>-->
+                                <!--<li class=""><a href="#">Galleries <span class="sr-only"></span></a></li>-->
+                                <!--<li class=""><a href="#">Info <span class="sr-only"></span></a></li>-->
+                            <!--</ul>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <div class="" style="/*position: relative; height: 1200px;*/">
+                    <!-- <div id="container" class="cols">
+                         <div *ngFor="let picture of pictures" class="box"><img src="../../uploads/pictures/{{ picture.filename }}"></div>
+                     </div>-->
+                    <!--<div id="main" role="main" style="height: 1097px;">
+                        <ul id="tiles" class="unstyled">
+                            <li *ngFor="let picture of pictures">
+                                <img src="../../uploads/pictures/{{ picture.filename }}">
+                            </li>
+                        </ul>
+                    </div>-->
+                    <div id="main" role="main" style="height: 1200px;">
+                        <ul id="tiles" class="unstyled" style="list-style-type:none">
+                            <li style="display: list-item;"><div id="post-225">
+                                <div class="post-home">
+                                    <div class="view view-first">
+                                        <a href="http://bragthemes.com/demo/pinstrap/files/2012/10/hooter-girl.jpeg" title="Hooters Girl">
+                                            <img width="450" height="auto" src="../../uploads/pictures/1.jpg" class="attachment-hp-thumb wp-post-image" alt="hooter-girl">                        </a>
+                                        <div class="mask">
+                                            <h2>Hooters Girl</h2>
+                                            <p class="link-btn"><a href="http://bragthemes.com/demo/pinstrap/hooters-girl/" rel="bookmark" title="Permanent Link to Hooters Girl"><i class="icon-link"></i></a>
+                                                <a href="http://bragthemes.com/demo/pinstrap/files/2012/10/hooter-girl.jpeg" title="Hooters Girl" rel="colorbox" class="cboxElement"><i class=" icon-zoom-in"></i></a>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div><!-- end of .post-home-->
+                            </div><!-- end of #post-225 -->
+                            </li>
+                            <li style="display: list-item;"><div id="post-222">
+                                <div class="post-home">
+                                    <div class="view view-first">
+                                        <a href="http://bragthemes.com/demo/pinstrap/files/2012/10/gucci-gun.jpeg" title="Gucci Gun">
+                                            <img width="450" height="auto" src="../../uploads/pictures/2.jpg" class="attachment-hp-thumb wp-post-image" alt="gucci-gun">                        </a>
+                                        <div class="mask">
+                                            <h2>Gucci Gun</h2>
+                                            <p class="link-btn"><a href="http://bragthemes.com/demo/pinstrap/gucci-gun/" rel="bookmark" title="Permanent Link to Gucci Gun"><i class="icon-link"></i></a>
+                                                <a href="http://bragthemes.com/demo/pinstrap/files/2012/10/gucci-gun.jpeg" title="Gucci Gun" rel="colorbox" class="cboxElement"><i class=" icon-zoom-in"></i></a>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div><!-- end of .post-home-->
+                            </div><!-- end of #post-222 -->
+                            </li>
+                            <li style="display: list-item;"><div id="post-219">
+                                <div class="post-home">
+                                    <div class="view view-first">
+                                        <a href="http://bragthemes.com/demo/pinstrap/files/2012/10/gold-grenade.jpeg" title="Gold Gernade">
+                                            <img width="450" height="auto" src="../../uploads/pictures/3.jpg" class="attachment-hp-thumb wp-post-image" alt="gold-grenade">                        </a>
+                                        <div class="mask">
+                                            <h2>Gold Gernade</h2>
+                                            <p class="link-btn"><a href="http://bragthemes.com/demo/pinstrap/gold-gernade/" rel="bookmark" title="Permanent Link to Gold Gernade"><i class="icon-link"></i></a>
+                                                <a href="http://bragthemes.com/demo/pinstrap/files/2012/10/gold-grenade.jpeg" title="Gold Gernade" rel="colorbox" class="cboxElement"><i class=" icon-zoom-in"></i></a>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div><!-- end of .post-home-->
+                            </div><!-- end of #post-219 -->
+                            </li>
+                            <li style="display: list-item;"><div id="post-207">
+                                <div class="post-home">
+                                    <div class="view view-first">
+                                        <a href="http://bragthemes.com/demo/pinstrap/files/2012/10/camo-dog.jpeg" title="Camo Dog">
+                                            <img width="450" height="auto" src="../../uploads/pictures/7.jpg" class="attachment-hp-thumb wp-post-image" alt="camo-dog">                        </a>
+                                        <div class="mask">
+                                            <h2>Camo Dog</h2>
+                                            <p class="link-btn"><a href="http://bragthemes.com/demo/pinstrap/camo-dog/" rel="bookmark" title="Permanent Link to Camo Dog"><i class="icon-link"></i></a>
+                                                <a href="http://bragthemes.com/demo/pinstrap/files/2012/10/camo-dog.jpeg" title="Camo Dog" rel="colorbox" class="cboxElement"><i class=" icon-zoom-in"></i></a>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div><!-- end of .post-home-->
+                            </div><!-- end of #post-207 -->
+                            </li>
+                            <li style="display: list-item;"><div id="post-204">
+                                <div class="post-home">
+                                    <div class="view view-first">
+                                        <a href="http://bragthemes.com/demo/pinstrap/files/2012/10/black-jet.jpeg" title="Black Jet">
+                                            <img width="450" height="auto" src="../../uploads/pictures/6.jpg" class="attachment-hp-thumb wp-post-image" alt="black-jet">                        </a>
+                                        <div class="mask">
+                                            <h2>Black Jet</h2>
+                                            <p class="link-btn"><a href="http://bragthemes.com/demo/pinstrap/black-jet/" rel="bookmark" title="Permanent Link to Black Jet"><i class="icon-link"></i></a>
+                                                <a href="http://bragthemes.com/demo/pinstrap/files/2012/10/black-jet.jpeg" title="Black Jet" rel="colorbox" class="cboxElement"><i class=" icon-zoom-in"></i></a>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div><!-- end of .post-home-->
+                            </div><!-- end of #post-204 -->
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 </div>

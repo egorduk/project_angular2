@@ -131,7 +131,7 @@ switch ($requestMethod) {
                 $login = $data[5];
 
                 $db = getDb();
-                $query = $db->prepare("select u.login, u.avatar, u.id
+                $query = $db->prepare("select u.login, u.avatar, u.id, u.info, u.page_photo
                         from user u
                         where u.login = ?");
                 $query->execute(array($login));
@@ -139,6 +139,23 @@ switch ($requestMethod) {
                 if ($query->rowCount() > 0) {
                     $user = $query->fetch(PDO::FETCH_ASSOC);
                     echo json_encode(array('response' => true, 'user' => $user));
+                } else {
+                    echo json_encode(array('response' => false));
+                }
+            }
+        } elseif ($action == 'pictures') {
+            if ($data[4] == 'users') {
+                $userId = $data[5];
+
+                $db = getDb();
+                $query = $db->prepare("select p.name, p.filename
+                        from picture p
+                        where p.user_id = ?");
+                $query->execute(array($userId));
+
+                if ($query->rowCount() > 0) {
+                    $pictures = $query->fetchAll(PDO::FETCH_ASSOC);
+                    echo json_encode(array('response' => true, 'pictures' => $pictures));
                 } else {
                     echo json_encode(array('response' => false));
                 }
