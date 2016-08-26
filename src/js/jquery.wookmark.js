@@ -1,5 +1,18 @@
 jQuery.fn.wookmark = function(options) {
 
+  /*  jQuery("a[rel=popover]")
+        .popover()
+        .click(function(e) {
+            e.preventDefault()
+        });
+
+    jQuery("a[rel=tooltip]").tooltip();
+
+    //jQuery("a[rel=colorbox]").colorbox();
+
+    console.log( jQuery("a[rel=popover]"));
+    console.log( jQuery("a[rel=tooltip]"));*/
+
     if(!this.wookmarkOptions) {
         this.wookmarkOptions = jQuery.extend( {
             container: jQuery('body'),

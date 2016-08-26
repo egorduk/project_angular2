@@ -7,7 +7,8 @@
         '@angular':                   'node_modules/@angular',
         'angular2-localstorage':      'node_modules/angular2-localstorage',
         'angular2-jwt':               'node_modules/angular2-jwt',
-        'angular2-image-popup':       'node_modules/angular2-image-popup/directives/angular2-image-popup'
+        'angular2-image-popup':       'node_modules/angular2-image-popup/directives/angular2-image-popup',
+        'ng2-file-upload':            'node_modules/ng2-file-upload'
     };
 
     // packages tells the System loader how to load when no filename and/or no extension
@@ -21,6 +22,9 @@
             defaultExtension: "js"
         },
         'angular2-image-popup': {
+            defaultExtension: "js"
+        },
+        'ng2-file-upload': {
             defaultExtension: "js"
         }
     };

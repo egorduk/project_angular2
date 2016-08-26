@@ -9,13 +9,16 @@ import 'rxjs/add/operator/catch';
 import { DataService } from '../common/service/data.service';
 import { IUser, IPicture } from '../common/interfaces';
 import { SafePipe } from '../common/pipe/safe.pipe';
+import {FILE_UPLOAD_DIRECTIVES, FileUploader} from 'ng2-file-upload/ng2-file-upload';
 //import { Subscription } from 'rxjs/Subscription';
 
 declare  var $:any;
 
+const URL = 'https://evening-anchorage-3159.herokuapp.com/api/';
+
 @Component({
     selector: 'user',
-    directives: [ ROUTER_DIRECTIVES, CORE_DIRECTIVES ],
+    directives: [ ROUTER_DIRECTIVES, CORE_DIRECTIVES, FILE_UPLOAD_DIRECTIVES ],
     pipes: [ SafePipe ],
     styleUrls: ['app/user/style.css'],
     templateUrl: 'app/user/user.html'
@@ -31,6 +34,10 @@ export class User implements OnInit {
     private pictures: IPicture[] = [];
     private el: HTMLElement;
 
+    public uploader:FileUploader = new FileUploader({url: URL});
+    public hasBaseDropZoneOver:boolean = false;
+    public hasAnotherDropZoneOver:boolean = false;
+
     constructor(private router: Router, private http: Http, private dataService: DataService, private el: ElementRef) {
         this.el = el.nativeElement;
 
@@ -38,18 +45,25 @@ export class User implements OnInit {
         let data = window.jwt_decode(token);
         this._userId = data.uid;
        // this.router.navigate(['/hero', hero.id]);
-        //this._userLogin = this.router.url.split('/')[2];
 
-        //this.getUserPictures();
+    }
 
+    public fileOverBase(e:any):void {
+        this.hasBaseDropZoneOver = e;
+    }
+
+    public fileOverAnother(e:any):void {
+        this.hasAnotherDropZoneOver = e;
     }
 
     ngOnInit() {
         this._userLogin = this.router.url.split('/')[2];
-        //let ul = this.router.url.split('/')[2];
         this.getUserInfo();
+    }
 
+    ngAfterViewChecked() {
         let imgs = $(this.el).find('#tiles li');
+        //console.log(imgs);
 
         let options = {
             autoResize: true, // This will auto-update the layout when the browser window is resized.
@@ -59,9 +73,6 @@ export class User implements OnInit {
         };
 
         imgs.wookmark(options);
-    }
-
-    ngAfterViewInit() {
     }
 
     getUserInfo() {
