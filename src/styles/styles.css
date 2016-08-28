@@ -9,7 +9,7 @@ body {
 
 main {
     position: relative;
-    padding-top: 60px;
+    padding-top: 30px;
 }
 
 /* Ensure display:flex and others don't override a [hidden] */
@@ -137,13 +137,13 @@ a.navbar-brand {
 }
 
 .navbar-inner {
-    padding-left: 0px;
-    -webkit-border-radius: 0px;
-    border-radius: 0px;
+    padding-left: 0;
+    -webkit-border-radius: 0;
+    border-radius: 0;
     -webkit-box-shadow: none;
     -moz-box-shadow: none;
     box-shadow: none;
-    background-color: #027FF4;
+    background-color: gainsboro;
     background-image: none;
 }
 

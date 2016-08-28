@@ -137,7 +137,7 @@ export class DataService {
     }
 
     getUserGalleriesWithCheckedPictures() : Observable<IGallery[]> {
-        return this.authHttp.get(this._apiUrl + '/galleries/users/')
+        return this.authHttp.get(this._apiUrl + '/galleries/users')
             .map((response: Response) => {
                 this.galleries = response.json();
                 //console.log(this.users);

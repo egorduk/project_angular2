@@ -8,6 +8,9 @@ $requestMethod = $_SERVER['REQUEST_METHOD'];
 $requestUri = $_SERVER['REQUEST_URI'];
 $encAlgorithm = 'RS256';
 define('ENC_ALG' , 'RS256');
+$pictureBasePath = realpath(__DIR__ . '/..') . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'pictures';
+$pictureOriginalPath = $pictureBasePath . DIRECTORY_SEPARATOR . 'original' . DIRECTORY_SEPARATOR;
+$pictureResizedPath = $pictureBasePath . DIRECTORY_SEPARATOR . 'resized' . DIRECTORY_SEPARATOR;
 
 switch ($requestMethod) {
     case "GET":
@@ -163,6 +166,7 @@ switch ($requestMethod) {
         }
 
         break;
+
     case "POST":
         $post = json_decode(file_get_contents('php://input'));
         $data = explode('/', $requestUri);
@@ -333,7 +337,99 @@ switch ($requestMethod) {
                     echo json_encode(array('response' => $response));
                 }
             }
+        } elseif ($action == 'pictures') {
+            //var_dump($_FILES);
+
+            $filename     = $_FILES['file']['name'];
+            $tmpName  = $_FILES['file']['tmp_name'];
+            $error    = $_FILES['file']['error'];
+            $size     = $_FILES['file']['size'];
+            $type     = $_FILES['file']['type'];
+            $ext      = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+
+            $response = false;
+            $errorMsg = '';
+
+            switch ($error) {
+                case UPLOAD_ERR_OK:
+                    $valid = true;
+
+                    //validate file extensions
+                    if (!in_array($ext, array('jpg', 'jpeg', 'png', 'gif'))) {
+                        $valid = false;
+                        $errorMsg = 'Invalid file extension.';
+                    }
+
+                    $uploadMaxFileSize = ini_get("upload_max_filesize");
+                    $uploadMaxFileSize = getFileSizeBytes($uploadMaxFileSize);
+
+                    //validate file size
+                    if ($size > $uploadMaxFileSize) {
+                        $valid = false;
+                        $response = 'File size is exceeding maximum allowed size.';
+                    }
+
+                    //upload file
+                    if ($valid) {
+                        $targetOriginalPath = $pictureOriginalPath . $filename;
+                        $targetResizedPath = $pictureResizedPath . $filename;
+
+                        move_uploaded_file($tmpName, $targetOriginalPath);
+
+                        $percent = 0.5;
+
+                        list($width, $height) = getimagesize($targetOriginalPath);
+                        $newWidth = $width * $percent;
+                        $newHeight = $height * $percent;
+                        $thumb = imagecreatetruecolor($newWidth, $newHeight);
+
+                        if ($type == 'image/jpeg') {
+                            header('Content-Type: image/jpeg');
+                            $source = imagecreatefromjpeg($targetOriginalPath);
+                        } elseif ($type == 'image/png') {
+                            header('Content-Type: image/png');
+                            $source = imagecreatefrompng($targetOriginalPath);
+                        } elseif ($type == 'image/gif') {
+                            header('Content-Type: image/gif');
+                            $source = imagecreatefromgif($targetOriginalPath);
+                        }
+
+                        imagecopyresized($thumb, $source, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+                        imagejpeg($thumb, $targetResizedPath);
+
+                        $response = true;
+                    }
+
+                    break;
+                case UPLOAD_ERR_INI_SIZE:
+                    $errorMsg = 'The uploaded file exceeds the upload_max_filesize directive in php.ini.';
+                    break;
+                case UPLOAD_ERR_FORM_SIZE:
+                    $errorMsg = 'The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form.';
+                    break;
+                case UPLOAD_ERR_PARTIAL:
+                    $errorMsg = 'The uploaded file was only partially uploaded.';
+                    break;
+                case UPLOAD_ERR_NO_FILE:
+                    $errorMsg = 'No file was uploaded.';
+                    break;
+                case UPLOAD_ERR_NO_TMP_DIR:
+                    $errorMsg = 'Missing a temporary folder.';
+                    break;
+                case UPLOAD_ERR_CANT_WRITE:
+                    $errorMsg = 'Failed to write file to disk.';
+                    break;
+                case UPLOAD_ERR_EXTENSION:
+                    $errorMsg = 'File upload stopped by extension.';
+                    break;
+                default:
+                    $errorMsg = 'Unknown error';
+                    break;
+            }
+
+            echo json_encode(array('response' => $response, 'errorMsg' => $errorMsg));
         }
+
         //var_dump($action);die;
         break;
     case "DELETE":
@@ -409,4 +505,25 @@ function isValidToken($token) {
     $jws = \Namshi\JOSE\SimpleJWS::load($token);
     $publicKey = getPublicKey();
     return $jws->isValid($publicKey, ENC_ALG);
+}
+
+function getFileSizeBytes($fileSize) {
+    $val = trim($fileSize);
+    $last = strtolower($val[strlen($val)-1]);
+
+    switch($last) {
+        case 'g':
+            $val *= 1024 * 1024 * 1024;
+            break;
+        case 'm':
+            $val *= 1024 * 1024;
+            break;
+        case 'k':
+            $val *= 1024;
+            break;
+        default:
+            break;
+    }
+
+    return $val;
 }

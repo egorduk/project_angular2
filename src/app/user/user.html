@@ -1,138 +1,53 @@
 <div class="jumbotron center-block user" style="padding: 0">
     <h1></h1>
-    <div class="row">
-        <input type="button" value="upload">
 
-        <div class="row">
-            <div class="col-md-3">
-                <h3>Select files</h3>
-                <div ng2FileDrop
-                     [ngClass]="{'nv-file-over': hasBaseDropZoneOver}"
-                     (fileOver)="fileOverBase($event)"
-                     [uploader]="uploader"
-                     class="well my-drop-zone">
-                    Base drop zone
-                </div>
-                <div ng2FileDrop
-                     [ngClass]="{'another-file-over-class': hasAnotherDropZoneOver}"
-                     (fileOver)="fileOverAnother($event)"
-                     [uploader]="uploader"
-                     class="well my-drop-zone">
-                    Another drop zone
-                </div>
-                Multiple
-                <input type="file" ng2FileSelect [uploader]="uploader" multiple  /><br/>
-                Single
-                <input type="file" ng2FileSelect [uploader]="uploader" />
-            </div>
-            <div class="col-md-9" style="margin-bottom: 40px">
-                <h3>Upload queue</h3>
-                <p>Queue length: </p>
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th width="50%">Name</th>
-                        <th>Size</th>
-                        <th>Progress</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr *ngFor="let item of uploader.queue">
-                        <td><strong></strong></td>
-                        <td *ngIf="uploader.isHTML5" nowrap>0.00 MB</td>
-                        <td *ngIf="uploader.isHTML5">
-                            <div class="progress" style="margin-bottom: 0;">
-                                <div class="progress-bar" role="progressbar" [ngStyle]="{ 'width': item.progress + '%' }"></div>
-                            </div>
-                        </td>
-                        <td class="text-center">
-                            <span *ngIf="item.isSuccess"><i class="glyphicon glyphicon-ok"></i></span>
-                            <span *ngIf="item.isCancel"><i class="glyphicon glyphicon-ban-circle"></i></span>
-                            <span *ngIf="item.isError"><i class="glyphicon glyphicon-remove"></i></span>
-                        </td>
-                        <td nowrap>
-                            <button type="button" class="btn btn-success btn-xs"
-                                    (click)="item.upload()" [disabled]="item.isReady || item.isUploading || item.isSuccess">
-                                <span class="glyphicon glyphicon-upload"></span> Upload
-                            </button>
-                            <button type="button" class="btn btn-warning btn-xs"
-                                    (click)="item.cancel()" [disabled]="!item.isUploading">
-                                <span class="glyphicon glyphicon-ban-circle"></span> Cancel
-                            </button>
-                            <button type="button" class="btn btn-danger btn-xs"
-                                    (click)="item.remove()">
-                                <span class="glyphicon glyphicon-trash"></span> Remove
-                            </button>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-                <div>
-                    <div>
-                        Queue progress:
-                        <div class="progress" style="">
-                            <div class="progress-bar" role="progressbar" [ngStyle]="{ 'width': uploader.progress + '%' }"></div>
-                        </div>
-                    </div>
-                    <button type="button" class="btn btn-success btn-s"
-                            (click)="uploader.uploadAll()" [disabled]="!uploader.getNotUploadedItems().length">
-                        <span class="glyphicon glyphicon-upload"></span> Upload all
-                    </button>
-                    <button type="button" class="btn btn-warning btn-s"
-                            (click)="uploader.cancelAll()" [disabled]="!uploader.isUploading">
-                        <span class="glyphicon glyphicon-ban-circle"></span> Cancel all
-                    </button>
-                    <button type="button" class="btn btn-danger btn-s"
-                            (click)="uploader.clearQueue()" [disabled]="!uploader.queue.length">
-                        <span class="glyphicon glyphicon-trash"></span> Remove all
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!--<div class="col-md-12">
+   <!-- <div class="row">
+        <div class="col-md-12">
             <div class="row panel panel-default panel-profile m-b-0">
                 <div class="panel-heading" [style.background-image]="user?.page_photo | safeBg"></div>
-                <div class="panel-body text-center">
-                    <img *ngIf="user?.avatar" class="panel-profile-img" src="../../uploads/avatars/{{ user?.avatar }}">
-                    <h5 class="panel-title">{{ user?.login }}</h5>
-                    <p class="m-b">{{ user?.info }}</p>
-                </div>
-                <div class="row">
-                    <div class=".col-md-6"></div>
-                    <div class=".col-md-6 col-md-offset-5">
-                        <ul class="nav nav-tabs centered">
-                            <li class="active"><a href="#">Pictures <span class="sr-only"></span></a></li>
-                            <li class=""><a href="#">Galleries <span class="sr-only"></span></a></li>
-                            <li class=""><a href="#">Info <span class="sr-only"></span></a></li>
-                        </ul>
-                    </div>
-                </div>
+            <div class="panel-body text-center">
+                <img *ngIf="user?.avatar" class="panel-profile-img" src="../../uploads/avatars/{{ user?.avatar }}">
+                <h5 class="panel-title">{{ user?.login }}</h5>
+                <p class="m-b">{{ user?.info }}</p>
             </div>
-            <div class="" style="position: relative/*; height: 1200px;*/">
-                <div id="main" role="main" style="height: 1200px;">
-                    <ul id="tiles" class="unstyled" style="list-style-type:none">
-                        <li *ngFor="let picture of pictures" style="display: list-item;">
-                            <div id="post-225">
-                                <div class="post-home">
-                                    <div class="view view-first hovereffect">
-                                        <img width="450" height="220" src="../../uploads/pictures/{{ picture.filename }}" class="attachment-hp-thumb wp-post-image" alt="">
-                                        <div class="overlay">
-                                            <h2>{{ picture.name }}</h2>
-                                            &lt;!&ndash;<a class="info" href="#">link here</a>&ndash;&gt;
-                                            <span class="info glyphicon glyphicon-heart" aria-hidden="true"></span>
-                                            <span class="info glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
+            <div class="row">
+                <div class=".col-md-6"></div>
+                <div class=".col-md-6 col-md-offset-5">
+                    <ul class="nav nav-tabs centered">
+                        <li class="active"><a href="#">Pictures <span class="sr-only"></span></a></li>
+                        <li class=""><a href="#">Galleries <span class="sr-only"></span></a></li>
+                        <li class=""><a href="#">Info <span class="sr-only"></span></a></li>
                     </ul>
                 </div>
             </div>
-        </div>-->
+        </div>
+        <div class="" style="position: relative/*; height: 1200px;*/">
+            <div id="main" role="main" style="height: 1200px;">
+                <ul id="tiles" class="unstyled" style="list-style-type:none">
+                    <li *ngFor="let picture of pictures" style="display: list-item;">
+                    <div id="post-225">
+                        <div class="post-home">
+                            <div class="view view-first hovereffect">
+                                <img width="450" height="220" src="../../uploads/pictures/{{ picture.filename }}" class="attachment-hp-thumb wp-post-image" alt="">
+                                <div class="overlay">
+                                    <h2>{{ picture.name }}</h2>
+                                    &lt;!&ndash;<a class="info" href="#">link here</a>&ndash;&gt;
+                                    <span class="info glyphicon glyphicon-heart" aria-hidden="true"></span>
+                                    <span class="info glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
     </div>
+</div>-->
+
+
 </div>
-<p>        http://valor-software.com/ng2-file-upload/</p>
+<!--
+<p>        http://valor-software.com/ng2-file-upload/
+npm install bootstrap-select
+</p>-->
