@@ -165,7 +165,7 @@ switch ($requestMethod) {
             }
         } elseif ($action == 'tags') {
             $db = getDb();
-            $query = $db->prepare("select * from tag");
+            $query = $db->prepare("select * from tag order by name");
             $query->execute();
 
             if ($query->rowCount() > 0) {
@@ -350,7 +350,9 @@ switch ($requestMethod) {
             }
         } elseif ($action == 'pictures') {
             if ($jws->isValid($publicKey, $encAlgorithm)) {
-                //var_dump($_FILES);
+                var_dump($_FILES);
+                var_dump($_POST);
+                var_dump($post);die;
 
                 $filename = $_FILES['file']['name'];
                 $tmpName = $_FILES['file']['tmp_name'];
