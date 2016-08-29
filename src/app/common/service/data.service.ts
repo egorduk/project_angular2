@@ -6,7 +6,7 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 import { AuthHttp } from 'angular2-jwt/angular2-jwt';
 import { contentHeaders } from '../headers';
-import { IPicture, IUser, IGallery, IComment } from '../interfaces';
+import { IPicture, IUser, IGallery, IComment, ITag } from '../interfaces';
 import { GlobalService } from './global.service';
 
 @Injectable()
@@ -156,6 +156,14 @@ export class DataService {
 
     getUserPictures(userId: number) : Observable<IPicture[]> {
         return this.authHttp.get(this._apiUrl + '/pictures/users/' + userId)
+            .map((response: Response) => {
+                return response.json();
+            })
+            .catch(this.handleError);
+    }
+
+    getTags() : Observable<ITags[]> {
+        return this.authHttp.get(this._apiUrl + '/tags/')
             .map((response: Response) => {
                 return response.json();
             })
