@@ -59,8 +59,6 @@ export class HeaderComponent implements OnInit {
         this.getTags();
 
         this.uploader = new FileUploader({url: URL, authToken: this._token, allowedMimeType: ['image/jpeg', 'image/gif', 'image/png']});
-        //this.uploader.tags = this._tags;
-        //console.log(this.getFileExtByFileTypePipe);
 
         // this.uploader.authToken = this._token;
 
@@ -70,20 +68,31 @@ export class HeaderComponent implements OnInit {
                 item.file.name = item.file.newName + this.getFileExtByFileTypePipe.transform(item.file.type);
             }
 
-            //item.file.tags = item.file.newTags;
-            //console.log(item.file);
+            item.file.tags = (item.file.tags) ? item.file.tags.join(',') : null;
+
+            console.log(item.file);
         };
 
         this.uploader.onAfterAddingFile = function(item) {
             this.showSuccessMessage = false;
-            //item.file.tags = this._tags;
-            //console.log(item.file);
-            //console.log('this._tags', this._tags);
         };
 
         this.uploader.onCompleteAll = function() {
             this.showSuccessMessage = true;
+        };
+
+        let disabled = this.disabled;
+        let that = this;
+
+        this.uploader.onCompleteItem = function(item: any, response: any, status: any, headers: any) {
+           /* console.log(response);
+            console.log(status);
+            console.log(headers);*/
+            console.log(item);
+            that.disabled = true;
         }
+
+        //console.log(this.uploader.onCompleteItem);
     }
 
     ngAfterViewChecked() {
@@ -110,17 +119,17 @@ export class HeaderComponent implements OnInit {
     }
 
     private getTags() {
+        //this.tags = null;
         this.dataService.getTags()
             .subscribe((tags: ITag[]) => {
                 if (tags.response) {
                     if (tags.tags) {
                         tags.tags.forEach((value: any, key: any) => {
-                            /*if (value.gallery_ids) {
-                                this.pictures[key].gallery_ids = value.gallery_ids.split(',');
-                            }*/
-                            this.tags[key] = value.name;
+                            let obj = new Object();
+                            obj.text = value.name;
+                            obj.id = value.id;
+                            this.tags[key] = obj;
                         });
-                        //this.tags = tags.tags;
                         //console.log(this.tags);
                     }
                 }
@@ -137,10 +146,11 @@ export class HeaderComponent implements OnInit {
     }
 
     public selected(value:any, uploader):void {
-        //console.log('Selected value is: ', value);
-        //console.log('item.file', item.file);
-        uploader.file.tags = value.id;
-        //console.log('uploader', uploader);
+        if (typeof uploader.file.tags === 'undefined') {
+            uploader.file.tags = [];
+        }
+
+        uploader.file.tags.push(value.id);
     }
 
     public removed(value:any):void {

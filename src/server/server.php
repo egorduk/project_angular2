@@ -350,9 +350,9 @@ switch ($requestMethod) {
             }
         } elseif ($action == 'pictures') {
             if ($jws->isValid($publicKey, $encAlgorithm)) {
-                var_dump($_FILES);
+                /*var_dump($_FILES);
                 var_dump($_POST);
-                var_dump($post);die;
+                var_dump($post);die;*/
 
                 $filename = $_FILES['file']['name'];
                 $tmpName = $_FILES['file']['tmp_name'];
@@ -385,6 +385,9 @@ switch ($requestMethod) {
 
                         //upload file
                         if ($valid) {
+                            $tagIds = $_POST['tags'];
+                            $tagIds = explode(',', $tagIds);
+
                             $targetOriginalPath = $pictureOriginalPath . $filename;
                             $targetResizedPath = $pictureResizedPath . $filename;
 
@@ -416,11 +419,24 @@ switch ($requestMethod) {
 
                             $name = preg_replace('/.jpg|.jpeg|.png|.gif/', '', $filename);
 
-                            /*$db = getDb();
-                            $query = $db->prepare("insert into picture(user_id, name, filename) values(?, ?, ?)");
-                            $response = $query->execute(array($userId, $name, $filename));*/
+                            $db = getDb();
 
-                            //$response = true;
+                            try {
+                                $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                                $db->beginTransaction();
+                                $query = $db->prepare("insert into picture(user_id, name, filename) values(?, ?, ?)");
+                                $query->execute(array($userId, $name, $filename));
+                                $pictureId = $db->lastInsertId();
+
+                                foreach ($tagIds as $tagId) {
+                                    $db->exec("INSERT INTO picture_tag(picture_id, tag_id) VALUES ('$pictureId', '$tagId')");
+                                }
+
+                                $response = $db->commit();
+                            } catch(PDOException $e) {
+                                $db->rollback();
+                                echo $e->getMessage();
+                            }
                         }
 
                         break;
