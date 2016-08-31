@@ -7,9 +7,9 @@ import { SafeFileExtPipe } from '../common/pipe/safe.pipe';
 import { GetFileExtByFileNamePipe } from '../common/pipe/safe.pipe';
 import { FILE_UPLOAD_DIRECTIVES, FileUploader } from 'ng2-file-upload/ng2-file-upload';
 import { SELECT_DIRECTIVES } from 'ng2-select/ng2-select';
-/*import { BUTTON_DIRECTIVES } from 'ng2-bootstrap/ng2-bootstrap';*/
 import { DataService } from '../common/service/data.service';
 import { ITag } from '../common/interfaces';
+import { User } from '../user/user';
 
 const URL = 'http://localhost:80/project_angular2/api/pictures';
 declare var $:any;
@@ -17,7 +17,7 @@ declare var $:any;
 @Component({
     selector: 'header',
     directives: [ CORE_DIRECTIVES, ROUTER_DIRECTIVES, FILE_UPLOAD_DIRECTIVES, SELECT_DIRECTIVES ],
-    providers: [ GetFileExtByFileNamePipe ],
+    providers: [ GetFileExtByFileNamePipe, User ],
     styleUrls: ['app/header/style.css'],
     pipes: [ FileSizePipe, SafeFileExtPipe ],
     templateUrl: 'app/header/header.component.html'
@@ -43,7 +43,8 @@ export class HeaderComponent implements OnInit {
     constructor(public router: Router,
                 public http: Http,
                 private el: ElementRef,
-                private dataService: DataService) {
+                private dataService: DataService,
+                private user: User) {
         this._token = localStorage.getItem('id_token');
         this._el = el.nativeElement;
 
@@ -65,9 +66,14 @@ export class HeaderComponent implements OnInit {
             this.showSuccessMessage = false;
         };
 
+        let that = this;
+
         this.uploader.onCompleteAll = function() {
             this.showSuccessMessage = true;
+            that.user.getUserPictures(6);
         };
+
+        console.log(this.user);
     }
 
     ngAfterViewChecked() {

@@ -96,7 +96,7 @@ export class User implements OnInit {
                     });*/
                 }
 
-                //console.log('this.pictures', this.pictures);
+                console.log('this.pictures', this.pictures);
             });
     }
 }
