@@ -1,8 +1,13 @@
-export interface IPicture {
+export class IPicture {
     id: number;
     name: string;
-    filename: string;
-    comments: IComment[];
+
+    constructor(id: number, name: string) {
+        this.id = id;
+        this.name = name;
+    }
+    //filename: string;
+    //comments: IComment[];
 }
 
 export interface IUser {

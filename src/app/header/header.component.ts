@@ -10,6 +10,7 @@ import { SELECT_DIRECTIVES } from 'ng2-select/ng2-select';
 import { DataService } from '../common/service/data.service';
 import { ITag } from '../common/interfaces';
 import { User } from '../user/user';
+import { MessageService } from '../common/service/message.service';
 
 const URL = 'http://localhost:80/project_angular2/api/pictures';
 declare var $:any;
@@ -29,7 +30,7 @@ export class HeaderComponent implements OnInit {
      response: string;
      api: string;
      _serverUrl: string = '';*/
-    private _openUploader: boolean = false;
+    private _openUploader: boolean = true;
     public uploader: FileUploader /*= new FileUploader({url: URL, *//*authToken: this._token, *//*allowedMimeType: ['image/jpeg', 'image/gif', 'image/png']})*/;
     public hasBaseDropZoneOver: boolean = false;
     private _el: HTMLElement;
@@ -39,12 +40,14 @@ export class HeaderComponent implements OnInit {
     private _getFileExtByFileNamePipe: GetFileExtByFileNamePipe;
     private value:any = [];
     private _tags:any = [];
+    message: any = [];
 
     constructor(public router: Router,
                 public http: Http,
                 private el: ElementRef,
                 private dataService: DataService,
-                private user: User) {
+                private user: User,
+                private ms: MessageService) {
         this._token = localStorage.getItem('id_token');
         this._el = el.nativeElement;
 
@@ -70,10 +73,24 @@ export class HeaderComponent implements OnInit {
 
         this.uploader.onCompleteAll = function() {
             this.showSuccessMessage = true;
-            that.user.getUserPictures(6);
+            //that.user.getUserPictures(6);
         };
 
-        console.log(this.user);
+        //console.log(this.user);
+
+        this.ms.data = true;
+        this.message = this.ms.rxEmitter;
+       // console.log('this.message t', this.message);
+
+        this.ms.data = false;
+        this.message = this.ms.rxEmitter;
+        //console.log('this.message f', this.message);
+    }
+
+    test() {
+        //this.user.test();
+        console.log('this.message', this.message);
+        console.log('this.ms.data', this.ms.data);
     }
 
     ngAfterViewChecked() {

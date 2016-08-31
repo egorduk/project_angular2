@@ -1,7 +1,7 @@
 <div class="jumbotron center-block user" style="padding: 0">
     <h1></h1>
-
     <div class="row">
+        <input type="button" (click)="getUserPictures(6)" value="PIY">
         <div class="col-md-12">
             <div class="row panel panel-default panel-profile m-b-0">
                 <div class="panel-heading" [style.background-image]="user?.page_photo | safeBg"></div>
@@ -21,12 +21,12 @@
                 </div>
             </div>
         </div>
-        <div class="" style="position: relative/*; height: 1200px;*/">
+
+        <div class="" style="position: relative">
             <div id="main" role="main" style="height: 1200px;">
                 <ul id="tiles" class="unstyled" style="list-style-type:none">
                     <li *ngFor="let picture of pictures" style="display: list-item;">
-                    <div id="post-225">
-                        <div class="post-home">
+                    <div>{{picture?.id}}</div>
                             <div class="view view-first hovereffect">
                                 <img width="450" height="{{ picture.resize_height }}" src="../../uploads/pictures/resized/{{ picture.filename }}" class="attachment-hp-thumb wp-post-image" alt="">
                                 <div class="overlay">
@@ -35,8 +35,6 @@
                                     <span class="info glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
                                 </div>
                             </div>
-                        </div>
-                    </div>
                     </li>
                 </ul>
             </div>

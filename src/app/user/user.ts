@@ -28,8 +28,10 @@ export class User implements OnInit {
     private _userLogin: string = '';
     private _userId: number = 0;
     private _isCurrentUser: boolean = false;
-    private user: IUser[];
-    private pictures: IPicture[] = [];
+    private user: IUser;
+    //pictures: IPicture[] = [];
+   // pictures: Observable<IPicture> = [];
+    pictures: Array<IPicture> = [];
     private el: HTMLElement;
     private _token: string = '';
 
@@ -44,6 +46,8 @@ export class User implements OnInit {
     ngOnInit() {
         this._userLogin = this.router.url.split('/')[2];
         this.getUserInfo();
+
+        //this.pictures = this.getUserPictures(6);
     }
 
     ngAfterViewChecked() {
@@ -62,7 +66,7 @@ export class User implements OnInit {
 
     getUserInfo() {
         this.dataService.getUserInfo(this._userLogin)
-            .subscribe((user: IUser[]) => {
+            .subscribe((user: IUser) => {
                 if (user.response) {
                     //console.log(user);
                     if (user.user) {
@@ -85,18 +89,30 @@ export class User implements OnInit {
 
     getUserPictures(userId) {
         this.dataService.getUserPictures(userId)
-            .subscribe((pictures: IPicture[]) => {
-                this.pictures = (pictures.response) ? pictures.pictures : null;
-
-                if (this.pictures) {
-                    /*this.pictures.forEach((value: any, key: any) => {
-                        if (value.gallery_ids) {
-                            this.pictures[key].gallery_ids = value.gallery_ids.split(',');
-                        }
-                    });*/
-                }
-
+            /*.subscribe((pictures: IPicture[]) => {
+                //this.pictures = (pictures.response) ? pictures.pictures : null;
+                this.pictures = pictures.pictures;
                 console.log('this.pictures', this.pictures);
-            });
+            });*/
+            .subscribe(
+           /* data => {
+                // Set the products Array
+                this.pictures = data;
+                console.log('this.pictures', this.pictures);
+                console.log('data', data);
+            }*/
+            res => this.pictures = res
+            );
+
+        //this.test();
+        console.log('this.pictures', this);
+
+    }
+
+    test() {
+        this.getUserPictures(6);
+        //console.log('change');
+        //this.pictures.push(new IPicture(13, '14'))
+
     }
 }

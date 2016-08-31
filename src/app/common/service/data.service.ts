@@ -19,6 +19,8 @@ export class DataService {
     comments: IComment[];
     galleries: IGallery[];
 
+    tasks: Array<IPicture>;
+
     constructor(private http: Http, private authHttp: AuthHttp, private globalService: GlobalService) {
         this._apiUrl = this.globalService.getApiUrl();
     }
@@ -154,12 +156,41 @@ export class DataService {
             .catch(this.handleError);
     }
 
-    getUserPictures(userId: number) : Observable<IPicture[]> {
-        return this.authHttp.get(this._apiUrl + '/pictures/users/' + userId)
+    getUserPictures(userId: number)/* : Observable<IPicture[]>*/ {
+      /*  return this.authHttp.get(this._apiUrl + '/pictures/users/' + userId)
             .map((response: Response) => {
-                return response.json();
+                this.pictures = response.json();
+                return this.pictures;
             })
-            .catch(this.handleError);
+            .catch(this.handleError);*/
+
+        return this.http.get('pictures.json')
+            /*.map((res: Response) => {
+                this.pictures = res.json();
+                console.log('res.json()', res.json());
+                console.log('this.pictures', this.pictures);
+                return this.pictures;
+            })*/
+            .map( (responseData) => {
+                return responseData.json();
+            })
+            // next transform - each element in the
+            // array to a Task class instance
+            .map((tasks: Array<any>) => {
+                let result:Array<IPicture> = [];
+                if (tasks) {
+                    tasks.forEach((task) => {
+                        result.push(new IPicture(task.id, task.name));
+                    });
+                }
+                console.log(result);
+                return result;
+            });
+            // subscribe to output from this observable and bind
+            // the output to the component when received
+            //.subscribe( res => this.tasks = res);
+
+            //.catch(this.handleError);
     }
 
     getTags() : Observable<ITags[]> {

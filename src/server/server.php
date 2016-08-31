@@ -385,23 +385,21 @@ switch ($requestMethod) {
                             move_uploaded_file($tmpName, $targetOriginalPath);
 
                             $percent = 0.5;
-                            $_width = 450;
-                            $_height = 450;
-
+                            $maxWidth = 450;
+                            $maxHeight = 450;
+                            $newWidth = $maxWidth;
+                            $newHeight = $maxHeight;
 
                             list($width, $height) = getimagesize($targetOriginalPath);
-                            $newWidth = $width * $percent;
-                            $newHeight = $height * $percent;
-                            $ratio_orig = $newWidth/$newHeight;
+                            $ratioOriginal = $width / $height;
 
-                            if ($_width/$_height > $ratio_orig) {
-                                $_width = $_height*$ratio_orig;
+                            if ($maxWidth / $maxHeight > $ratioOriginal) {
+                                $newWidth = $maxHeight * $ratioOriginal;
                             } else {
-                                $_height = $_width/$ratio_orig;
+                                $newHeight = $maxWidth / $ratioOriginal;
                             }
 
-                            //$thumb = imagecreatetruecolor($newWidth, $newHeight);
-                            $thumb = imagecreatetruecolor($_width, $_height);
+                            $thumb = imagecreatetruecolor($newWidth, $newHeight);
 
                             if ($type == 'image/jpeg') {
                                 header('Content-Type: image/jpeg');
@@ -414,7 +412,7 @@ switch ($requestMethod) {
                                 $source = imagecreatefromgif($targetOriginalPath);
                             }
 
-                            imagecopyresampled($thumb, $source, 0, 0, 0, 0, $_width, $_height, $width, $height);
+                            imagecopyresampled($thumb, $source, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
                             imagejpeg($thumb, $targetResizedPath);
 
                             $payload = $jws->getPayload();
@@ -431,11 +429,11 @@ switch ($requestMethod) {
                                 $db->beginTransaction();
 
                                 if ($pictureId) {
-                                    $query = $db->prepare("update picture set date_upload = NOW() where id = ?");
-                                    $query->execute(array($pictureId));
+                                    $query = $db->prepare("update picture set date_upload = NOW(), resize_height = ?, resize_width = ? where id = ?");
+                                    $query->execute(array($newHeight, $newWidth, $pictureId));
                                 } else {
-                                    $query = $db->prepare("insert into picture(user_id, name, filename) values(?, ?, ?)");
-                                    $query->execute(array($userId, $name, $filename));
+                                    $query = $db->prepare("insert into picture(user_id, name, filename, resize_height, resize_width) values(?, ?, ?, ?, ?)");
+                                    $query->execute(array($userId, $name, $filename, $newHeight, $newWidth));
                                     $pictureId = $db->lastInsertId();
                                 }
 

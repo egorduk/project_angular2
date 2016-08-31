@@ -1,5 +1,6 @@
 <div class="navbar navbar-inner navbar-fixed-top">
     <div class="row">
+        <input type="button" (click)="test()">
         <div class="col-md-1 col-md-offset-10" style="margin-top: 5px;">
             <div class="dropdown">
                 <img src="../../uploads/avatars/av4.jpg" alt="..." data-toggle="dropdown" class="img-circle" style="width: 40px; height: 40px;">
@@ -17,6 +18,7 @@
     </div>
     <div class="row" *ngIf="_openUploader">
     <div class="col-md-3" style="margin-left: 3%">
+        {{message | async}}
         <h3>Select files</h3>
         <div ng2FileDrop
         [ngClass]="{'nv-file-over': hasBaseDropZoneOver}"
