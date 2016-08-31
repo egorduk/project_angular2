@@ -152,4 +152,6 @@ export class HeaderComponent implements OnInit {
                 return item.text;
             }).join(',');
     }
+
+    //https://vladotesanovic.me/2016/02/01/angular-2-asyncpipe/
 }
