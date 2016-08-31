@@ -46,3 +46,15 @@ export class GetFileExtByFileTypePipe {
         }
     }
 }
+
+@Pipe({name: 'getFileExtByFileName'})
+
+export class GetFileExtByFileNamePipe {
+    constructor(){}
+
+    transform(fileName) {
+        if (fileName) {
+            return fileName.match(/.jpeg|.jpg|.gif|.png/);
+        }
+    }
+}

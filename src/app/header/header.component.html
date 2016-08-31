@@ -48,14 +48,11 @@
             <div class="row">
                 <div class="col-xs-12">
                     <div class="form-group">
-                       <!-- <select class="selectpicker form-control" multiple data-header="Select tags">
-                            <option *ngFor="let tag of tags" [ngValue]="tag.id">{{ tag.name }}</option>
-                        </select>-->
-                        <div style="width: 300px; margin-bottom: 0">
+                        <div style="margin-bottom: 0">
                             <ng-select [data]="value"
                             [multiple]="true"
                             [items]="tags"
-                            [disabled]="disabled"
+                            [disabled]="uploader.queue[i].isUploaded"
                             (data)="refreshValue($event)"
                             (selected)="selected($event, uploader.queue[i])"
                             (removed)="removed($event)"

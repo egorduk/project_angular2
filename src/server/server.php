@@ -151,7 +151,7 @@ switch ($requestMethod) {
                 $userId = $data[5];
 
                 $db = getDb();
-                $query = $db->prepare("select p.name, p.filename
+                $query = $db->prepare("select p.name, p.filename, p.resize_height, p.resize_width
                         from picture p
                         where p.user_id = ?");
                 $query->execute(array($userId));
@@ -350,17 +350,13 @@ switch ($requestMethod) {
             }
         } elseif ($action == 'pictures') {
             if ($jws->isValid($publicKey, $encAlgorithm)) {
-                /*var_dump($_FILES);
-                var_dump($_POST);
-                var_dump($post);die;*/
-
                 $filename = $_FILES['file']['name'];
                 $tmpName = $_FILES['file']['tmp_name'];
                 $error = $_FILES['file']['error'];
                 $size = $_FILES['file']['size'];
                 $type = $_FILES['file']['type'];
-                $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
 
+                $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
                 $response = false;
                 $errorMsg = '';
 
@@ -368,7 +364,6 @@ switch ($requestMethod) {
                     case UPLOAD_ERR_OK:
                         $valid = true;
 
-                        //validate file extensions
                         if (!in_array($ext, array('jpg', 'jpeg', 'png', 'gif'))) {
                             $valid = false;
                             $errorMsg = 'Invalid file extension.';
@@ -383,22 +378,30 @@ switch ($requestMethod) {
                             $response = 'File size is exceeding maximum allowed size.';
                         }
 
-                        //upload file
                         if ($valid) {
-                            $tagIds = $_POST['tags'];
-                            $tagIds = explode(',', $tagIds);
-
                             $targetOriginalPath = $pictureOriginalPath . $filename;
                             $targetResizedPath = $pictureResizedPath . $filename;
 
                             move_uploaded_file($tmpName, $targetOriginalPath);
 
                             $percent = 0.5;
+                            $_width = 450;
+                            $_height = 450;
+
 
                             list($width, $height) = getimagesize($targetOriginalPath);
                             $newWidth = $width * $percent;
                             $newHeight = $height * $percent;
-                            $thumb = imagecreatetruecolor($newWidth, $newHeight);
+                            $ratio_orig = $newWidth/$newHeight;
+
+                            if ($_width/$_height > $ratio_orig) {
+                                $_width = $_height*$ratio_orig;
+                            } else {
+                                $_height = $_width/$ratio_orig;
+                            }
+
+                            //$thumb = imagecreatetruecolor($newWidth, $newHeight);
+                            $thumb = imagecreatetruecolor($_width, $_height);
 
                             if ($type == 'image/jpeg') {
                                 header('Content-Type: image/jpeg');
@@ -411,7 +414,7 @@ switch ($requestMethod) {
                                 $source = imagecreatefromgif($targetOriginalPath);
                             }
 
-                            imagecopyresized($thumb, $source, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+                            imagecopyresampled($thumb, $source, 0, 0, 0, 0, $_width, $_height, $width, $height);
                             imagejpeg($thumb, $targetResizedPath);
 
                             $payload = $jws->getPayload();
@@ -419,17 +422,31 @@ switch ($requestMethod) {
 
                             $name = preg_replace('/.jpg|.jpeg|.png|.gif/', '', $filename);
 
-                            $db = getDb();
+                            $picture = getPictureByName($name, $userId);
+                            $pictureId = $picture['id'];
 
                             try {
+                                $db = getDb();
                                 $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
                                 $db->beginTransaction();
-                                $query = $db->prepare("insert into picture(user_id, name, filename) values(?, ?, ?)");
-                                $query->execute(array($userId, $name, $filename));
-                                $pictureId = $db->lastInsertId();
 
-                                foreach ($tagIds as $tagId) {
-                                    $db->exec("INSERT INTO picture_tag(picture_id, tag_id) VALUES ('$pictureId', '$tagId')");
+                                if ($pictureId) {
+                                    $query = $db->prepare("update picture set date_upload = NOW() where id = ?");
+                                    $query->execute(array($pictureId));
+                                } else {
+                                    $query = $db->prepare("insert into picture(user_id, name, filename) values(?, ?, ?)");
+                                    $query->execute(array($userId, $name, $filename));
+                                    $pictureId = $db->lastInsertId();
+                                }
+
+                                $tagIds = $_POST['tags'];
+
+                                if ($tagIds != "null") {
+                                    $tagIds = explode(',', $tagIds);
+
+                                    foreach ($tagIds as $tagId) {
+                                        $db->exec("INSERT INTO picture_tag(picture_id, tag_id) VALUES ('$pictureId', '$tagId')");
+                                    }
                                 }
 
                                 $response = $db->commit();
@@ -566,4 +583,16 @@ function getFileSizeBytes($fileSize) {
     }
 
     return $val;
+}
+
+function getPictureByName($name, $userId) {
+    $db = getDb();
+    $query = $db->prepare("select p.id
+                        from picture p
+                        inner join user u on u.id = p.user_id
+                        where p.name = ? and u.id = ?");
+    $query->execute(array($name, $userId));
+
+    return ($query->rowCount() > 0) ? $query->fetch(PDO::FETCH_ASSOC) : null;
+
 }

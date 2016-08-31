@@ -4,7 +4,7 @@ import { Http, Headers } from '@angular/http';
 import { Router, ROUTER_DIRECTIVES } from '@angular/router';
 import { FileSizePipe } from '../common/pipe/fileSize.pipe';
 import { SafeFileExtPipe } from '../common/pipe/safe.pipe';
-import { GetFileExtByFileTypePipe } from '../common/pipe/safe.pipe';
+import { GetFileExtByFileNamePipe } from '../common/pipe/safe.pipe';
 import { FILE_UPLOAD_DIRECTIVES, FileUploader } from 'ng2-file-upload/ng2-file-upload';
 import { SELECT_DIRECTIVES } from 'ng2-select/ng2-select';
 /*import { BUTTON_DIRECTIVES } from 'ng2-bootstrap/ng2-bootstrap';*/
@@ -16,8 +16,8 @@ declare var $:any;
 
 @Component({
     selector: 'header',
-    directives: [ CORE_DIRECTIVES, ROUTER_DIRECTIVES, FILE_UPLOAD_DIRECTIVES, SELECT_DIRECTIVES/*, BUTTON_DIRECTIVES*/ ],
-    providers: [ GetFileExtByFileTypePipe ],
+    directives: [ CORE_DIRECTIVES, ROUTER_DIRECTIVES, FILE_UPLOAD_DIRECTIVES, SELECT_DIRECTIVES ],
+    providers: [ GetFileExtByFileNamePipe ],
     styleUrls: ['app/header/style.css'],
     pipes: [ FileSizePipe, SafeFileExtPipe ],
     templateUrl: 'app/header/header.component.html'
@@ -29,48 +29,36 @@ export class HeaderComponent implements OnInit {
      response: string;
      api: string;
      _serverUrl: string = '';*/
-    private _openUploader: boolean = true;
+    private _openUploader: boolean = false;
     public uploader: FileUploader /*= new FileUploader({url: URL, *//*authToken: this._token, *//*allowedMimeType: ['image/jpeg', 'image/gif', 'image/png']})*/;
     public hasBaseDropZoneOver: boolean = false;
     private _el: HTMLElement;
     private _token: string = '';
-    private _showSuccessMessage: boolean = false;
+    //private _showSuccessMessage: boolean = false;
     private tags: ITag[] = [];
-
-    private value:any = ['Athens'];
-    private _tags:any = ['default'];
-    private _disabledV:string = '0';
-    private disabled:boolean = false;
+    private _getFileExtByFileNamePipe: GetFileExtByFileNamePipe;
+    private value:any = [];
+    private _tags:any = [];
 
     constructor(public router: Router,
                 public http: Http,
-                private getFileExtByFileTypePipe: GetFileExtByFileTypePipe,
                 private el: ElementRef,
                 private dataService: DataService) {
-        /* this.jwt = localStorage.getItem('id_token');
-         this.decodedJwt = this.jwt && window.jwt_decode(this.jwt);
-         this._serverUrl = 'http://localhost:80/project_angular2';
-         this.getAllUserPictures();*/
-
         this._token = localStorage.getItem('id_token');
         this._el = el.nativeElement;
-        //this.eventEmitter = new EventEmitter<boolean>();
 
         this.getTags();
 
         this.uploader = new FileUploader({url: URL, authToken: this._token, allowedMimeType: ['image/jpeg', 'image/gif', 'image/png']});
 
-        // this.uploader.authToken = this._token;
-
         this.uploader.onBeforeUploadItem = function(item) {
             if (item.file.newName) {
-                this.getFileExtByFileTypePipe = new GetFileExtByFileTypePipe();
-                item.file.name = item.file.newName + this.getFileExtByFileTypePipe.transform(item.file.type);
+                this._getFileExtByFileNamePipe = new GetFileExtByFileNamePipe();
+                item.file.name = item.file.newName + this._getFileExtByFileNamePipe.transform(item.file.name);
             }
 
             item.file.tags = (item.file.tags) ? item.file.tags.join(',') : null;
-
-            console.log(item.file);
+            //console.log(item.file);
         };
 
         this.uploader.onAfterAddingFile = function(item) {
@@ -80,28 +68,9 @@ export class HeaderComponent implements OnInit {
         this.uploader.onCompleteAll = function() {
             this.showSuccessMessage = true;
         };
-
-        let disabled = this.disabled;
-        let that = this;
-
-        this.uploader.onCompleteItem = function(item: any, response: any, status: any, headers: any) {
-           /* console.log(response);
-            console.log(status);
-            console.log(headers);*/
-            console.log(item);
-            that.disabled = true;
-        }
-
-        //console.log(this.uploader.onCompleteItem);
     }
 
     ngAfterViewChecked() {
-        //console.log($(this.el).find('.selectpicker'));
-        $(this._el).find('.selectpicker').selectpicker({
-            style: 'btn-default',
-            //width: 'auto'
-            //size: 10
-        });
     }
 
     ngAfterViewInit() {
@@ -111,7 +80,7 @@ export class HeaderComponent implements OnInit {
         event.preventDefault();
 
         this._openUploader = !this._openUploader;
-        this._showSuccessMessage = false;
+        //this._showSuccessMessage = false;
     }
 
     public fileOverBase(e:any):void {
@@ -134,15 +103,6 @@ export class HeaderComponent implements OnInit {
                     }
                 }
             });
-    }
-
-    private get disabledV():string {
-        return this._disabledV;
-    }
-
-    private set disabledV(value:string) {
-        this._disabledV = value;
-        this.disabled = this._disabledV === '1';
     }
 
     public selected(value:any, uploader):void {

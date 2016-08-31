@@ -1,6 +1,6 @@
 import { Component, OnInit, ElementRef } from '@angular/core';
 import { Router, ROUTER_DIRECTIVES } from '@angular/router';
-import { CORE_DIRECTIVES, NgClass, NgStyle } from '@angular/common';
+import { CORE_DIRECTIVES } from '@angular/common';
 import { Http } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import {Observer} from 'rxjs/Observer';
@@ -9,8 +9,6 @@ import 'rxjs/add/operator/catch';
 import { DataService } from '../common/service/data.service';
 import { IUser, IPicture } from '../common/interfaces';
 import { SafeBgPipe } from '../common/pipe/safe.pipe';
-import { FileSizePipe } from '../common/pipe/fileSize.pipe';
-import {FILE_UPLOAD_DIRECTIVES, FileUploader} from 'ng2-file-upload/ng2-file-upload';
 //import { Subscription } from 'rxjs/Subscription';
 
 declare  var $:any;
@@ -19,14 +17,13 @@ const URL = 'http://localhost:80/project_angular2/api/pictures';
 
 @Component({
     selector: 'user',
-    directives: [ ROUTER_DIRECTIVES, CORE_DIRECTIVES, FILE_UPLOAD_DIRECTIVES, NgClass, NgStyle ],
-    pipes: [ SafeBgPipe, FileSizePipe ],
+    directives: [ ROUTER_DIRECTIVES, CORE_DIRECTIVES ],
+    pipes: [ SafeBgPipe ],
     styleUrls: ['app/user/style.css'],
     templateUrl: 'app/user/user.html'
 })
 
 export class User implements OnInit {
-
     //private sub: Subscription;
     private _userLogin: string = '';
     private _userId: number = 0;
@@ -36,27 +33,12 @@ export class User implements OnInit {
     private el: HTMLElement;
     private _token: string = '';
 
-    public uploader: FileUploader;
-    public hasBaseDropZoneOver: boolean = false;
-    public hasAnotherDropZoneOver: boolean = false;
-
     constructor(private router: Router, private http: Http, private dataService: DataService, private el: ElementRef) {
         this.el = el.nativeElement;
-
         this._token = localStorage.getItem('id_token');
         let data = window.jwt_decode(this._token);
         this._userId = data.uid;
-        this.uploader = new FileUploader({url: URL, authToken: this._token, allowedMimeType: ['image/jpeg', 'image/gif', 'image/png']});
        // this.router.navigate(['/hero', hero.id]);
-        //console.log(this.uploader);
-    }
-
-    public fileOverBase(e:any):void {
-        this.hasBaseDropZoneOver = e;
-    }
-
-    public fileOverAnother(e:any):void {
-        this.hasAnotherDropZoneOver = e;
     }
 
     ngOnInit() {
