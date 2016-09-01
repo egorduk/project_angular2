@@ -151,7 +151,7 @@ switch ($requestMethod) {
                 $userId = $data[5];
 
                 $db = getDb();
-                $query = $db->prepare("select p.name, p.filename, p.resize_height
+                $query = $db->prepare("select p.name, p.filename, p.resize_height, p.resize_width
                         from picture p
                         where p.user_id = ?");
                 $query->execute(array($userId));
@@ -384,9 +384,8 @@ switch ($requestMethod) {
 
                             move_uploaded_file($tmpName, $targetOriginalPath);
 
-                            $percent = 0.5;
                             $maxWidth = 450;
-                            $maxHeight = 450;
+                            $maxHeight = 900;
                             $newWidth = $maxWidth;
                             $newHeight = $maxHeight;
 

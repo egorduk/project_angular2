@@ -156,21 +156,21 @@ export class DataService {
             .catch(this.handleError);
     }
 
-    getUserPictures(userId: number)/* : Observable<IPicture[]>*/ {
-      /*  return this.authHttp.get(this._apiUrl + '/pictures/users/' + userId)
+    getUserPictures(userId: number) : Observable<IPicture[]> {
+        return this.authHttp.get(this._apiUrl + '/pictures/users/' + userId)
             .map((response: Response) => {
                 this.pictures = response.json();
                 return this.pictures;
             })
-            .catch(this.handleError);*/
+            .catch(this.handleError);
 
-        return this.http.get('pictures.json')
-            /*.map((res: Response) => {
+        /*return this.http.get('pictures.json')
+            *//*.map((res: Response) => {
                 this.pictures = res.json();
                 console.log('res.json()', res.json());
                 console.log('this.pictures', this.pictures);
                 return this.pictures;
-            })*/
+            })*//*
             .map( (responseData) => {
                 return responseData.json();
             })
@@ -185,7 +185,7 @@ export class DataService {
                 }
                 console.log(result);
                 return result;
-            });
+            });*/
             // subscribe to output from this observable and bind
             // the output to the component when received
             //.subscribe( res => this.tasks = res);

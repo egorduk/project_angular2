@@ -1,4 +1,4 @@
-import { Component, ElementRef  } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Injectable, Input, Output } from '@angular/core';
 import { CORE_DIRECTIVES } from '@angular/common';
 import { Http, Headers } from '@angular/http';
 import { Router, ROUTER_DIRECTIVES } from '@angular/router';
@@ -9,7 +9,7 @@ import { FILE_UPLOAD_DIRECTIVES, FileUploader } from 'ng2-file-upload/ng2-file-u
 import { SELECT_DIRECTIVES } from 'ng2-select/ng2-select';
 import { DataService } from '../common/service/data.service';
 import { ITag } from '../common/interfaces';
-import { User } from '../user/user';
+//import { User } from '../user/user';
 import { MessageService } from '../common/service/message.service';
 
 const URL = 'http://localhost:80/project_angular2/api/pictures';
@@ -18,7 +18,7 @@ declare var $:any;
 @Component({
     selector: 'header',
     directives: [ CORE_DIRECTIVES, ROUTER_DIRECTIVES, FILE_UPLOAD_DIRECTIVES, SELECT_DIRECTIVES ],
-    providers: [ GetFileExtByFileNamePipe, User ],
+    providers: [ GetFileExtByFileNamePipe ],
     styleUrls: ['app/header/style.css'],
     pipes: [ FileSizePipe, SafeFileExtPipe ],
     templateUrl: 'app/header/header.component.html'
@@ -30,7 +30,7 @@ export class HeaderComponent implements OnInit {
      response: string;
      api: string;
      _serverUrl: string = '';*/
-    private _openUploader: boolean = true;
+    private _openUploader: boolean = false;
     public uploader: FileUploader /*= new FileUploader({url: URL, *//*authToken: this._token, *//*allowedMimeType: ['image/jpeg', 'image/gif', 'image/png']})*/;
     public hasBaseDropZoneOver: boolean = false;
     private _el: HTMLElement;
@@ -41,12 +41,15 @@ export class HeaderComponent implements OnInit {
     private value:any = [];
     private _tags:any = [];
     message: any = [];
+    piy: boolean = false;
+
+    @Output() emitResponse: EventEmitter<string> = new EventEmitter<string>();
 
     constructor(public router: Router,
                 public http: Http,
                 private el: ElementRef,
                 private dataService: DataService,
-                private user: User,
+                //private user: User,
                 private ms: MessageService) {
         this._token = localStorage.getItem('id_token');
         this._el = el.nativeElement;
@@ -73,24 +76,10 @@ export class HeaderComponent implements OnInit {
 
         this.uploader.onCompleteAll = function() {
             this.showSuccessMessage = true;
-            //that.user.getUserPictures(6);
+            that.emitResponse.emit("");
         };
 
-        //console.log(this.user);
-
-        this.ms.data = true;
-        this.message = this.ms.rxEmitter;
-       // console.log('this.message t', this.message);
-
-        this.ms.data = false;
-        this.message = this.ms.rxEmitter;
-        //console.log('this.message f', this.message);
-    }
-
-    test() {
-        //this.user.test();
-        console.log('this.message', this.message);
-        console.log('this.ms.data', this.ms.data);
+        this.emitResponse = this.ms.rxEmitter;
     }
 
     ngAfterViewChecked() {

@@ -7,9 +7,10 @@ import {Observer} from 'rxjs/Observer';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 import { DataService } from '../common/service/data.service';
-import { IUser, IPicture } from '../common/interfaces';
+import { ChildComponent } from '../common/service/child.component';
+import { IUser, IPicture, IGallery } from '../common/interfaces';
 import { SafeBgPipe } from '../common/pipe/safe.pipe';
-//import { Subscription } from 'rxjs/Subscription';
+import { HeaderComponent } from '../header/header.component';
 
 declare  var $:any;
 
@@ -17,7 +18,7 @@ const URL = 'http://localhost:80/project_angular2/api/pictures';
 
 @Component({
     selector: 'user',
-    directives: [ ROUTER_DIRECTIVES, CORE_DIRECTIVES ],
+    directives: [ ROUTER_DIRECTIVES, CORE_DIRECTIVES, HeaderComponent ],
     pipes: [ SafeBgPipe ],
     styleUrls: ['app/user/style.css'],
     templateUrl: 'app/user/user.html'
@@ -34,6 +35,7 @@ export class User implements OnInit {
     pictures: Array<IPicture> = [];
     private el: HTMLElement;
     private _token: string = '';
+    private galleries: IGallery[] = [];
 
     constructor(private router: Router, private http: Http, private dataService: DataService, private el: ElementRef) {
         this.el = el.nativeElement;
@@ -43,11 +45,13 @@ export class User implements OnInit {
        // this.router.navigate(['/hero', hero.id]);
     }
 
+    onEmitter():void {
+        this.getUserPictures(this._userId);
+    }
+
     ngOnInit() {
         this._userLogin = this.router.url.split('/')[2];
         this.getUserInfo();
-
-        //this.pictures = this.getUserPictures(6);
     }
 
     ngAfterViewChecked() {
@@ -89,30 +93,46 @@ export class User implements OnInit {
 
     getUserPictures(userId) {
         this.dataService.getUserPictures(userId)
-            /*.subscribe((pictures: IPicture[]) => {
-                //this.pictures = (pictures.response) ? pictures.pictures : null;
-                this.pictures = pictures.pictures;
-                console.log('this.pictures', this.pictures);
-            });*/
-            .subscribe(
-           /* data => {
+            .subscribe((pictures: IPicture[]) => {
+                this.pictures = (pictures.response) ? pictures.pictures : null;
+                //this.pictures = pictures.pictures;
+                //console.log('this.pictures', this.pictures);
+            });
+            /*.subscribe(
+           *//* data => {
                 // Set the products Array
                 this.pictures = data;
                 console.log('this.pictures', this.pictures);
                 console.log('data', data);
-            }*/
+            }*//*
             res => this.pictures = res
-            );
+            );*/
 
         //this.test();
-        console.log('this.pictures', this);
+        //console.log('this.pictures', this);
 
     }
 
-    test() {
-        this.getUserPictures(6);
-        //console.log('change');
-        //this.pictures.push(new IPicture(13, '14'))
+    getUserGallery() {
+        this.galleries = null;
 
+        this.dataService.getUserGalleriesWithCheckedPictures()
+            .subscribe((galleries: IGallery[]) => {
+                if (galleries.response) {
+                    if (galleries.galleries) {
+                        galleries.galleries.forEach((value: any, key: any) => {
+                            if (typeof value.picture_ids === 'string') {
+                                galleries.galleries[key].picture_ids = value.picture_ids.split(',');
+                            }
+                        });
+                    } else {
+
+                    }
+
+                    this.galleries = galleries.galleries;
+                }
+
+                //console.log('this.galleries', this.galleries);
+            });
     }
 }

@@ -8,7 +8,7 @@ export class SafeBgPipe {
 
     transform(image) {
         if (image) {
-            return this.sanitizer.bypassSecurityTrustStyle('url(../../uploads/pictures/' + image + ')');
+            return this.sanitizer.bypassSecurityTrustStyle('url(../../uploads/pictures/original/' + image + ')');
         }
     }
 }

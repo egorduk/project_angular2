@@ -1,6 +1,6 @@
 <div class="navbar navbar-inner navbar-fixed-top">
     <div class="row">
-        <input type="button" (click)="test()">
+       <!-- <input type="button" (click)='onClick()' value="TESTTTTTTT">-->
         <div class="col-md-1 col-md-offset-10" style="margin-top: 5px;">
             <div class="dropdown">
                 <img src="../../uploads/avatars/av4.jpg" alt="..." data-toggle="dropdown" class="img-circle" style="width: 40px; height: 40px;">
@@ -18,7 +18,6 @@
     </div>
     <div class="row" *ngIf="_openUploader">
     <div class="col-md-3" style="margin-left: 3%">
-        {{message | async}}
         <h3>Select files</h3>
         <div ng2FileDrop
         [ngClass]="{'nv-file-over': hasBaseDropZoneOver}"
@@ -30,7 +29,7 @@
     Or
     <input type="file" ng2FileSelect [uploader]="uploader" multiple  /><br/>
 </div>
-<div class="col-md-8" style="margin-bottom: 40px">
+<div class="col-md-8" style="margin-bottom: 40px; overflow-y: overlay; max-height: 700px">
     <h3>Upload queue</h3>
     <p>Queue length: </p>
     <table class="table">
