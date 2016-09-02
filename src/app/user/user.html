@@ -30,37 +30,32 @@
                                 <img width="{{ picture.resize_width }}" height="{{ picture.resize_height }}" src="../../uploads/pictures/resized/{{ picture.filename }}" class="attachment-hp-thumb wp-post-image" alt="">
                                 <div class="overlay">
                                     <h2>{{ picture.name }}</h2>
-                                    <span class="info glyphicon glyphicon-heart" aria-hidden="true"></span>
-                                    <span data-toggle="dropdown" aria-haspopup="true" class="info glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
-                                    <ul class="dropdown-menu" aria-labelledby="dLabel">
-                                        <li>
-                                            <div class="input-group">
-                                                <input type="text" #elInputGallery (keyup.enter)="addUserGallery($event, elInputGallery, picture)" class="form-control" placeholder="Album name">
-                                                <div class="input-group-addon">
-                                                    <a href="#" (click)="addUserGallery($event, elInputGallery, picture)"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a>
+
+                                    <!--  <span data-toggle="dropdown" aria-haspopup="true" class="info glyphicon glyphicon-plus-sign" aria-hidden="true"></span>-->
+                                    <div class="dropdown">
+                                        <span class="info glyphicon glyphicon-heart" aria-hidden="true"></span>
+                                        <span data-toggle="dropdown" id="dLabel" aria-haspopup="true" class="info glyphicon glyphicon-plus-sign" aria-hidden="true" aria-expanded="false"></span>
+                                        <ul class="dropdown-menu gallery-items" aria-labelledby="dLabel">
+                                            <li class="gallery-item">
+                                                <div class="input-group">
+                                                    <input type="text" #elInputGallery (keyup.enter)="addUserGallery($event, elInputGallery, picture)" class="form-control" placeholder="Album name">
+                                                    <div class="input-group-addon">
+                                                        <a href="#" (click)="addUserGallery($event, elInputGallery, picture)"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </li>
-                                        <li *ngFor="let gallery of galleries">
+                                            </li>
+                                            <li *ngFor="let gallery of galleries" class="gallery-item">
                                             <span *ngFor="let picture_id of gallery.picture_ids">
                                                 <span *ngIf="picture_id == picture.picture_id" class="glyphicon glyphicon-ok"></span>
                                             </span>
-                                            <a href="#" (click)="addPictureToGallery($event, picture, gallery)">{{ gallery.name }}</a>
-                                        </li>
-                                    </ul>
+                                                <a href="#" (click)="addPictureToGallery($event, picture, gallery)">{{ gallery.name }}</a>
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                         </li>
                     </ul>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="dropdown">
-                    <button class="btn btn-default" id="dLabel" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <span class="glyphicon glyphicon-plus" aria-hidden="true">&nbsp;Add</span>
-                        <span class="caret"></span>
-                    </button>
-
                 </div>
             </div>
         </div>

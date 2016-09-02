@@ -97,6 +97,7 @@ export class User implements OnInit {
                 this.pictures = (pictures.response) ? pictures.pictures : null;
                 //this.pictures = pictures.pictures;
                 //console.log('this.pictures', this.pictures);
+                this.getUserGallery();
             });
             /*.subscribe(
            *//* data => {
@@ -125,14 +126,39 @@ export class User implements OnInit {
                                 galleries.galleries[key].picture_ids = value.picture_ids.split(',');
                             }
                         });
-                    } else {
 
+                        this.galleries = galleries.galleries;
                     }
-
-                    this.galleries = galleries.galleries;
                 }
 
-                //console.log('this.galleries', this.galleries);
+                console.log('this.galleries', this.galleries);
+            });
+    }
+
+    addUserGallery(event, elInputGallery, picture) {
+        event.preventDefault();
+
+        let galleryName = elInputGallery.value;
+
+        if (galleryName) {
+            this.dataService.addUserGallery(galleryName, picture.picture_id)
+                .subscribe((response: IGallery[]) => {
+                    if (response.response) {
+                        this.getUserGallery();
+                        elInputGallery.value = '';
+                    }
+                });
+        }
+    }
+
+    addPictureToGallery(event, picture, gallery) {
+        event.preventDefault();
+
+        this.dataService.addPictureInGallery(gallery.gallery_id, picture.picture_id)
+            .subscribe((response: boolean) => {
+                if (response.response) {
+                    this.getUserGallery();
+                }
             });
     }
 }
