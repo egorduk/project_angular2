@@ -17,22 +17,7 @@
     font-size: 25px;
 }
 
-/*.view-first .mask {
-    opacity: 0;
-    background-color: rgba(255,255,255, 0.7);
-    transition: all 0.4s ease-in-out;
-}
-
-.view .mask, .view .content {
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    overflow: hidden;
-    top: 0;
-    left: 0;
-}*/
-
-.view h2 {
+/*.view h2 {
     text-transform: uppercase;
     color: #fff;
     text-align: center;
@@ -41,7 +26,7 @@
     padding: 10px;
     background: rgba(0, 0, 0, 0.8);
     margin: 10px 0 0 0;
-}
+}*/
 
 .hovereffect {
     width: 100%;
@@ -52,52 +37,114 @@
     text-align: center;
     cursor: default;
 }
-
 .hovereffect .overlay {
     width: 100%;
-    height: 100%;
     position: absolute;
     overflow: hidden;
-    top: 0;
     left: 0;
+    top: auto;
+    bottom: 0;
+    padding: 1em;
+    height: 4.75em;
+    background: #79FAC4;
+    color: #3c4a50;
+    -webkit-transition: -webkit-transform 0.35s;
+    transition: transform 0.35s;
+    -webkit-transform: translate3d(0,100%,0);
+    transform: translate3d(0,100%,0);
 }
 
 .hovereffect img {
     display: block;
     position: relative;
-    -webkit-transition: all 0.4s ease-in;
-    transition: all 0.4s ease-in;
+    -webkit-transition: -webkit-transform 0.35s;
+    transition: transform 0.35s;
 }
 
 .hovereffect:hover img {
-    filter: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg"><filter id="filter"><feColorMatrix type="matrix" color-interpolation-filters="sRGB" values="0.2126 0.7152 0.0722 0 0 0.2126 0.7152 0.0722 0 0 0.2126 0.7152 0.0722 0 0 0 0 0 1 0" /><feGaussianBlur stdDeviation="3" /></filter></svg>#filter');
-    filter: grayscale(1) blur(3px);
-    -webkit-filter: grayscale(1) blur(3px);
-    -webkit-transform: scale(1.2);
-    -ms-transform: scale(1.2);
-    transform: scale(1.2);
+    -webkit-transform: translate3d(0,-10%,0);
+    transform: translate3d(0,-10%,0);
 }
 
 .hovereffect h2 {
     text-transform: uppercase;
+    color: #fff;
     text-align: center;
     position: relative;
     font-size: 17px;
     padding: 10px;
     background: rgba(0, 0, 0, 0.6);
+    float: left;
+    margin: 0;
+    display: inline-block;
 }
 
-.hovereffect span.info {
+.hovereffect a.info {
     display: inline-block;
     text-decoration: none;
     padding: 7px 14px;
-    /*border: 1px solid #fff;*/
+    text-transform: uppercase;
+    color: #fff;
+    border: 1px solid #fff;
     margin: 50px 0 0 0;
+    background-color: transparent;
+}
+.hovereffect a.info:hover {
+    box-shadow: 0 0 5px #fff;
+}
+
+
+.hovereffect p.icon-links a {
+    float: right;
+    color: #3c4a50;
+    font-size: 1.4em;
+}
+
+.hovereffect:hover p.icon-links a:hover,
+.hovereffect:hover p.icon-links a:focus {
+    color: #252d31;
+}
+
+.hovereffect h2,
+.hovereffect p.icon-links a {
+    -webkit-transition: -webkit-transform 0.35s;
+    transition: transform 0.35s;
+    -webkit-transform: translate3d(0,200%,0);
+    transform: translate3d(0,200%,0);
+}
+
+.hovereffect p.icon-links a span:before {
+    display: inline-block;
+    padding: 8px 10px;
+    speak: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.hovereffect:hover .overlay,
+.hovereffect:hover h2,
+.hovereffect:hover p.icon-links a {
+    -webkit-transform: translate3d(0,0,0);
+    transform: translate3d(0,0,0);
+}
+
+.hovereffect:hover h2 {
+    -webkit-transition-delay: 0.05s;
+    transition-delay: 0.05s;
+}
+
+
+
+.hovereffect span.info {
+    /*display: inline-block;*/
+    text-decoration: none;
+    /*padding: 7px 14px;
+    margin: 50px 0 0 0*/;
     background-color: transparent;
     font-size: 30px;
 }
 
-.hovereffect span.info:hover {
+/*.hovereffect span.info:hover {
     box-shadow: 0 0 5px #fff;
 }
 
@@ -119,7 +166,8 @@
     -webkit-transform: scale(1);
     -ms-transform: scale(1);
     transform: scale(1);
-}
+}*/
+
 
 .gallery-item {
     position: initial !important;
@@ -128,4 +176,8 @@
 .gallery-items {
     overflow: overlay;
     max-height: 160px;
+}
+
+.dropdown-menu>li>a {
+    display: inline; !important;
 }

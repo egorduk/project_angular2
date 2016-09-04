@@ -10,7 +10,8 @@
         'angular2-image-popup':       'node_modules/angular2-image-popup/directives/angular2-image-popup',
         'ng2-file-upload':            'node_modules/ng2-file-upload',
         'ng2-select':                 'node_modules/ng2-select',
-        'ng2-bootstrap':              'node_modules/ng2-bootstrap'
+        'ng2-bootstrap':              'node_modules/ng2-bootstrap',
+        'moment':                     'node_modules/moment'
     };
 
     // packages tells the System loader how to load when no filename and/or no extension
@@ -33,6 +34,10 @@
             defaultExtension: "js"
         },
         'ng2-bootstrap': {
+            defaultExtension: "js"
+        },
+        'moment': {
+            main: 'moment.js',
             defaultExtension: "js"
         }
     };

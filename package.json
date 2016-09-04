@@ -29,6 +29,7 @@
     "bootstrap": "^3.3.6",
     "core-js": "^2.4.0",
     "jwt-decode": "^2.0.1",
+    "ng2-bootstrap": "^1.1.1",
     "ng2-file-upload": "^1.0.3",
     "ng2-select": "^1.0.3",
     "reflect-metadata": "^0.1.3",

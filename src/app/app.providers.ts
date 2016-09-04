@@ -7,7 +7,6 @@ import { MessageService } from './common/service/message.service';
 import { GlobalService } from './common/service/global.service';
 import { TrackByService } from './shared/services/trackby.service';
 import { FocusDirective } from './common/directive/focus.directive';
-import { CheckGalleryDirective } from './common/directive/checkGallery.directive';
 
 export const APP_PROVIDERS = [
     Sorter,
@@ -16,6 +15,5 @@ export const APP_PROVIDERS = [
     HTTP_PROVIDERS,
     GlobalService,
     FocusDirective,
-    CheckGalleryDirective,
     MessageService
 ];

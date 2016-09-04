@@ -11,6 +11,7 @@ import { ChildComponent } from '../common/service/child.component';
 import { IUser, IPicture, IGallery } from '../common/interfaces';
 import { SafeBgPipe } from '../common/pipe/safe.pipe';
 import { HeaderComponent } from '../header/header.component';
+import { AlertComponent } from 'ng2-bootstrap/components/alert';
 
 declare  var $:any;
 
@@ -18,7 +19,7 @@ const URL = 'http://localhost:80/project_angular2/api/pictures';
 
 @Component({
     selector: 'user',
-    directives: [ ROUTER_DIRECTIVES, CORE_DIRECTIVES, HeaderComponent ],
+    directives: [ ROUTER_DIRECTIVES, CORE_DIRECTIVES, HeaderComponent, AlertComponent/*, DropdownModule*/ ],
     pipes: [ SafeBgPipe ],
     styleUrls: ['app/user/style.css'],
     templateUrl: 'app/user/user.html'
@@ -36,6 +37,11 @@ export class User implements OnInit {
     private el: HTMLElement;
     private _token: string = '';
     private galleries: IGallery[] = [];
+    private _isHideDropDown: boolean = false;
+
+    public status:{isopen:boolean} = {isopen: false};
+
+
 
     constructor(private router: Router, private http: Http, private dataService: DataService, private el: ElementRef) {
         this.el = el.nativeElement;
@@ -95,7 +101,6 @@ export class User implements OnInit {
         this.dataService.getUserPictures(userId)
             .subscribe((pictures: IPicture[]) => {
                 this.pictures = (pictures.response) ? pictures.pictures : null;
-                //this.pictures = pictures.pictures;
                 //console.log('this.pictures', this.pictures);
                 this.getUserGallery();
             });
@@ -108,10 +113,6 @@ export class User implements OnInit {
             }*//*
             res => this.pictures = res
             );*/
-
-        //this.test();
-        //console.log('this.pictures', this);
-
     }
 
     getUserGallery() {
@@ -153,12 +154,48 @@ export class User implements OnInit {
 
     addPictureToGallery(event, picture, gallery) {
         event.preventDefault();
+        //console.log(picture);
 
         this.dataService.addPictureInGallery(gallery.gallery_id, picture.picture_id)
             .subscribe((response: boolean) => {
                 if (response.response) {
+                    this._isHideDropDown = true;
                     this.getUserGallery();
                 }
             });
+    }
+
+    /*toggled(event) {
+        event.preventDefault();
+    }*/
+
+    public toggled(open:boolean):void {
+        console.log('Dropdown is now: ', open);
+    }
+
+    public toggleDropdown($event:MouseEvent):void {
+        $event.preventDefault();
+        $event.stopPropagation();
+        this.status.isopen = !this.status.isopen;
+    }
+
+    public alerts:Array<Object> = [
+        {
+            type: 'danger',
+            msg: 'Oh snap! Change a few things up and try submitting again.'
+        },
+        {
+            type: 'success',
+            msg: 'Well done! You successfully read this important alert message.',
+            closable: true
+        }
+    ];
+
+    public closeAlert(i:number):void {
+        this.alerts.splice(i, 1);
+    }
+
+    public addAlert():void {
+        this.alerts.push({msg: 'Another alert!', type: 'warning', closable: true});
     }
 }

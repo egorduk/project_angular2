@@ -151,7 +151,7 @@ switch ($requestMethod) {
                 $userId = $data[5];
 
                 $db = getDb();
-                $query = $db->prepare("select p.name, p.filename, p.resize_height, p.resize_width
+                $query = $db->prepare("select p.name, p.filename, p.resize_height, p.resize_width, p.id as picture_id
                         from picture p
                         where p.user_id = ?");
                 $query->execute(array($userId));
