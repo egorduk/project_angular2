@@ -1,4 +1,7 @@
-import { RouterConfig } from '@angular/router';
+// - Routes instead of RouteConfig
+// - RouterModule instead of provideRoutes
+import { Routes, RouterModule } from '@angular/router';
+
 import { Home } from './home/home';
 import { Login } from './login/login';
 import { Signup } from './signup/signup';
@@ -6,7 +9,7 @@ import { AuthGuard } from './common/auth.guard';
 import { Friends } from './friends/friends';
 import { User } from './user/user';
 
-export const routes: RouterConfig = [
+const routes: Routes = [
     { path: '',       component: Login },
     { path: 'login',  component: Login },
     { path: 'signup', component: Signup },
@@ -15,3 +18,6 @@ export const routes: RouterConfig = [
     { path: 'user/:id', component: User },
     { path: '**',     component: Login }
 ];
+
+// - Updated Export
+export const routing = RouterModule.forRoot(routes);

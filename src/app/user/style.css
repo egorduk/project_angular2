@@ -167,17 +167,3 @@
     -ms-transform: scale(1);
     transform: scale(1);
 }*/
-
-
-.gallery-item {
-    position: initial !important;
-}
-
-.gallery-items {
-    overflow: overlay;
-    max-height: 160px;
-}
-
-.dropdown-menu>li>a {
-    display: inline; !important;
-}

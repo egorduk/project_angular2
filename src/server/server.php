@@ -18,7 +18,13 @@ switch ($requestMethod) {
         $action = $data[3];
         require_once "JOSE/autoloader.php";
         $headers = apache_request_headers();
-        $token = getFormattedToken($headers['Authorization']);
+        $token = getFormattedToken($headers['authorization']);
+
+        if (!$token) {
+            header('HTTP/1.1 401 Unauthorized ');
+            return;
+        }
+
         $jws = \Namshi\JOSE\SimpleJWS::load($token);
         $publicKey = getPublicKey();
 

@@ -2,16 +2,7 @@
     <h1></h1>
     <header (emitResponse)='onEmitter()'></header>
     <div class="row">
-
-        <alert *ngFor="let alert of alerts;let i = index" [type]="alert.type" dismissible="true" (close)="closeAlert(i)">
-        {{ alert?.msg }}
-        </alert>
-
-        <alert dismissOnTimeout="3000">This alert will dismiss in 3s</alert>
-
-        <button type="button" class='btn btn-primary' (click)="addAlert()">Add Alert</button>
-        <!-- <input type="button" (click)="getUserPictures(6)" value="PIY">-->
-        <!--<div class="col-md-12">
+        <div class="col-md-12">
             <div class="row panel panel-default panel-profile m-b-0">
                 <div class="panel-heading" [style.background-image]="user?.page_photo | safeBg"></div>
                 <div class="panel-body text-center">
@@ -39,57 +30,15 @@
                                 <div class="overlay">
                                     <h2>{{ picture.name }}</h2>
                                     <span class="info glyphicon glyphicon-heart" aria-hidden="true"></span>
-                                    <span id="dLabel" aria-haspopup="true" class="info glyphicon glyphicon-plus-sign" aria-hidden="true" aria-expanded="false"></span>
-
-                                    &lt;!&ndash; Simple dropdown &ndash;&gt;
-                                    <span dropdown (onToggle)="toggled($event)">
-                                    <span dropdownToggle class="info glyphicon glyphicon-cloud"></span>
-                                &lt;!&ndash;    <a href id="simple-dropdown" dropdownToggle>
-                                        Click me for a dropdown, yo!
-                                    </a>&ndash;&gt;
-                                    <ul class="dropdown-menu" dropdownMenu aria-labelledby="simple-dropdown">
-                                        <li *ngFor="let gallery of galleries">
-                                        <a class="dropdown-item" href="#">{{ gallery.name }}</a>
-                                        </li>
-                                    </ul>
-                                    </span>
-
-                                    <div class="btn-group" dropdown dropdown-append-to-body>
-                                        <button id="btn-append-to-body" type="button" class="btn btn-primary" dropdownToggle>
-                                            Dropdown on Body <span class="caret"></span>
-                                        </button>
-                                        <ul class="dropdown-menu" role="menu" aria-labelledby="btn-append-to-body">
-                                            <li role="menuitem" *ngFor="let gallery of galleries">
-                                            <a class="dropdown-item" href="#">{{ gallery.name }}</a>
-                                            </li>
-                                        </ul>
-                                    </div>
-
+                                    <span class="info glyphicon glyphicon-trash" aria-hidden="true"></span>
+                                    <span class="info glyphicon glyphicon-edit" aria-hidden="true"></span>
                                 </div>
                             </div>
-                            &lt;!&ndash;<div class="dropdown">
-                                <ul class="dropdown-menu gallery-itemss" aria-labelledby="dLabel">
-                                    <li class="gallery-itemm">
-                                        <div class="input-group">
-                                            <input type="text" #elInputGallery (keyup.enter)="addUserGallery($event, elInputGallery, picture)" class="form-control" placeholder="Album name">
-                                            <div class="input-group-addon">
-                                                <a href="#" (click)="addUserGallery($event, elInputGallery, picture)"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li *ngFor="let gallery of galleries" class="gallery-itemm">
-                                    <span *ngFor="let picture_id of gallery.picture_ids">
-                                    <span *ngIf="picture_id == picture.picture_id" class="glyphicon glyphicon-ok"></span>
-                                    </span>
-                                    <a href="#" (click)="addPictureToGallery($event, picture, gallery)">{{ gallery.name }}</a>
-                                    </li>
-                                </ul>
-                            </div>&ndash;&gt;
                         </li>
                     </ul>
                 </div>
             </div>
-        </div>-->
+        </div>
     </div>
 </div>
 <!--
@@ -98,10 +47,3 @@ npm install bootstrap-select
 npm i ng2-select --save
 npm i ng2-bootstrap --save
 </p>-->
-<script>
-    /*$('.dropdown').dropdown();
-    $('.glyphicon-plus-sign').on('click', function() {
-        $('.dropdown').dropdown('toggle');
-        console.log('1');
-    });*/
-</script>

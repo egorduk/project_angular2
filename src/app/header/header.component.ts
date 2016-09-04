@@ -6,7 +6,7 @@ import { FileSizePipe } from '../common/pipe/fileSize.pipe';
 import { SafeFileExtPipe } from '../common/pipe/safe.pipe';
 import { GetFileExtByFileNamePipe } from '../common/pipe/safe.pipe';
 import { FILE_UPLOAD_DIRECTIVES, FileUploader } from 'ng2-file-upload/ng2-file-upload';
-import { SELECT_DIRECTIVES } from 'ng2-select/ng2-select';
+
 import { DataService } from '../common/service/data.service';
 import { ITag } from '../common/interfaces';
 //import { User } from '../user/user';
@@ -17,7 +17,7 @@ declare var $:any;
 
 @Component({
     selector: 'header',
-    directives: [ CORE_DIRECTIVES, ROUTER_DIRECTIVES, FILE_UPLOAD_DIRECTIVES, SELECT_DIRECTIVES ],
+    directives: [ CORE_DIRECTIVES, ROUTER_DIRECTIVES, FILE_UPLOAD_DIRECTIVES ],
     providers: [ GetFileExtByFileNamePipe ],
     styleUrls: ['app/header/style.css'],
     pipes: [ FileSizePipe, SafeFileExtPipe ],
