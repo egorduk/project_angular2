@@ -8,6 +8,7 @@ import { AuthHttp } from 'angular2-jwt/angular2-jwt';
 import { contentHeaders } from '../headers';
 import { IPicture, IUser, IGallery, IComment, ITag } from '../interfaces';
 import { GlobalService } from './global.service';
+import { Headers } from '@angular/http';
 
 @Injectable()
 export class DataService {
@@ -74,9 +75,10 @@ export class DataService {
             .catch(this.handleError);
     }
 
-    unlikePicture(pictureId: number) : Observable<boolean> {
-        return this.authHttp.delete(this._apiUrl + '/likes/' + pictureId, { headers: contentHeaders })
+    unlikePicture(pictureId: number) : boolean {
+        return this.authHttp.delete(this._apiUrl + '/likes/' + pictureId)
             .map((response: Response) => {
+                console.log(response);
                 return response.json();
             })
             .catch(this.handleError);
@@ -196,6 +198,17 @@ export class DataService {
     getTags() : Observable<ITags[]> {
         return this.authHttp.get(this._apiUrl + '/tags/')
             .map((response: Response) => {
+                return response.json();
+            })
+            .catch(this.handleError);
+    }
+
+    deletePicture(pictureId: number) : boolean {
+        let body = JSON.stringify({ pictureId });
+
+        return this.authHttp.put(this._apiUrl + '/pictures', body)
+            .map((response: Response) => {
+                console.log(response);
                 return response.json();
             })
             .catch(this.handleError);

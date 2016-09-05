@@ -111,7 +111,6 @@ export class Friends {
         if (picture.is_liked == '1') {
             this.dataService.unlikePicture(picture.picture_id)
                 .subscribe((response: boolean) => {
-                    //console.log(response);
                     if (response.response) {
                         if (picture.cnt_like != '0') {
                             picture.cnt_like--;

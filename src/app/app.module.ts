@@ -15,11 +15,13 @@ import { FILE_UPLOAD_DIRECTIVES } from 'ng2-file-upload/ng2-file-upload';
 import { SafeBgPipe } from './common/pipe/safe.pipe';
 import { FileSizePipe } from './common/pipe/fileSize.pipe';
 import { SafeFileExtPipe } from './common/pipe/safe.pipe';
-//import { SELECT_DIRECTIVES } from 'ng2-select/ng2-select';
+import { SELECT_DIRECTIVES } from 'ng2-select/ng2-select';
+import { LoginComponent } from './login/login.component';
+import { ModalModule } from 'ng2-bootstrap/components/modal';
 
 @NgModule({
-    imports: [ BrowserModule, routing, FormsModule, HttpModule],
-    declarations: [ AppComponent, SafeBgPipe, AlertComponent, FileSizePipe, SafeFileExtPipe, FILE_UPLOAD_DIRECTIVES ],
+    imports: [ BrowserModule, routing, FormsModule, HttpModule, ModalModule ],
+    declarations: [ AppComponent, SafeBgPipe, AlertComponent, FileSizePipe, SafeFileExtPipe, FILE_UPLOAD_DIRECTIVES, SELECT_DIRECTIVES, LoginComponent ],
     bootstrap: [ AppComponent ],
     providers: [ DataService, AUTH_PROVIDERS ]
 })

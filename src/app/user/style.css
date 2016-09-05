@@ -167,3 +167,11 @@
     -ms-transform: scale(1);
     transform: scale(1);
 }*/
+
+.glyphicon-heart {
+    color: red
+}
+
+.picture-liked.glyphicon-heart {
+    color: #333
+}

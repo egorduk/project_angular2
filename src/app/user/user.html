@@ -8,8 +8,26 @@
     <alert dismissOnTimeout="3000">This alert will dismiss in 3s</alert>
     <button type="button" class='btn btn-primary' (click)="addAlert()">Add Alert</button>-->
 
+    <button class="btn btn-primary" (click)="lgModal.show()">Large modal</button>
+    <div bsModal #lgModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" (click)="lgModal.hide()" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">Large modal</h4>
+                </div>
+                <div class="modal-body">
+                    ...
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="row">
         <div class="col-md-12">
+            <confirm-dialog-modal></confirm-dialog-modal>
             <div class="row panel panel-default panel-profile m-b-0">
                 <div class="panel-heading" [style.background-image]="user?.page_photo | safeBg"></div>
                 <div class="panel-body text-center">
@@ -36,9 +54,9 @@
                                 <img width="{{ picture.resize_width }}" height="{{ picture.resize_height }}" src="../../uploads/pictures/resized/{{ picture.filename }}" class="attachment-hp-thumb wp-post-image" alt="">
                                 <div class="overlay">
                                     <h2>{{ picture.name }}</h2>
-                                    <span class="info glyphicon glyphicon-heart" aria-hidden="true"></span>
-                                    <span class="info glyphicon glyphicon-trash" aria-hidden="true"></span>
-                                    <span class="info glyphicon glyphicon-edit" aria-hidden="true"></span>
+                                    <span *ngIf="!_isCurrentUser" (click)="likePicture($event, picture)" [ngClass]="{ 'picture-liked': picture.is_liked == '1' }" class="info glyphicon glyphicon-heart" aria-hidden="true"></span>
+                                    <span *ngIf="_isCurrentUser" (click)="deletePicture(picture)" class="info glyphicon glyphicon-trash" aria-hidden="true"></span>
+                                    <span *ngIf="_isCurrentUser" class="info glyphicon glyphicon-edit" aria-hidden="true"></span>
                                 </div>
                             </div>
                         </li>

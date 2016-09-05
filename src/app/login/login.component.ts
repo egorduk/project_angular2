@@ -9,14 +9,14 @@ import { contentHeaders } from '../common/headers';
 
 @Component({
     selector: 'login',
-    directives: [ ROUTER_DIRECTIVES, CORE_DIRECTIVES ],
+    //directives: [ ROUTER_DIRECTIVES, CORE_DIRECTIVES ],
     //template: `<router-outlet></router-outlet>`,
     //template: template,
     //styles: [ styles ]
     //template: 'login.html'
-    templateUrl: 'app/login/login.html'
+    templateUrl: 'app/login/login.component.html'
 })
-export class Login {
+export class LoginComponent {
 
     _serverUrl: string = '';
     _hideError: boolean = true;

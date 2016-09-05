@@ -156,11 +156,15 @@ switch ($requestMethod) {
             if ($data[4] == 'users') {
                 $userId = $data[5];
 
+                $payload = $jws->getPayload();
+                $currentUserId = $payload['uid'];
+
                 $db = getDb();
-                $query = $db->prepare("select p.name, p.filename, p.resize_height, p.resize_width, p.id as picture_id
+                $query = $db->prepare("select p.name, p.filename, p.resize_height, p.resize_width, p.id as picture_id,
+                        EXISTS(select pl.id from picture_like pl where pl.user_id = ? and pl.picture_id = p.id) as is_liked
                         from picture p
-                        where p.user_id = ?");
-                $query->execute(array($userId));
+                        where p.is_show_host = 1 and p.user_id = ?");
+                $query->execute(array($currentUserId, $userId));
 
                 if ($query->rowCount() > 0) {
                     $pictures = $query->fetchAll(PDO::FETCH_ASSOC);
@@ -192,7 +196,7 @@ switch ($requestMethod) {
 
         require_once "JOSE/autoloader.php";
         $headers = apache_request_headers();
-        $token = getFormattedToken($headers['Authorization']);
+        $token = getFormattedToken($headers['authorization']);
 
         if ($token) {
             $jws = \Namshi\JOSE\SimpleJWS::load($token);
@@ -275,7 +279,7 @@ switch ($requestMethod) {
                 return;
             }
 
-            if ($jws->isValid($publicKey, $encAlgorithm)) {
+            if (isValidToken($token)) {
                 $payload = $jws->getPayload();
                 $userId = $payload['uid'];
                 $pictureId = $post->pictureId;
@@ -495,16 +499,16 @@ switch ($requestMethod) {
     case "DELETE":
         require_once "JOSE/autoloader.php";
         $headers = apache_request_headers();
-        $token = getFormattedToken($headers['Authorization']);
+        $token = getFormattedToken($headers['authorization']);
         $jws = \Namshi\JOSE\SimpleJWS::load($token);
-        $publicKey = getPublicKey();
+        //$publicKey = getPublicKey();
 
-        $data = explode('/', $requestUri);
-        $action = $data[3];
-        $id = $data[4];
-        //var_dump($data);
-        if ($action == 'likes') {
-            if ($jws->isValid($publicKey, $encAlgorithm)) {
+        if (isValidToken($token)) {
+            $data = explode('/', $requestUri);
+            $action = $data[3];
+            $id = $data[4];
+            //var_dump($data);
+            if ($action == 'likes') {
                 $payload = $jws->getPayload();
                 $userId = $payload['uid'];
 
@@ -512,9 +516,7 @@ switch ($requestMethod) {
                 $query = $db->prepare("delete from picture_like where user_id = ? and picture_id = ? ");
                 $response = $query->execute(array($userId, $id));
                 echo json_encode(array('response' => $response));
-            }
-        } elseif ($action == 'comments') {
-            if ($jws->isValid($publicKey, $encAlgorithm)) {
+            } elseif ($action == 'comments') {
                 $payload = $jws->getPayload();
                 $userId = $payload['uid'];
 
@@ -522,9 +524,7 @@ switch ($requestMethod) {
                 $query = $db->prepare("delete from picture_comment where user_id = ? and id = ? ");
                 $response = $query->execute(array($userId, $id));
                 echo json_encode(array('response' => $response));
-            }
-        } elseif ($action == 'users') {
-            if ($jws->isValid($publicKey, $encAlgorithm)) {
+            } elseif ($action == 'users') {
                 $payload = $jws->getPayload();
                 $userId = $payload['uid'];
 
@@ -535,11 +535,31 @@ switch ($requestMethod) {
             }
         }
 
-
         break;
-    case "OPTIONS":
-        var_dump($_POST);die;
-        // delete stuff
+    case "PUT":
+
+        require_once "JOSE/autoloader.php";
+        $headers = apache_request_headers();
+        $token = getFormattedToken($headers['authorization']);
+        $post = json_decode(file_get_contents('php://input'));
+
+        if (isValidToken($token)) {
+            $jws = \Namshi\JOSE\SimpleJWS::load($token);
+            $data = explode('/', $requestUri);
+            $action = $data[3];
+
+            if ($action == 'pictures') {
+                $payload = $jws->getPayload();
+                $userId = $payload['uid'];
+                $pictureId = $post->pictureId;
+
+                $db = getDb();
+                $query = $db->prepare("update picture set is_show_host = 0 where user_id = ? and id = ? ");
+                $response = $query->execute(array($userId, $pictureId));
+                echo json_encode(array('response' => $response));
+            }
+        }
+
         break;
 }
 
@@ -564,6 +584,7 @@ function getPrivateKey() {
 function isValidToken($token) {
     $jws = \Namshi\JOSE\SimpleJWS::load($token);
     $publicKey = getPublicKey();
+
     return $jws->isValid($publicKey, ENC_ALG);
 }
 

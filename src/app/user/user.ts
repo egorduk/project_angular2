@@ -1,7 +1,8 @@
-import { Component, OnInit, ElementRef } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewContainerRef, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { DataService } from '../common/service/data.service';
 import { Http } from '@angular/http';
+
+import { DataService } from '../common/service/data.service';
 
 declare  var $:any;
 
@@ -18,7 +19,7 @@ const URL = 'http://localhost:80/project_angular2/api/pictures';
 export class User implements OnInit {
     //private sub: Subscription;
     private _userLogin: string = '';
-    private _userId: number = 0;
+    private _currentUserId: number = 0;
     private _isCurrentUser: boolean = false;
     private user: IUser;
     //pictures: IPicture[] = [];
@@ -31,16 +32,28 @@ export class User implements OnInit {
 
     public status:{isopen:boolean} = {isopen: false};
 
-    constructor(private router: Router, private http: Http, private dataService: DataService, private el: ElementRef) {
+    constructor(private router: Router, private http: Http, private dataService: DataService, private el: ElementRef, viewContainerRef:ViewContainerRef) {
         this.el = el.nativeElement;
         this._token = localStorage.getItem('id_token');
         let data = window.jwt_decode(this._token);
-        this._userId = data.uid;
+        this._currentUserId = data.uid;
+
+        this.viewContainerRef = viewContainerRef;
        // this.router.navigate(['/hero', hero.id]);
     }
 
+     @ViewChild('childModal') public childModal:ModalDirective;
+
+    public showChildModal():void {
+        this.childModal.show();
+    }
+
+    public hideChildModal():void {
+        this.childModal.hide();
+    }
+
     onEmitter():void {
-        this.getUserPictures(this._userId);
+        this.getUserPictures(this.user.id);
     }
 
     ngOnInit() {
@@ -69,7 +82,7 @@ export class User implements OnInit {
                     if (user.user) {
                         this.user = user.user;
 
-                        if (this.user.id == this._userId) {
+                        if (this.user.id == this._currentUserId) {
                             this._isCurrentUser = true;
                         }
 
@@ -99,6 +112,35 @@ export class User implements OnInit {
             }*//*
             res => this.pictures = res
             );*/
+    }
+
+    likePicture(event, picture) {
+        event.preventDefault();
+
+        if (picture.is_liked == '1') {
+            this.dataService.unlikePicture(picture.picture_id)
+                .subscribe((response: boolean) => {
+                    if (response.response) {
+                        picture.is_liked = '0';
+                    }
+                });
+        } else {
+            this.dataService.likePicture(picture.picture_id)
+                .subscribe((response: boolean) => {
+                    if (response.response) {
+                        picture.is_liked = '1';
+                    }
+                });
+        }
+    }
+
+    deletePicture(picture) {
+        this.dataService.deletePicture(picture.picture_id)
+            .subscribe((response: boolean) => {
+                if (response.response) {
+                    this.getUserPictures(this.user.id);
+                }
+            });
     }
 
     /*public toggled(open:boolean):void {

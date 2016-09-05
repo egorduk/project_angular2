@@ -10,14 +10,14 @@ import { DataService } from '../common/service/data.service';
 import { ITag } from '../common/interfaces';
 //import { User } from '../user/user';
 import { MessageService } from '../common/service/message.service';
-import { SELECT_DIRECTIVES } from 'ng2-select/ng2-select';
+//import { SELECT_DIRECTIVES } from 'ng2-select/ng2-select';
 
 const URL = 'http://localhost:80/project_angular2/api/pictures';
 declare var $:any;
 
 @Component({
     selector: 'header',
-    directives: [ CORE_DIRECTIVES, ROUTER_DIRECTIVES, SELECT_DIRECTIVES ],
+    //directives: [ CORE_DIRECTIVES, ROUTER_DIRECTIVES, SELECT_DIRECTIVES ],
     //providers: [ GetFileExtByFileNamePipe ],
     styleUrls: ['app/header/style.css'],
     //pipes: [ FileSizePipe, SafeFileExtPipe ],
@@ -49,7 +49,6 @@ export class HeaderComponent implements OnInit {
                 public http: Http,
                 private el: ElementRef,
                 private dataService: DataService,
-                //private user: User,
                 private ms: MessageService) {
         this._token = localStorage.getItem('id_token');
         this._el = el.nativeElement;
