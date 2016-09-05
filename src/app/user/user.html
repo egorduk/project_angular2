@@ -1,9 +1,54 @@
 <div class="jumbotron center-block user" style="padding: 0">
     <h1></h1>
     <header (emitResponse)='onEmitter()'></header>
+
+    <!--<alert *ngFor="let alert of alerts;let i = index" [type]="alert.type" dismissible="true" (close)="closeAlert(i)">
+    {{ alert?.msg }}
+    </alert>
+    <alert dismissOnTimeout="3000">This alert will dismiss in 3s</alert>
+    <button type="button" class='btn btn-primary' (click)="addAlert()">Add Alert</button>-->
+
+    <!--<button (click)="myModal.open()">open my modal</button>-->
+
+    <form (ngSubmit)="onSubmit()" #editPictureForm="ngForm">
+        <modal #modalPopup title="Edit picture"
+        modalClass="modal-lg modal-sm"
+        [closeOnEscape]="true"
+        [closeOnOutsideClick]="true"
+        (onOpen)="actionOnOpen()"
+        (onClose)="actionOnClose()">
+        <modal-header>
+        </modal-header>
+        <modal-content>
+            <div *ngIf="_selectedPicture">
+                <input type="text" class="form-control" placeholder="New picture name" [(ngModel)]="_selectedPicture.name" #name="ngModel" [ngModelOptions]="{standalone: true}" required><br>
+                <div [hidden]="name.valid" class="alert alert-danger">
+                    Picture name is required
+                </div>
+                <div class="thumbnail">
+                    <img src="../../uploads/pictures/original/{{ _selectedPicture?.filename }}" alt="user_picture">
+                    <div class="caption">
+                        <span>Uploaded: {{ _selectedPicture.uploaded }}</span>
+                    </div>
+                </div>
+            </div>
+        </modal-content>
+        <modal-footer>
+            <div *ngIf="_selectedPicture">
+                <div class="col-xs-12">
+                    <p class="text-left">
+                        <a href="#" *ngFor="let tag of _selectedPicture?.tags"><span class="label label-primary" style="margin-right: 10px">{{ tag }}</span></a>
+                    </p>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+        </modal-footer>
+        </modal>
+    </form>
+
     <div class="row">
         <div class="col-md-12">
-            <div class="row panel panel-default panel-profile m-b-0">
+           <!-- <div class="row panel panel-default panel-profile m-b-0">
                 <div class="panel-heading" [style.background-image]="user?.page_photo | safeBg"></div>
                 <div class="panel-body text-center">
                     <img *ngIf="user?.avatar" class="panel-profile-img" src="../../uploads/avatars/{{ user?.avatar }}">
@@ -20,13 +65,13 @@
                         </ul>
                     </div>
                 </div>
-            </div>
+            </div>-->
             <div class="" style="position: relative">
                 <div id="main" role="main" style="height: 1200px;">
                     <ul id="tiles" class="unstyled" style="list-style-type:none">
                         <li *ngFor="let picture of pictures" style="display: list-item;">
                             <div class="view view-first hovereffect">
-                                <img width="{{ picture.resize_width }}" height="{{ picture.resize_height }}" src="../../uploads/pictures/resized/{{ picture.filename }}" class="attachment-hp-thumb wp-post-image" alt="">
+                                <img (click)="openModalPopup(picture, modalPopup)" width="{{ picture.resize_width }}" height="{{ picture.resize_height }}" src="../../uploads/pictures/resized/{{ picture.filename }}" class="attachment-hp-thumb wp-post-image" alt="">
                                 <div class="overlay">
                                     <h2>{{ picture.name }}</h2>
                                     <span class="info glyphicon glyphicon-heart" aria-hidden="true"></span>

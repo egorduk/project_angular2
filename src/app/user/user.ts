@@ -28,9 +28,10 @@ export class User implements OnInit {
     private _token: string = '';
     private galleries: IGallery[] = [];
     private _isHideDropDown: boolean = false;
+    private _selectedPicture: IPicture;
+    private _modalPopup: any;
 
     public status:{isopen:boolean} = {isopen: false};
-
 
 
     constructor(private router: Router, private http: Http, private dataService: DataService, private el: ElementRef) {
@@ -101,19 +102,56 @@ export class User implements OnInit {
             }*//*
             res => this.pictures = res
             );*/
+        //this.getPictureTags();
     }
 
-    /*public toggled(open:boolean):void {
-        console.log('Dropdown is now: ', open);
+    preparePictureTags() {
+        //console.log(this._selectedPicture);
+        if (typeof this._selectedPicture.tags === 'string') {
+            this._selectedPicture.tags = this._selectedPicture.tags.split(',');
+        }
     }
 
-    public toggleDropdown($event:MouseEvent):void {
-        $event.preventDefault();
-        $event.stopPropagation();
-        this.status.isopen = !this.status.isopen;
+    public actionOnOpen() {
+        //console.log('open');
+    }
+
+    public actionOnClose() {
+        //console.log('close');
+        this._selectedPicture = null;
+    }
+
+    /*public actionOnSubmit(editPictureForm) {
+        console.log(editPictureForm);
+        console.log(this._selectedPicture);
     }*/
 
-   /* public alerts:Array<Object> = [
+    openModalPopup(picture, modalPopup) {
+        this._selectedPicture = picture;
+        this._modalPopup = modalPopup;
+
+        //console.log(modalPopup);
+        this.preparePictureTags();
+        this._modalPopup.open();
+    }
+
+    onSubmit() {
+        //this.submitted = true;
+        this.updatePictureName();
+    }
+
+    updatePictureName() {
+        console.log(this._selectedPicture);
+
+        this.dataService.updatePictureName(this._selectedPicture.picture_id, this._selectedPicture.name)
+            .subscribe((response: boolean) => {
+                if (response.response) {
+                    this._modalPopup.close();
+                }
+            });
+    }
+
+  /*  public alerts:Array<Object> = [
         {
             type: 'danger',
             msg: 'Oh snap! Change a few things up and try submitting again.'

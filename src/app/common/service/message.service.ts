@@ -15,13 +15,13 @@ export class MessageService {
     //private _emitter: EventEmitter<string> = new EventEmitter<string>();
 
     constructor() {
-        console.log('init');
+        //console.log('init');
         this.rxEmitter = this._emitter;
         //this.input = this.data;
         //console.log('this.input', this.input);
 
         this.input = !this.input;
-        console.log('this.input', this.input);
+        //console.log('this.input', this.input);
         //this.emit(this.input);
 
         /*setInterval(() => {
@@ -36,6 +36,6 @@ export class MessageService {
         /*this.rxEmitter.emit({
             value: false
         });*/
-        console.log('emit');
+        //console.log('emit');
     }
 }

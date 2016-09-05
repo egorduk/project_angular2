@@ -11,7 +11,8 @@
         'ng2-file-upload':            'node_modules/ng2-file-upload',
         'ng2-select':                 'node_modules/ng2-select',
         'ng2-bootstrap':              'node_modules/ng2-bootstrap',
-        'moment':                     'node_modules/moment'
+        'moment':                     'node_modules/moment',
+        "ng2-modal":                  "node_modules/ng2-modal"
     };
 
     // packages tells the System loader how to load when no filename and/or no extension
@@ -39,7 +40,8 @@
         'moment': {
             main: 'moment.js',
             defaultExtension: "js"
-        }
+        },
+        "ng2-modal": { "main": "index.js", "defaultExtension": "js" }
     };
 
     var ngPackageNames = [

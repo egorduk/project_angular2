@@ -79,51 +79,15 @@
     display: inline-block;
 }
 
-.hovereffect a.info {
-    display: inline-block;
-    text-decoration: none;
-    padding: 7px 14px;
-    text-transform: uppercase;
-    color: #fff;
-    border: 1px solid #fff;
-    margin: 50px 0 0 0;
-    background-color: transparent;
-}
-.hovereffect a.info:hover {
-    box-shadow: 0 0 5px #fff;
-}
-
-
-.hovereffect p.icon-links a {
-    float: right;
-    color: #3c4a50;
-    font-size: 1.4em;
-}
-
-.hovereffect:hover p.icon-links a:hover,
-.hovereffect:hover p.icon-links a:focus {
-    color: #252d31;
-}
-
-.hovereffect h2,
-.hovereffect p.icon-links a {
+.hovereffect h2 {
     -webkit-transition: -webkit-transform 0.35s;
     transition: transform 0.35s;
     -webkit-transform: translate3d(0,200%,0);
     transform: translate3d(0,200%,0);
 }
 
-.hovereffect p.icon-links a span:before {
-    display: inline-block;
-    padding: 8px 10px;
-    speak: none;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-}
-
 .hovereffect:hover .overlay,
-.hovereffect:hover h2,
-.hovereffect:hover p.icon-links a {
+.hovereffect:hover h2 {
     -webkit-transform: translate3d(0,0,0);
     transform: translate3d(0,0,0);
 }
@@ -132,8 +96,6 @@
     -webkit-transition-delay: 0.05s;
     transition-delay: 0.05s;
 }
-
-
 
 .hovereffect span.info {
     /*display: inline-block;*/
@@ -144,26 +106,10 @@
     font-size: 30px;
 }
 
-/*.hovereffect span.info:hover {
-    box-shadow: 0 0 5px #fff;
+.ng-valid[required] {
+    border-left: 5px solid #42A948; /* green */
 }
 
-.hovereffect span.info, .hovereffect h2 {
-    -webkit-transform: scale(0.7);
-    -ms-transform: scale(0.7);
-    transform: scale(0.7);
-    -webkit-transition: all 0.4s ease-in;
-    transition: all 0.4s ease-in;
-    opacity: 0;
-    filter: alpha(opacity=0);
-    color: #fff;
-    text-transform: uppercase;
+.ng-invalid {
+    border-left: 5px solid #a94442; /* red */
 }
-
-.hovereffect:hover span.info, .hovereffect:hover h2 {
-    opacity: 1;
-    filter: alpha(opacity=100);
-    -webkit-transform: scale(1);
-    -ms-transform: scale(1);
-    transform: scale(1);
-}*/
