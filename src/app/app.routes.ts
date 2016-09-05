@@ -1,5 +1,3 @@
-// - Routes instead of RouteConfig
-// - RouterModule instead of provideRoutes
 import { Routes, RouterModule } from '@angular/router';
 
 import { Home } from './home/home';
