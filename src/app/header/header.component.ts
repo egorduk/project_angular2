@@ -2,25 +2,25 @@ import { Component, ElementRef, EventEmitter, Injectable, Input, Output } from '
 import { CORE_DIRECTIVES } from '@angular/common';
 import { Http, Headers } from '@angular/http';
 import { Router, ROUTER_DIRECTIVES } from '@angular/router';
-import { FileSizePipe } from '../common/pipe/fileSize.pipe';
-import { SafeFileExtPipe } from '../common/pipe/safe.pipe';
+
 import { GetFileExtByFileNamePipe } from '../common/pipe/safe.pipe';
-import { FILE_UPLOAD_DIRECTIVES, FileUploader } from 'ng2-file-upload/ng2-file-upload';
+import { FileUploader } from 'ng2-file-upload/ng2-file-upload';
 
 import { DataService } from '../common/service/data.service';
 import { ITag } from '../common/interfaces';
 //import { User } from '../user/user';
 import { MessageService } from '../common/service/message.service';
+import { SELECT_DIRECTIVES } from 'ng2-select/ng2-select';
 
 const URL = 'http://localhost:80/project_angular2/api/pictures';
 declare var $:any;
 
 @Component({
     selector: 'header',
-    directives: [ CORE_DIRECTIVES, ROUTER_DIRECTIVES, FILE_UPLOAD_DIRECTIVES ],
-    providers: [ GetFileExtByFileNamePipe ],
+    directives: [ CORE_DIRECTIVES, ROUTER_DIRECTIVES, SELECT_DIRECTIVES ],
+    //providers: [ GetFileExtByFileNamePipe ],
     styleUrls: ['app/header/style.css'],
-    pipes: [ FileSizePipe, SafeFileExtPipe ],
+    //pipes: [ FileSizePipe, SafeFileExtPipe ],
     templateUrl: 'app/header/header.component.html'
 })
 

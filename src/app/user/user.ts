@@ -111,7 +111,7 @@ export class User implements OnInit {
         this.status.isopen = !this.status.isopen;
     }*/
 
-   /* public alerts:Array<Object> = [
+    /*public alerts:Array<Object> = [
         {
             type: 'danger',
             msg: 'Oh snap! Change a few things up and try submitting again.'
