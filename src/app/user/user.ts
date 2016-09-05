@@ -31,8 +31,6 @@ export class User implements OnInit {
 
     public status:{isopen:boolean} = {isopen: false};
 
-
-
     constructor(private router: Router, private http: Http, private dataService: DataService, private el: ElementRef) {
         this.el = el.nativeElement;
         this._token = localStorage.getItem('id_token');

@@ -1,6 +1,13 @@
 <div class="jumbotron center-block user" style="padding: 0">
     <h1></h1>
     <header (emitResponse)='onEmitter()'></header>
+
+    <alert *ngFor="let alert of alerts;let i = index" [type]="alert.type" dismissible="true" (close)="closeAlert(i)">
+        {{ alert?.msg }}
+    </alert>
+    <alert dismissOnTimeout="3000">This alert will dismiss in 3s</alert>
+    <button type="button" class='btn btn-primary' (click)="addAlert()">Add Alert</button>
+
     <div class="row">
         <div class="col-md-12">
             <div class="row panel panel-default panel-profile m-b-0">
