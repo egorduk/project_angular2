@@ -5,24 +5,25 @@ import { HttpModule } from '@angular/http';
 
 import { routing } from './app.routes';
 
-import { AppComponent }  from './app.component';
-
-import { DataService } from './common/service/data.service';
-import { AlertComponent } from 'ng2-bootstrap/components/alert';
 import { AUTH_PROVIDERS } from 'angular2-jwt/angular2-jwt';
 
-import { FILE_UPLOAD_DIRECTIVES } from 'ng2-file-upload/ng2-file-upload';
+import { DataService } from './common/service/data.service';
 import { SafeBgPipe } from './common/pipe/safe.pipe';
+
+import { AppComponent }  from './app.component';
+import { AlertComponent } from 'ng2-bootstrap/components/alert';
+import { DropdownModule  } from 'ng2-bootstrap/components/dropdown';
+import { SELECT_DIRECTIVES } from 'ng2-select/ng2-select';
+import { ModalModule } from "ng2-modal";
+import { LoginComponent } from './login/login.component';
 import { FileSizePipe } from './common/pipe/fileSize.pipe';
 import { SafeFileExtPipe } from './common/pipe/safe.pipe';
-import { SELECT_DIRECTIVES } from 'ng2-select/ng2-select';
-import { LoginComponent } from './login/login.component';
-import { ModalModule } from 'ng2-bootstrap/components/modal';
+import { FILE_UPLOAD_DIRECTIVES } from 'ng2-file-upload/ng2-file-upload';
 
 @NgModule({
-    imports: [ BrowserModule, routing, FormsModule, HttpModule, ModalModule ],
-    declarations: [ AppComponent, SafeBgPipe, AlertComponent, FileSizePipe, SafeFileExtPipe, FILE_UPLOAD_DIRECTIVES, SELECT_DIRECTIVES, LoginComponent ],
-    bootstrap: [ AppComponent ],
-    providers: [ DataService, AUTH_PROVIDERS ]
+    imports: [ BrowserModule, FormsModule, HttpModule, routing, DropdownModule, ModalModule ],       // module dependencies
+    declarations: [ AppComponent, AlertComponent, FileSizePipe, SafeFileExtPipe, FILE_UPLOAD_DIRECTIVES, SELECT_DIRECTIVES, LoginComponent ],   // components and directives
+    bootstrap: [ AppComponent ],     // root component
+    providers: [ AUTH_PROVIDERS, DataService ]                    // services
 })
 export class AppModule { }

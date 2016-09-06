@@ -214,6 +214,16 @@ export class DataService {
             .catch(this.handleError);
     }
 
+    updatePictureName(pictureId: number, pictureName: string) : boolean {
+        let body = JSON.stringify({ pictureName });
+
+        return this.authHttp.put(this._apiUrl + '/pictures/' + pictureId, body)
+            .map((response: Response) => {
+                return response.json();
+            })
+            .catch(this.handleError);
+    }
+
     private handleError(error: any) {
         console.error(error);
         return Observable.throw(error.json().error || 'Server error');

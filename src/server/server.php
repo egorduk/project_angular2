@@ -163,6 +163,14 @@ switch ($requestMethod) {
                 $query = $db->prepare("select p.name, p.filename, p.resize_height, p.resize_width, p.id as picture_id,
                         EXISTS(select pl.id from picture_like pl where pl.user_id = ? and pl.picture_id = p.id) as is_liked
                         from picture p
+                        
+                        select p.name, p.filename, p.resize_height, p.resize_width, p.id as picture_id, DATE_FORMAT(p.date_upload, '%b %d %Y %h:%i %p') as uploaded, GROUP_CONCAT(distinct t.name) as tags
+                        from picture p
+                        left join picture_tag pt on p.id = pt.picture_id
+                        left join tag t on t.id = pt.tag_id
+                        where p.user_id = ?
+                        group by p.id
+                        
                         where p.is_show_host = 1 and p.user_id = ?");
                 $query->execute(array($currentUserId, $userId));
 
@@ -535,8 +543,34 @@ switch ($requestMethod) {
             }
         }
 
+
         break;
     case "PUT":
+
+        require_once "JOSE/autoloader.php";
+        $headers = apache_request_headers();
+        $token = getFormattedToken($headers['authorization']);
+        $post = json_decode(file_get_contents('php://input'));
+
+        if ($token) {
+            $jws = \Namshi\JOSE\SimpleJWS::load($token);
+        } else {
+        }
+
+        $data = explode('/', $requestUri);
+        $action = $data[3];
+        $id = $data[4];
+
+        if ($action == 'pictures') {
+            $payload = $jws->getPayload();
+            $userId = $payload['uid'];
+            $pictureName = $post->pictureName;
+
+            $db = getDb();
+            $query = $db->prepare("update picture set name = ? where user_id = ? and id = ? ");
+            $response = $query->execute(array($pictureName, $userId, $id));
+            echo json_encode(array('response' => $response));
+        }
 
         require_once "JOSE/autoloader.php";
         $headers = apache_request_headers();
