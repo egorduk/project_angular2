@@ -14,7 +14,7 @@ const routes: Routes = [
     { path: 'home',   component: Home, canActivate: [AuthGuard] },
     { path: 'friends', component: Friends },
     { path: 'user/:id', component: User },
-    { path: '**',     component: LoginComponent }
+    { path: '**', component: LoginComponent }
 ];
 
 // - Updated Export

@@ -90,7 +90,9 @@ jQuery.fn.wookmark = function(options) {
             heights[shortestIndex] = shortest + item.outerHeight() + this.wookmarkOptions.offset;
             bottom = Math.max(bottom, heights[shortestIndex]);
 
-            this.wookmarkColumns[shortestIndex].push(item);
+            if (this.wookmarkColumns.length > 0) {
+                this.wookmarkColumns[shortestIndex].push(item);
+            }
         }
 
         return bottom;

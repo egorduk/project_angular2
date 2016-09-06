@@ -108,21 +108,33 @@ switch ($requestMethod) {
             if ($data[4] == 'users') {
                 if (isValidToken($token)) {
                     $payload = $jws->getPayload();
-                    $userId = $payload['uid'];
+
 
                     $db = getDb();
-                    /*$query = $db->prepare("select pg.name, pg.id as gallery_id
-                    from user_has_gallery uhg
-                    inner join picture_gallery pg on pg.id = uhg.gallery_id
-                    where uhg.user_id = ?
-                    order by pg.name asc");*/
-                    $query = $db->prepare("select pg.name, pg.id as gallery_id, GROUP_CONCAT(p.id) as picture_ids
+
+                    if (isset($data[5])) {
+                        $userId = $data[5];
+
+                        $query = $db->prepare("select pg.name, pg.id as gallery_id, count(p.id) as cnt_pictures,
+                        GROUP_CONCAT(p.filename) as pictures
                         from gallery_has_picture ghp
                         left join picture_gallery pg on pg.id = ghp.gallery_id
                         left join picture p on p.id = ghp.picture_id
                         where ghp.user_id = ?
                         group by pg.id
                         order by pg.name asc");
+                    } else {
+                        $userId = $payload['uid'];
+
+                        $query = $db->prepare("select pg.name, pg.id as gallery_id, GROUP_CONCAT(p.id) as picture_ids
+                        from gallery_has_picture ghp
+                        left join picture_gallery pg on pg.id = ghp.gallery_id
+                        left join picture p on p.id = ghp.picture_id
+                        where ghp.user_id = ?
+                        group by pg.id
+                        order by pg.name asc");
+                    }
+
                     $query->execute(array($userId));
 
                     if ($query->rowCount() > 0) {
@@ -161,17 +173,13 @@ switch ($requestMethod) {
 
                 $db = getDb();
                 $query = $db->prepare("select p.name, p.filename, p.resize_height, p.resize_width, p.id as picture_id,
-                        EXISTS(select pl.id from picture_like pl where pl.user_id = ? and pl.picture_id = p.id) as is_liked
-                        from picture p
-                        
-                        select p.name, p.filename, p.resize_height, p.resize_width, p.id as picture_id, DATE_FORMAT(p.date_upload, '%b %d %Y %h:%i %p') as uploaded, GROUP_CONCAT(distinct t.name) as tags
+                        EXISTS(select pl.id from picture_like pl where pl.user_id = ? and pl.picture_id = p.id) as is_liked,
+                        DATE_FORMAT(p.date_upload, '%b %d %Y %h:%i %p') as uploaded, GROUP_CONCAT(distinct t.name) as tags
                         from picture p
                         left join picture_tag pt on p.id = pt.picture_id
                         left join tag t on t.id = pt.tag_id
-                        where p.user_id = ?
-                        group by p.id
-                        
-                        where p.is_show_host = 1 and p.user_id = ?");
+                        where p.is_show_host = 1 and p.user_id = ?
+                        group by p.id");
                 $query->execute(array($currentUserId, $userId));
 
                 if ($query->rowCount() > 0) {
@@ -204,7 +212,7 @@ switch ($requestMethod) {
 
         require_once "JOSE/autoloader.php";
         $headers = apache_request_headers();
-        $token = getFormattedToken($headers['authorization']);
+        $token = getFormattedToken($headers['Authorization']);
 
         if ($token) {
             $jws = \Namshi\JOSE\SimpleJWS::load($token);
@@ -367,7 +375,7 @@ switch ($requestMethod) {
                 }
             }
         } elseif ($action == 'pictures') {
-            if ($jws->isValid($publicKey, $encAlgorithm)) {
+            if (isValidToken($token)) {
                 $filename = $_FILES['file']['name'];
                 $tmpName = $_FILES['file']['tmp_name'];
                 $error = $_FILES['file']['error'];
@@ -507,7 +515,7 @@ switch ($requestMethod) {
     case "DELETE":
         require_once "JOSE/autoloader.php";
         $headers = apache_request_headers();
-        $token = getFormattedToken($headers['authorization']);
+        $token = getFormattedToken($headers['Authorization']);
         $jws = \Namshi\JOSE\SimpleJWS::load($token);
         //$publicKey = getPublicKey();
 
@@ -549,48 +557,33 @@ switch ($requestMethod) {
 
         require_once "JOSE/autoloader.php";
         $headers = apache_request_headers();
-        $token = getFormattedToken($headers['authorization']);
-        $post = json_decode(file_get_contents('php://input'));
-
-        if ($token) {
-            $jws = \Namshi\JOSE\SimpleJWS::load($token);
-        } else {
-        }
-
-        $data = explode('/', $requestUri);
-        $action = $data[3];
-        $id = $data[4];
-
-        if ($action == 'pictures') {
-            $payload = $jws->getPayload();
-            $userId = $payload['uid'];
-            $pictureName = $post->pictureName;
-
-            $db = getDb();
-            $query = $db->prepare("update picture set name = ? where user_id = ? and id = ? ");
-            $response = $query->execute(array($pictureName, $userId, $id));
-            echo json_encode(array('response' => $response));
-        }
-
-        require_once "JOSE/autoloader.php";
-        $headers = apache_request_headers();
-        $token = getFormattedToken($headers['authorization']);
+        $token = getFormattedToken($headers['Authorization']);
         $post = json_decode(file_get_contents('php://input'));
 
         if (isValidToken($token)) {
             $jws = \Namshi\JOSE\SimpleJWS::load($token);
             $data = explode('/', $requestUri);
             $action = $data[3];
+            $method = $data[5];
+            $pictureId = $data[4];
 
             if ($action == 'pictures') {
                 $payload = $jws->getPayload();
                 $userId = $payload['uid'];
-                $pictureId = $post->pictureId;
 
-                $db = getDb();
-                $query = $db->prepare("update picture set is_show_host = 0 where user_id = ? and id = ? ");
-                $response = $query->execute(array($userId, $pictureId));
-                echo json_encode(array('response' => $response));
+                if ($method == 'status') {
+                    $db = getDb();
+                    $query = $db->prepare("update picture set is_show_host = 0 where user_id = ? and id = ? ");
+                    $response = $query->execute(array($userId, $pictureId));
+                    echo json_encode(array('response' => $response));
+                } elseif ($method == 'name') {
+                    $pictureName = $post->pictureName;
+
+                    $db = getDb();
+                    $query = $db->prepare("update picture set name = ? where user_id = ? and id = ? ");
+                    $response = $query->execute(array($pictureName, $userId, $pictureId));
+                    echo json_encode(array('response' => $response));
+                }
             }
         }
 

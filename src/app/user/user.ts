@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, ViewContainerRef, ViewChild } from '@angular/core';
+import { Component, OnInit, ElementRef, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Http } from '@angular/http';
 
@@ -13,7 +13,8 @@ const URL = 'http://localhost:80/project_angular2/api/pictures';
     //directives: [ ROUTER_DIRECTIVES, CORE_DIRECTIVES, HeaderComponent, AlertComponent/*, DropdownModule*/ ],
     //pipes: [ SafeBgPipe ],
     styleUrls: ['app/user/style.css'],
-    templateUrl: 'app/user/user.html'
+    templateUrl: 'app/user/user.html',
+    //changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class User implements OnInit {
@@ -31,6 +32,7 @@ export class User implements OnInit {
     private _isHideDropDown: boolean = false;
     private _selectedPicture: IPicture;
     private _modalPopup: any;
+    private _tabsMode: string = '';
 
     public status:{isopen:boolean} = {isopen: false};
 
@@ -40,19 +42,7 @@ export class User implements OnInit {
         this._token = localStorage.getItem('id_token');
         let data = window.jwt_decode(this._token);
         this._currentUserId = data.uid;
-
-        this.viewContainerRef = viewContainerRef;
        // this.router.navigate(['/hero', hero.id]);
-    }
-
-     @ViewChild('childModal') public childModal:ModalDirective;
-
-    public showChildModal():void {
-        this.childModal.show();
-    }
-
-    public hideChildModal():void {
-        this.childModal.hide();
     }
 
     onEmitter():void {
@@ -123,6 +113,8 @@ export class User implements OnInit {
         if (typeof this._selectedPicture.tags === 'string') {
             this._selectedPicture.tags = this._selectedPicture.tags.split(',');
         }
+    }
+
     likePicture(event, picture) {
         event.preventDefault();
 
@@ -144,17 +136,17 @@ export class User implements OnInit {
     }
 
     deletePicture(picture) {
-        this.dataService.deletePicture(picture.picture_id)
-            .subscribe((response: boolean) => {
-                if (response.response) {
-                    this.getUserPictures(this.user.id);
-                }
-            });
+        let confirmAnswer = confirm("Are you sure?");
+        if (confirmAnswer) {
+            this.dataService.deletePicture(picture.picture_id)
+                .subscribe((response: boolean) => {
+                    if (response.response) {
+                        this.getUserPictures(this.user.id);
+                    }
+                });
+        }
     }
 
-    /*public toggled(open:boolean):void {
-        console.log('Dropdown is now: ', open);
-    }
 
     public actionOnOpen() {
         //console.log('open');
@@ -170,7 +162,7 @@ export class User implements OnInit {
         console.log(this._selectedPicture);
     }*/
 
-    openModalPopup(picture, modalPopup) {
+    openEditModalPopup(picture, modalPopup) {
         this._selectedPicture = picture;
         this._modalPopup = modalPopup;
 
@@ -191,6 +183,46 @@ export class User implements OnInit {
             .subscribe((response: boolean) => {
                 if (response.response) {
                     this._modalPopup.close();
+                }
+            });
+    }
+
+    selectTab(event) {
+        let activeTab = event.heading;
+        console.log(activeTab);
+
+        if (activeTab == 'Pictures') {
+            this._tabsMode = 'pictures';
+        } else if (activeTab == 'Galleries') {
+            this._tabsMode = 'galleries';
+            this.getUserGalleries();
+        } else {
+
+        }
+    }
+
+    getUserGalleries() {
+        this.galleries = null;
+
+        this.dataService.getUserGalleries(this.user.id)
+            .subscribe((galleries: IGallery[]) => {
+                if (galleries.response) {
+                    if (galleries.galleries) {
+                        galleries.galleries.forEach((value: any, key: any) => {
+                            if (typeof value.pictures === 'string') {
+                                let pictures = value.pictures.split(',');
+                                galleries.galleries[key].cover_picture = pictures[Math.floor(Math.random() * pictures.length)];
+                            } else {
+                                galleries.galleries[key].cover_picture = 'cover_default.png';
+                            }
+                        });
+                    } else {
+                    }
+
+                    this.galleries = galleries.galleries;
+                    //console.log(this.galleries);
+                } else {
+                    this.router.navigate(['/home']);
                 }
             });
     }

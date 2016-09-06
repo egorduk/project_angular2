@@ -7,84 +7,96 @@
     </alert>
     <alert dismissOnTimeout="3000">This alert will dismiss in 3s</alert>
     <button type="button" class='btn btn-primary' (click)="addAlert()">Add Alert</button>-->
-
     <!--<button (click)="myModal.open()">open my modal</button>-->
 
     <form (ngSubmit)="onSubmit()" #editPictureForm="ngForm">
-        <modal #modalPopup title="Edit picture"
-        modalClass="modal-lg modal-sm"
-        [closeOnEscape]="true"
-        [closeOnOutsideClick]="true"
-        (onOpen)="actionOnOpen()"
-        (onClose)="actionOnClose()">
-        <modal-header>
-        </modal-header>
-        <modal-content>
-            <div *ngIf="_selectedPicture">
-                <input type="text" class="form-control" placeholder="New picture name" [(ngModel)]="_selectedPicture.name" #name="ngModel" [ngModelOptions]="{standalone: true}" required><br>
-                <div [hidden]="name.valid" class="alert alert-danger">
-                    Picture name is required
-                </div>
-                <div class="thumbnail">
-                    <img src="../../uploads/pictures/original/{{ _selectedPicture?.filename }}" alt="user_picture">
-                    <div class="caption">
-                        <span>Uploaded: {{ _selectedPicture.uploaded }}</span>
-                    </div>
-                </div>
-            </div>
-        </modal-content>
-        <modal-footer>
-            <div *ngIf="_selectedPicture">
-                <div class="col-xs-12">
-                    <p class="text-left">
-                        <a href="#" *ngFor="let tag of _selectedPicture?.tags"><span class="label label-primary" style="margin-right: 10px">{{ tag }}</span></a>
-                    </p>
-                </div>
-            </div>
-            <button type="submit" class="btn btn-primary">Save</button>
-        </modal-footer>
-        </modal>
-    </form>
+    <modal #modalPopup title="Edit picture"
+    modalClass="modal-lg modal-sm"
+    [closeOnEscape]="true"
+    [closeOnOutsideClick]="true"
+    (onOpen)="actionOnOpen()"
+    (onClose)="actionOnClose()">
+    <modal-header>
+    </modal-header>
+    <modal-content>
+        <div *ngIf="_selectedPicture">
+        <input type="text" class="form-control" placeholder="New picture name" [(ngModel)]="_selectedPicture.name" #name="ngModel" [ngModelOptions]="{standalone: true}" required><br>
+        <div [hidden]="name.valid" class="alert alert-danger">
+        Picture name is required
+</div>
+<div class="thumbnail">
+    <img src="../../uploads/pictures/original/{{ _selectedPicture?.filename }}" alt="user_picture">
+    <div class="caption">
+        <span>Uploaded: {{ _selectedPicture.uploaded }}</span>
+    </div>
+</div>
+</div>
+</modal-content>
+<modal-footer>
+    <div *ngIf="_selectedPicture">
+    <div class="col-xs-12">
+        <p class="text-left">
+            <a href="#" *ngFor="let tag of _selectedPicture?.tags"><span class="label label-primary" style="margin-right: 10px">{{ tag }}</span></a>
+        </p>
+    </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
+</modal-footer>
+</modal>
+</form>
 
-    <div class="row">
-        <div class="col-md-12">
-            <div class="row panel panel-default panel-profile m-b-0">
-                <div class="panel-heading" [style.background-image]="user?.page_photo | safeBg"></div>
-                <div class="panel-body text-center">
-                    <img *ngIf="user?.avatar" class="panel-profile-img" src="../../uploads/avatars/{{ user?.avatar }}">
-                    <h5 class="panel-title">{{ user?.login }}</h5>
-                    <p class="m-b">{{ user?.info }}</p>
+<div class="row">
+    <div class="col-md-12">
+        <div class="row panel panel-default panel-profile m-b-0">
+            <div class="panel-heading" [style.background-image]="user?.page_photo | safeBg"></div>
+        <div class="panel-body text-center">
+            <img *ngIf="user?.avatar" class="panel-profile-img" src="../../uploads/avatars/{{ user?.avatar }}">
+            <h5 class="panel-title">{{ user?.login }}</h5>
+            <p class="m-b">{{ user?.info }}</p>
+        </div>
+        <div class="row">
+            <div class=".col-md-6"></div>
+            <tabset [justified]="true">
+            <tab heading="Pictures" (select)="selectTab($event)" [active]="true"></tab>
+            <tab heading="Galleries"(select)="selectTab($event)"></tab>
+            <tab heading="Info"(select)="selectTab($event)"></tab>
+            </tabset>
+        </div>
+    </div>
+
+    <div *ngIf="_tabsMode == 'pictures'" style="position: relative;height: 1200px;">
+    <div id="main" role="main" style="height: 1200px;">
+        <ul id="tiles" class="unstyled" style="list-style-type:none">
+            <li *ngFor="let picture of pictures" style="display: list-item;">
+            <div class="view view-first hovereffect">
+                <img width="{{ picture.resize_width }}" height="{{ picture.resize_height }}" src="../../uploads/pictures/resized/{{ picture.filename }}" alt="">
+                <div class="overlay">
+                    <h2>{{ picture.name }}</h2>
+                    <span *ngIf="!_isCurrentUser" (click)="likePicture($event, picture)" [ngClass]="{ 'picture-liked': picture.is_liked == '1' }" class="info glyphicon glyphicon-heart" aria-hidden="true"></span>
+                    <span *ngIf="_isCurrentUser" (click)="deletePicture(picture)" class="info glyphicon glyphicon-trash" aria-hidden="true"></span>
+                    <span *ngIf="_isCurrentUser" (click)="openEditModalPopup(picture, modalPopup)" class="info glyphicon glyphicon-edit" aria-hidden="true"></span>
                 </div>
-                <div class="row">
-                    <div class=".col-md-6"></div>
-                    <div class=".col-md-6 col-md-offset-5">
-                        <ul class="nav nav-tabs centered">
-                            <li class="active"><a href="#">Pictures <span class="sr-only"></span></a></li>
-                            <li class=""><a href="#">Galleries <span class="sr-only"></span></a></li>
-                            <li class=""><a href="#">Info <span class="sr-only"></span></a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>-->
-            <div class="" style="position: relative">
-                <div id="main" role="main" style="height: 1200px;">
-                    <ul id="tiles" class="unstyled" style="list-style-type:none">
-                        <li *ngFor="let picture of pictures" style="display: list-item;">
-                            <div class="view view-first hovereffect">
-                                <img (click)="openModalPopup(picture, modalPopup)" width="{{ picture.resize_width }}" height="{{ picture.resize_height }}" src="../../uploads/pictures/resized/{{ picture.filename }}" class="attachment-hp-thumb wp-post-image" alt="">
-                                <div class="overlay">
-                                    <h2>{{ picture.name }}</h2>
-                                    <span *ngIf="!_isCurrentUser" (click)="likePicture($event, picture)" [ngClass]="{ 'picture-liked': picture.is_liked == '1' }" class="info glyphicon glyphicon-heart" aria-hidden="true"></span>
-                                    <span *ngIf="_isCurrentUser" (click)="deletePicture(picture)" class="info glyphicon glyphicon-trash" aria-hidden="true"></span>
-                                    <span *ngIf="_isCurrentUser" class="info glyphicon glyphicon-edit" aria-hidden="true"></span>
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
+            </div>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div *ngIf="_tabsMode == 'galleries'" class="row">
+    <div *ngFor="let gallery of galleries" class="col-lg-3 col-md-4 col-xs-6 thumb">
+        <div class="thumbnail">
+            <img src="../../uploads/pictures/resized/{{ gallery?.cover_picture }}" alt="...">
+            <div class="caption">
+                <h3>{{ gallery.name }}</h3>
+                <p>{{ gallery.cnt_pictures }} photos</p>
+                <p><a href="#" class="btn btn-primary" role="button">View</a></p>
             </div>
         </div>
     </div>
+</div>
+
+</div>
+</div>
 </div>
 <!--
 <p>        http://valor-software.com/ng2-file-upload/

@@ -150,6 +150,16 @@ export class DataService {
             .catch(this.handleError);
     }
 
+    getUserGalleries(userId): Observable<IGallery[]> {
+        return this.authHttp.get(this._apiUrl + '/galleries/users/' + userId)
+            .map((response: Response) => {
+                this.galleries = response.json();
+                //console.log(this.galleries);
+                return this.galleries;
+            })
+            .catch(this.handleError);
+    }
+
     getUserInfo(login: string) : Observable<IUser[]> {
         return this.authHttp.get(this._apiUrl + '/users/login/' + login)
             .map((response: Response) => {
@@ -204,11 +214,9 @@ export class DataService {
     }
 
     deletePicture(pictureId: number) : boolean {
-        let body = JSON.stringify({ pictureId });
-
-        return this.authHttp.put(this._apiUrl + '/pictures', body)
+        return this.authHttp.put(this._apiUrl + '/pictures/' + pictureId + '/status', '')
             .map((response: Response) => {
-                console.log(response);
+                //console.log(response);
                 return response.json();
             })
             .catch(this.handleError);
@@ -217,7 +225,7 @@ export class DataService {
     updatePictureName(pictureId: number, pictureName: string) : boolean {
         let body = JSON.stringify({ pictureName });
 
-        return this.authHttp.put(this._apiUrl + '/pictures/' + pictureId, body)
+        return this.authHttp.put(this._apiUrl + '/pictures/' + pictureId + '/name', body)
             .map((response: Response) => {
                 return response.json();
             })
