@@ -3,7 +3,7 @@ RewriteEngine On
 RewriteBase /api/
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule . /project_angular2/src/server/server.php [L]
+RewriteRule . /project_angular2/src/server/index.php [L]
 </IfModule>
 
 #Header set Access-Control-Allow-Origin "*"

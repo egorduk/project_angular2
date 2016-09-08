@@ -1,4 +1,5 @@
 <div class="navbar navbar-inner navbar-fixed-top">
+    <div *ngIf="_isLogged">
     <div class="row">
         <div class="col-md-1 col-md-offset-10" style="margin-top: 5px;">
             <div class="dropdown">
@@ -27,7 +28,7 @@
     </div>
     Or
     <input type="file" ng2FileSelect [uploader]="uploader" multiple  /><br/>
-</div>
+    </div>
 <div class="col-md-8" style="margin-bottom: 40px; overflow-y: overlay; max-height: 700px">
     <h3>Upload queue</h3>
     <p>Queue length: </p>
@@ -116,10 +117,5 @@
 </div>
 </div>
 
-<div class="row">
-    <div class="col-md-12" style="">
-
-    </div>
 </div>
-
 </div>

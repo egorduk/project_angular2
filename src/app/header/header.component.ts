@@ -10,7 +10,8 @@ import { DataService } from '../common/service/data.service';
 import { ITag } from '../common/interfaces';
 //import { User } from '../user/user';
 import { MessageService } from '../common/service/message.service';
-//import { SELECT_DIRECTIVES } from 'ng2-select/ng2-select';
+//import { SELECT_DIRECTIVES } from 'ng2-select/ng2-
+import { tokenNotExpired, JwtHelper } from 'angular2-jwt/angular2-jwt';
 
 const URL = 'http://localhost:80/project_angular2/api/pictures';
 declare var $:any;
@@ -20,16 +21,10 @@ declare var $:any;
     //directives: [ CORE_DIRECTIVES, ROUTER_DIRECTIVES, SELECT_DIRECTIVES ],
     //providers: [ GetFileExtByFileNamePipe ],
     styleUrls: ['app/header/style.css'],
-    //pipes: [ FileSizePipe, SafeFileExtPipe ],
     templateUrl: 'app/header/header.component.html'
 })
 
 export class HeaderComponent implements OnInit {
-    /*jwt: string;
-     decodedJwt: string;
-     response: string;
-     api: string;
-     _serverUrl: string = '';*/
     private _openUploader: boolean = false;
     public uploader: FileUploader /*= new FileUploader({url: URL, *//*authToken: this._token, *//*allowedMimeType: ['image/jpeg', 'image/gif', 'image/png']})*/;
     public hasBaseDropZoneOver: boolean = false;
@@ -40,45 +35,46 @@ export class HeaderComponent implements OnInit {
     private _getFileExtByFileNamePipe: GetFileExtByFileNamePipe;
     private value:any = [];
     private _tags:any = [];
-    message: any = [];
-    piy: boolean = false;
+    private _isLogged: boolean = false;
 
     @Output() emitResponse: EventEmitter<string> = new EventEmitter<string>();
 
-    constructor(public router: Router,
-                public http: Http,
-                private el: ElementRef,
-                private dataService: DataService,
-                private ms: MessageService) {
+    private jwtHelper: JwtHelper = new JwtHelper();
+
+    constructor(public router: Router, public http: Http, private el: ElementRef, private dataService: DataService, private ms: MessageService) {
         this._token = localStorage.getItem('id_token');
-        this._el = el.nativeElement;
+        this._isLogged = this._token && !this.jwtHelper.isTokenExpired(this._token);
 
-        this.getTags();
+        if (this._isLogged) {
+            this._el = el.nativeElement;
 
-        this.uploader = new FileUploader({url: URL, authToken: this._token, allowedMimeType: ['image/jpeg', 'image/gif', 'image/png']});
+            this.getTags();
 
-        this.uploader.onBeforeUploadItem = function(item) {
-            if (item.file.newName) {
-                this._getFileExtByFileNamePipe = new GetFileExtByFileNamePipe();
-                item.file.name = item.file.newName + this._getFileExtByFileNamePipe.transform(item.file.name);
-            }
+            this.uploader = new FileUploader({url: URL, authToken: this._token, allowedMimeType: ['image/jpeg', 'image/gif', 'image/png']});
 
-            item.file.tags = (item.file.tags) ? item.file.tags.join(',') : null;
-            //console.log(item.file);
-        };
+            this.uploader.onBeforeUploadItem = function(item) {
+                if (item.file.newName) {
+                    this._getFileExtByFileNamePipe = new GetFileExtByFileNamePipe();
+                    item.file.name = item.file.newName + this._getFileExtByFileNamePipe.transform(item.file.name);
+                }
 
-        this.uploader.onAfterAddingFile = function(item) {
-            this.showSuccessMessage = false;
-        };
+                item.file.tags = (item.file.tags) ? item.file.tags.join(',') : null;
+                //console.log(item.file);
+            };
 
-        let that = this;
+            this.uploader.onAfterAddingFile = function(item) {
+                this.showSuccessMessage = false;
+            };
 
-        this.uploader.onCompleteAll = function() {
-            this.showSuccessMessage = true;
-            that.emitResponse.emit("");
-        };
+            let that = this;
 
-        this.emitResponse = this.ms.rxEmitter;
+            this.uploader.onCompleteAll = function() {
+                this.showSuccessMessage = true;
+                that.emitResponse.emit("");
+            };
+
+            this.emitResponse = this.ms.rxEmitter;
+        }
     }
 
     ngAfterViewChecked() {

@@ -28,7 +28,7 @@ switch ($requestMethod) {
         $jws = \Namshi\JOSE\SimpleJWS::load($token);
         $publicKey = getPublicKey();
 
-        if ($action == 'get_friends_pictures') {
+        if ($action == 'get_friends_pictures') { //     api/pictures/friends/users/6
             if ($jws->isValid($publicKey, $encAlgorithm)) {
                 $payload = $jws->getPayload();
                 $userId = $payload['uid'];
@@ -61,7 +61,7 @@ switch ($requestMethod) {
             } else {
                 header('HTTP/1.1 401 Unauthorized ');
             }
-        } elseif ($action == 'get_unfollow_users') {
+        } elseif ($action == 'get_unfollow_users') { //       api/users/6/unfollows
             if (isValidToken($token)) {
                 $payload = $jws->getPayload();
                 $userId = $payload['uid'];
@@ -85,7 +85,7 @@ switch ($requestMethod) {
             } else {
                 header('HTTP/1.1 401 Unauthorized ');
             }
-        } elseif ($action == 'comments') {
+        } elseif ($action == 'comments') {  //  api/pictures/6/comments
             $pictureId = $data[4];
 
             $db = getDb();
@@ -104,7 +104,7 @@ switch ($requestMethod) {
             }
 
             return;
-        } elseif ($action == 'galleries') {
+        } elseif ($action == 'galleries') { //      api/galleries/users/6
             if ($data[4] == 'users') {
                 if (isValidToken($token)) {
                     $payload = $jws->getPayload();
@@ -147,7 +147,7 @@ switch ($requestMethod) {
             }
 
             return;
-        }  elseif ($action == 'users') {
+        }  elseif ($action == 'users') {    //      api/users/e1
             if ($data[4] == 'login') {
                 $login = $data[5];
 
@@ -164,7 +164,7 @@ switch ($requestMethod) {
                     echo json_encode(array('response' => false));
                 }
             }
-        } elseif ($action == 'pictures') {
+        } elseif ($action == 'pictures') {  //      api/pictures/users/6
             if ($data[4] == 'users') {
                 $userId = $data[5];
 
@@ -189,7 +189,7 @@ switch ($requestMethod) {
                     echo json_encode(array('response' => false));
                 }
             }
-        } elseif ($action == 'tags') {
+        } elseif ($action == 'tags') {  //  api/tags
             $db = getDb();
             $query = $db->prepare("select * from tag order by name");
             $query->execute();
@@ -220,7 +220,7 @@ switch ($requestMethod) {
 
         $publicKey = getPublicKey();
 
-        if ($action == 'create_session') {
+        if ($action == 'create_session') {  //      api/users/sessions
             if (!$post->email || !$post->password) {
                 header('HTTP/1.1 400 You must send the email and the password');
                 return;
@@ -253,7 +253,7 @@ switch ($requestMethod) {
             $token = $jws->getTokenString();
 
             echo json_encode(array('id_token' => $token));
-        } elseif ($action == 'create_user') {
+        } elseif ($action == 'create_user') {   //      api/users
             if (!$post->email || !$post->password) {
                 header('HTTP/1.1 400 You must send the email and the password');
                 return;
@@ -270,7 +270,7 @@ switch ($requestMethod) {
             } else {
                 echo json_encode(array('error' => 'Something wrong'));
             }
-        } elseif ($action == 'follow_user') {
+        } elseif ($action == 'follow_user') {   //      api/users/follows
             if (!$post->id) {
                 header('HTTP/1.1 400 You must send the id');
                 return;
@@ -289,7 +289,7 @@ switch ($requestMethod) {
             } else {
                 header('HTTP/1.1 401 Unauthorized');
             }
-        } elseif ($action == 'likes') {
+        } elseif ($action == 'likes') {  //  api/pictures/6/likes
             if (!$post->pictureId) {
                 header('HTTP/1.1 400 You must send the picture id');
                 return;
@@ -305,7 +305,7 @@ switch ($requestMethod) {
                 $response = $query->execute(array($userId, $pictureId));
                 echo json_encode(array('response' => $response));
             }
-        } elseif ($action == 'comments') {
+        } elseif ($action == 'comments') {  //  api/pictures/6/comments
             if (!$post->pictureId || !$post->comment) {
                 header('HTTP/1.1 400 You must send the picture id and comment text');
                 return;
@@ -322,7 +322,7 @@ switch ($requestMethod) {
                 $response = $query->execute(array($userId, $pictureId, $comment));
                 echo json_encode(array('response' => $response));
             }
-        } elseif ($action == 'galleries') {
+        } elseif ($action == 'galleries') {     //      api/galleries || api/galleries/pictures
             if ($data[4] == 'pictures') {
                 if (!$post->pictureId || !$post->galleryId) {
                     header('HTTP/1.1 400 You must send the picture id and gallery id');
@@ -374,7 +374,7 @@ switch ($requestMethod) {
                     echo json_encode(array('response' => $response));
                 }
             }
-        } elseif ($action == 'pictures') {
+        } elseif ($action == 'pictures') {  //      api/pictures
             if (isValidToken($token)) {
                 $filename = $_FILES['file']['name'];
                 $tmpName = $_FILES['file']['tmp_name'];
@@ -524,7 +524,7 @@ switch ($requestMethod) {
             $action = $data[3];
             $id = $data[4];
             //var_dump($data);
-            if ($action == 'likes') {
+            if ($action == 'likes') {       //      api/pictures/6/likes
                 $payload = $jws->getPayload();
                 $userId = $payload['uid'];
 
@@ -532,7 +532,7 @@ switch ($requestMethod) {
                 $query = $db->prepare("delete from picture_like where user_id = ? and picture_id = ? ");
                 $response = $query->execute(array($userId, $id));
                 echo json_encode(array('response' => $response));
-            } elseif ($action == 'comments') {
+            } elseif ($action == 'comments') {      //      api/pictures/6/comments/7
                 $payload = $jws->getPayload();
                 $userId = $payload['uid'];
 
@@ -540,7 +540,7 @@ switch ($requestMethod) {
                 $query = $db->prepare("delete from picture_comment where user_id = ? and id = ? ");
                 $response = $query->execute(array($userId, $id));
                 echo json_encode(array('response' => $response));
-            } elseif ($action == 'users') {
+            } elseif ($action == 'users') {         //      api/users/follows/7
                 $payload = $jws->getPayload();
                 $userId = $payload['uid'];
 
@@ -567,7 +567,7 @@ switch ($requestMethod) {
             $method = $data[5];
             $pictureId = $data[4];
 
-            if ($action == 'pictures') {
+            if ($action == 'pictures') {    //  api/pictures/7/status ||  api/pictures/7/name
                 $payload = $jws->getPayload();
                 $userId = $payload['uid'];
 

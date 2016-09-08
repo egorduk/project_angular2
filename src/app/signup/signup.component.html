@@ -3,11 +3,11 @@
   <form role="form" (submit)="signup($event, email.value, password.value)">
   <div class="form-group">
     <label for="email">Email</label>
-    <input type="text" class="form-control" id="email" placeholder="Email" required>
+    <input type="text" class="form-control" #email id="email" placeholder="Email" required>
   </div>
   <div class="form-group">
     <label for="password">Password</label>
-    <input type="password" class="form-control" id="password" placeholder="Password" required>
+    <input type="password" class="form-control" #password id="password" placeholder="Password" required>
   </div>
   <button type="submit" class="btn btn-default">Submit</button>
     <a [routerLink]="['/login']">Click here to Login</a>

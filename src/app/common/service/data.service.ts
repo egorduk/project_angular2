@@ -26,8 +26,18 @@ export class DataService {
         this._apiUrl = this.globalService.getApiUrl();
     }
 
-    getFriendsPictures() : Observable<IPicture[]> {
-        return this.authHttp.get(this._apiUrl + '/get_friends_pictures')
+    signup(email, password) : any {
+        let body = JSON.stringify({ email, password });
+
+        return this.http.post(this._apiUrl + '/unsecured/users', body, { headers: contentHeaders })
+            .map((response: Response) => {
+                return response.json();
+            })
+            .catch(this.handleError);
+    }
+
+    getFriendsPictures(userId) : Observable<IPicture[]> {
+        return this.authHttp.get(this._apiUrl + '/pictures/friends/users/' + userId)
             .map((response: Response) => {
                 this.pictures = response.json();
                 //console.log(this.pictures);
