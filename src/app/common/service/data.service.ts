@@ -36,6 +36,14 @@ export class DataService {
             .catch(this.handleError);
     }
 
+    login(email, password) : Observable<IUser> {
+        return this.http.get(this._apiUrl + '/unsecured/users/email/' + email + '/password/' + password)
+            .map((response: Response) => {
+                return response.json();
+            })
+            .catch(this.handleError);
+    }
+
     getFriendsPictures(userId) : Observable<IPicture[]> {
         return this.authHttp.get(this._apiUrl + '/pictures/friends/users/' + userId)
             .map((response: Response) => {

@@ -26,13 +26,13 @@ class UsersController extends MainController
      */
     public function getAction(Request $request)
     {
-        if (isset($request->urlElements[4]) && ctype_alnum($request->urlElements[4])) {
+      /*  if (isset($request->urlElements[4]) && ctype_alnum($request->urlElements[4])) {
             $this->response = $this->user->getUserByLogin($request->urlElements[4]);
         } else {
 
         }
 
-        return $this->response;
+        return $this->response;*/
     }
 
     /**
@@ -56,13 +56,13 @@ class UsersController extends MainController
             $friendId = $request->parameters['id'];
 
             $this->response = $this->user->createFriend($friendId, $this->currentUserId);
-        } else {
-            $email = $request->parameters['email'];
+        } else {    //  api/users
+          /*  $email = $request->parameters['email'];
             $password = md5($request->parameters['password']);
 
-            $response = $this->user->createUser($email, $password);
+            $this->response = $this->user->createUser($email, $password);
 
-            $this->response = ($response) ? array('response' => $response, 'id_token' => $password) : array('response' => $response);
+            $this->response = ($response) ? array('response' => $response, 'id_token' => $password) : array('response' => $response);*/
         }
 
         return $this->response;

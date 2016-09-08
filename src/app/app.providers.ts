@@ -8,6 +8,8 @@ import { GlobalService } from './common/service/global.service';
 import { TrackByService } from './shared/services/trackby.service';
 import { FocusDirective } from './common/directive/focus.directive';
 import { DialogService } from './common/service/dialog.service';
+import { AUTH_PROVIDERS } from 'angular2-jwt/angular2-jwt';
+//import { AuthGuard } from './common/auth.guard';*/
 
 export const APP_PROVIDERS = [
     Sorter,
@@ -17,5 +19,6 @@ export const APP_PROVIDERS = [
     GlobalService,
     FocusDirective,
     MessageService,
-    DialogService
+    DialogService,
+    AUTH_PROVIDERS
 ];

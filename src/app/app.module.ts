@@ -6,6 +6,7 @@ import { HttpModule } from '@angular/http';
 import { routing } from './app.routes';
 
 import { AUTH_PROVIDERS } from 'angular2-jwt/angular2-jwt';
+//import { AuthHttp } from 'angular2-jwt/angular2-jwt';
 
 import { DataService } from './common/service/data.service';
 import { SafeBgPipe } from './common/pipe/safe.pipe';
@@ -20,6 +21,9 @@ import { FileSizePipe } from './common/pipe/fileSize.pipe';
 import { SafeFileExtPipe } from './common/pipe/safe.pipe';
 import { FILE_UPLOAD_DIRECTIVES } from 'ng2-file-upload/ng2-file-upload';
 import { TabsModule } from 'ng2-bootstrap/components/tabs';
+import { AuthGuard } from './common/auth.guard';
+
+import { Md5 } from 'ts-md5/dist/md5';
 
 @NgModule({
     imports: [ BrowserModule, FormsModule, HttpModule, routing, DropdownModule, ModalModule, TabsModule ],       // module dependencies
@@ -30,8 +34,9 @@ import { TabsModule } from 'ng2-bootstrap/components/tabs';
         SafeBgPipe,
         FILE_UPLOAD_DIRECTIVES,
         SELECT_DIRECTIVES,
-        LoginComponent ],   // components and directives
+        LoginComponent
+         ],   // components and directives
     bootstrap: [ AppComponent ],     // root component
-    providers: [ AUTH_PROVIDERS, DataService ]                    // services
+    providers: [ AUTH_PROVIDERS, DataService, Md5, AuthGuard ]                    // services
 })
 export class AppModule { }

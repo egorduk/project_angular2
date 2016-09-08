@@ -91,19 +91,29 @@ class MainController
         return openssl_pkey_get_private('file://' . $this->serverFolder . '/key/private.pem', 'pass');
     }
 
-    protected function getUserAuthToken($userId) {
-        $jws  = new \Namshi\JOSE\SimpleJWS(array(
-            'alg' => ENC_ALG
-        ));
+    protected function getUserAuthToken($userId)
+    {
+        if ($this->isValidUserId($userId)) {
+            $jws  = new \Namshi\JOSE\SimpleJWS(array(
+                'alg' => ENC_ALG
+            ));
 
-        $jws->setPayload(array(
-            'uid' => $userId,
-        ));
+            $jws->setPayload(array(
+                'uid' => $userId,
+            ));
 
-        $privateKey = $this->getPrivateKey();
+            $privateKey = $this->getPrivateKey();
 
-        $jws->sign($privateKey);
+            $jws->sign($privateKey);
 
-        return $jws->getTokenString();
+            return array('response' => true, 'token' => $jws->getTokenString());
+        }
+
+        return array('response' => false);
+    }
+
+    protected function isValidUserId($userId)
+    {
+        return is_numeric($userId) && ($userId > 0);
     }
 }

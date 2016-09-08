@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Router, CanActivate } from '@angular/router';
 import { tokenNotExpired, JwtHelper } from 'angular2-jwt/angular2-jwt';
 
+import { AUTH_PROVIDERS } from 'angular2-jwt/angular2-jwt';
 
 @Injectable()
 export class AuthGuard implements CanActivate {

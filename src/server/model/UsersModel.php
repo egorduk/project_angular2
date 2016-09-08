@@ -32,15 +32,14 @@ class UsersModel extends MainModel
         return $query->execute(array($email, $password));
     }
 
-    public function getUserByEmailPassword($email, $password) {
-        $query = $this->pdo->prepare("select * from user where email = ? and password = ?");
+    public function getUserIdByEmailPassword($email, $password) {
+        $query = $this->pdo->prepare("select id from user where email = ? and password = ?");
         $query->execute(array($email, $password));
 
         if ($query->rowCount() > 0) {
             $data = $query->fetch(PDO::FETCH_ASSOC);
-            //var_dump($data);die;
+
             return $data['id'];
-            //var_dump($data);die;
         } else {
             //header('HTTP/1.1 401 The email or password don\'t match');
             //return;

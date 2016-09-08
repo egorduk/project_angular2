@@ -1,7 +1,7 @@
 import { Component, ElementRef, EventEmitter, Injectable, Input, Output } from '@angular/core';
 import { CORE_DIRECTIVES } from '@angular/common';
 import { Http, Headers } from '@angular/http';
-import { Router, ROUTER_DIRECTIVES } from '@angular/router';
+import { Router } from '@angular/router';
 
 import { GetFileExtByFileNamePipe } from '../common/pipe/safe.pipe';
 import { FileUploader } from 'ng2-file-upload/ng2-file-upload';

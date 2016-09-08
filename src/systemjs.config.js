@@ -12,7 +12,8 @@
         'ng2-select':                 'node_modules/ng2-select',
         'ng2-bootstrap':              'node_modules/ng2-bootstrap',
         'moment':                     'node_modules/moment',
-        "ng2-modal":                  "node_modules/ng2-modal"
+        "ng2-modal":                  "node_modules/ng2-modal",
+        'ts-md5':                     'node_modules/ts-md5'
     };
 
     // packages tells the System loader how to load when no filename and/or no extension
@@ -41,7 +42,8 @@
             main: 'moment.js',
             defaultExtension: "js"
         },
-        "ng2-modal": { "main": "index.js", "defaultExtension": "js" }
+        "ng2-modal": { "main": "index.js", "defaultExtension": "js" },
+        'ts-md5': {main: 'md5.js', "defaultExtension": "js"}
     };
 
     var ngPackageNames = [

@@ -1,66 +1,49 @@
 import { Component } from '@angular/core';
-import { Router, ROUTER_DIRECTIVES } from '@angular/router';
-import { CORE_DIRECTIVES } from '@angular/common';
-import { Http, Headers } from '@angular/http';
-import { contentHeaders } from '../common/headers';
+import { Router } from '@angular/router';
 
-//const styles   = require('./login.css');
-//const template = require('./login.html');
+import { DataService } from '../common/service/data.service';
+import { Md5 } from 'ts-md5/dist/md5';
 
 @Component({
     selector: 'login',
-    //directives: [ ROUTER_DIRECTIVES, CORE_DIRECTIVES ],
-    //template: `<router-outlet></router-outlet>`,
-    //template: template,
-    //styles: [ styles ]
-    //template: 'login.html'
+    styleUrls: ['app/login/style.css'],
     templateUrl: 'app/login/login.component.html'
 })
+
 export class LoginComponent {
 
-    _serverUrl: string = '';
-    _hideError: boolean = true;
+    private dangerAlert : Object =  {
+        type: 'danger',
+        msg: 'There is no user with such email and password!',
+        is_show: false
+    };
 
-    constructor(public router: Router, public http: Http) {
-        this._serverUrl = 'http://localhost:80/project_angular2';
+    constructor(private router: Router, private dataService: DataService, private md5: Md5) {
     }
 
     login(event, email, password) {
-        //console.log(username);
         event.preventDefault();
-        let body = JSON.stringify({ email, password });
-        //console.log(body);
-        // let body = JSON.stringify({ username: 'u', password: 'p' });
-        //this.http.post('http://localhost:3001/sessions/create', body, { headers: contentHeaders })
-        this.http.post(this._serverUrl + '/api/create_session', body, { headers: contentHeaders })
-            .subscribe(
-                response => {
-                //this._hideError = response;
-                localStorage.setItem('id_token', response.json().id_token);
-                this.router.navigate(['/home']);
-            },
-                error => {
-                //alert(error.text());
-                console.log(error.text());
-            }
-        );
 
-        /*  this.http.get(this._serverUrl + '?action=test')
-         .subscribe(
-         response => {
-         //localStorage.setItem('id_token', response.json().id_token);
-         //this.router.navigate(['/home']);
-         console.log(response);
-         },
-         error => {
-         //alert(error.text());
-         console.log(error.text());
-         }
-         );*/
+        this.md5.start();
+        this.md5.appendAsciiStr(password);
+        password = this.md5.end();
+
+        this.dataService.login(email, password)
+            .subscribe((response: any) => {
+                if (response.response) {
+                    localStorage.setItem('id_token', response.token);
+                    this.dangerAlert.is_show = false;
+
+                    this.router.navigate(['/home']);
+                } else {
+                    this.dangerAlert.is_show = true;
+                }
+            });
     }
 
     signup(event) {
         event.preventDefault();
+
         this.router.navigate(['/signup']);
     }
 }
