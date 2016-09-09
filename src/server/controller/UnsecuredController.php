@@ -27,7 +27,7 @@ class UnsecuredController extends MainController
         //  api/unsecured/users/email/{email}/password/{password}
         if (isset($request->urlElements[4]) && $request->urlElements[4] == 'users'
             && isset($request->urlElements[5]) && $request->urlElements[5] == 'email'
-            && isset($request->urlElements[6]) && ctype_alnum($request->urlElements[6])
+            && isset($request->urlElements[6]) && ($request->urlElements[6]) != ''
             && isset($request->urlElements[7]) && $request->urlElements[7] == 'password'
             && isset($request->urlElements[8]) && ctype_alnum($request->urlElements[8])
         ) {
@@ -37,6 +37,9 @@ class UnsecuredController extends MainController
             $userId = $this->user->getUserIdByEmailPassword($email, $password);
 
             $this->response = $this->getUserAuthToken($userId);
+        } else {
+            header('HTTP/1.1 405 Method not allowed');
+            return;
         }
 
         return $this->response;
@@ -53,6 +56,11 @@ class UnsecuredController extends MainController
         if (isset($request->urlElements[4]) && $request->urlElements[4] == 'users') {       //  api/unsecured/users
             $email = $request->parameters['email'];
             $password = md5($request->parameters['password']);
+
+            if (!$email || !$password) {
+                header('HTTP/1.1 400 You must send the email and the password');
+                return;
+            }
 
             $response = $this->user->createUser($email, $password);
 

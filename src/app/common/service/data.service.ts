@@ -15,12 +15,14 @@ export class DataService {
 
     _baseUrl: string = '';
     _apiUrl: string = '';
-    pictures: IPicture[];
-    users: IUser[];
-    comments: IComment[];
-    galleries: IGallery[];
 
-    tasks: Array<IPicture>;
+    pictures: IPicture[];
+    users: IUser[] = [];
+    user: IUser[];
+    comments: IComment[] = [];
+    galleries: IGallery[] = [];
+
+    //tasks: Array<IPicture>;
 
     constructor(private http: Http, private authHttp: AuthHttp, private globalService: GlobalService) {
         this._apiUrl = this.globalService.getApiUrl();
@@ -48,14 +50,13 @@ export class DataService {
         return this.authHttp.get(this._apiUrl + '/pictures/friends/users/' + userId)
             .map((response: Response) => {
                 this.pictures = response.json();
-                //console.log(this.pictures);
                 return this.pictures;
             })
             .catch(this.handleError);
     }
 
-    getUnfollowUsers() : Observable<IUser[]> {
-        return this.authHttp.get(this._apiUrl + '/get_unfollow_users')
+    getUnfollowUsers(userId) : Observable<IUser[]> {
+        return this.authHttp.get(this._apiUrl + '/users/' + userId + '/unfollows')
             .map((response: Response) => {
                 this.users = response.json();
                 //console.log(this.users);
@@ -64,9 +65,9 @@ export class DataService {
             .catch(this.handleError);
     }
 
-    followUser(id: number) : Observable<boolean> {
-        let body = JSON.stringify({ id });
-        return this.authHttp.post(this._apiUrl + '/follow_user', body, { headers: contentHeaders })
+    followUser(friendId: number) : Observable<boolean> {
+        let body = JSON.stringify({ friendId });
+        return this.authHttp.post(this._apiUrl + '/users/follows', body, { headers: contentHeaders })
             .map((response: Response) => {
                 return response.json();
             })
@@ -86,44 +87,42 @@ export class DataService {
     likePicture(pictureId: number) : Observable<boolean> {
         let body = JSON.stringify({ pictureId });
 
-        return this.authHttp.post(this._apiUrl + '/likes', body, { headers: contentHeaders })
+        return this.authHttp.post(this._apiUrl + '/pictures/likes', body, { headers: contentHeaders })
             .map((response: Response) => {
                 return response.json();
             })
             .catch(this.handleError);
     }
 
-    unlikePicture(pictureId: number) : boolean {
-        return this.authHttp.delete(this._apiUrl + '/likes/' + pictureId)
+    unlikePicture(pictureId: number) : Observable<boolean> {
+        return this.authHttp.delete(this._apiUrl + '/pictures/' + pictureId + '/likes')
             .map((response: Response) => {
-                console.log(response);
                 return response.json();
             })
             .catch(this.handleError);
     }
 
     getPictureComments(pictureId: number) : Observable<IComment[]> {
-        return this.authHttp.get(this._apiUrl + '/comments/' + pictureId)
+        return this.authHttp.get(this._apiUrl + '/pictures/' + pictureId + '/comments')
             .map((response: Response) => {
                 this.comments = response.json();
-                //console.log(this.users);
                 return this.comments;
             })
             .catch(this.handleError);
     }
 
     addPictureComment(comment: string, pictureId: number) : Observable<boolean> {
-        let body = JSON.stringify({ comment, pictureId });
+        let body = JSON.stringify({ comment });
 
-        return this.authHttp.post(this._apiUrl + '/comments', body, { headers: contentHeaders })
+        return this.authHttp.post(this._apiUrl + '/pictures/' + pictureId + '/comments', body, { headers: contentHeaders })
             .map((response: Response) => {
                 return response.json();
             })
             .catch(this.handleError);
     }
 
-    addUserGallery(gallery: string, pictureId: number) : Observable<IGallery[]> {
-        let body = JSON.stringify({ gallery, pictureId });
+    addUserGallery(galleryName: string, pictureId: number) : Observable<IGallery[]> {
+        let body = JSON.stringify({ galleryName, pictureId });
 
         return this.authHttp.post(this._apiUrl + '/galleries', body, { headers: contentHeaders })
             .map((response: Response) => {
@@ -132,7 +131,7 @@ export class DataService {
             .catch(this.handleError);
     }
 
-    addPictureInGallery(galleryId: number, pictureId: number) : Observable<boolean> {
+    addPictureToGallery(galleryId: number, pictureId: number) : Observable<boolean> {
         let body = JSON.stringify({ galleryId, pictureId });
 
         return this.authHttp.post(this._apiUrl + '/galleries/pictures', body, { headers: contentHeaders })
@@ -142,8 +141,8 @@ export class DataService {
             .catch(this.handleError);
     }
 
-    deletePictureComment(commentId: number) : Observable<boolean> {
-        return this.authHttp.delete(this._apiUrl + '/comments/' + commentId, { headers: contentHeaders })
+    deletePictureComment(commentId: number, pictureId: number) : Observable<boolean> {
+        return this.authHttp.delete(this._apiUrl + '/pictures/' + pictureId + '/comments/' + commentId, { headers: contentHeaders })
             .map((response: Response) => {
                 return response.json();
             })
@@ -151,19 +150,9 @@ export class DataService {
     }
 
     unfollowUser(userId: number) : Observable<boolean> {
-        return this.authHttp.delete(this._apiUrl + '/users/' + userId, { headers: contentHeaders })
+        return this.authHttp.delete(this._apiUrl + '/users/follows/' + userId, { headers: contentHeaders })
             .map((response: Response) => {
                 return response.json();
-            })
-            .catch(this.handleError);
-    }
-
-    getUserGalleriesWithCheckedPictures() : Observable<IGallery[]> {
-        return this.authHttp.get(this._apiUrl + '/galleries/users')
-            .map((response: Response) => {
-                this.galleries = response.json();
-                //console.log(this.users);
-                return this.galleries;
             })
             .catch(this.handleError);
     }
@@ -178,10 +167,20 @@ export class DataService {
             .catch(this.handleError);
     }
 
-    getUserInfo(login: string) : Observable<IUser[]> {
+    getUserInfoByLogin(login: string) : Observable<IUser[]> {
         return this.authHttp.get(this._apiUrl + '/users/login/' + login)
             .map((response: Response) => {
-                return response.json();
+                this.user = response.json()
+                return this.user;
+            })
+            .catch(this.handleError);
+    }
+
+    getUserInfoById(userId: number) : Observable<IUser[]> {
+        return this.authHttp.get(this._apiUrl + '/users/id/' + userId)
+            .map((response: Response) => {
+                this.user = response.json()
+                return this.user;
             })
             .catch(this.handleError);
     }
@@ -195,35 +194,35 @@ export class DataService {
             .catch(this.handleError);
 
         /*return this.http.get('pictures.json')
-            *//*.map((res: Response) => {
-                this.pictures = res.json();
-                console.log('res.json()', res.json());
-                console.log('this.pictures', this.pictures);
-                return this.pictures;
-            })*//*
-            .map( (responseData) => {
-                return responseData.json();
-            })
-            // next transform - each element in the
-            // array to a Task class instance
-            .map((tasks: Array<any>) => {
-                let result:Array<IPicture> = [];
-                if (tasks) {
-                    tasks.forEach((task) => {
-                        result.push(new IPicture(task.id, task.name));
-                    });
-                }
-                console.log(result);
-                return result;
-            });*/
-            // subscribe to output from this observable and bind
-            // the output to the component when received
-            //.subscribe( res => this.tasks = res);
+         *//*.map((res: Response) => {
+         this.pictures = res.json();
+         console.log('res.json()', res.json());
+         console.log('this.pictures', this.pictures);
+         return this.pictures;
+         })*//*
+         .map( (responseData) => {
+         return responseData.json();
+         })
+         // next transform - each element in the
+         // array to a Task class instance
+         .map((tasks: Array<any>) => {
+         let result:Array<IPicture> = [];
+         if (tasks) {
+         tasks.forEach((task) => {
+         result.push(new IPicture(task.id, task.name));
+         });
+         }
+         console.log(result);
+         return result;
+         });*/
+        // subscribe to output from this observable and bind
+        // the output to the component when received
+        //.subscribe( res => this.tasks = res);
 
-            //.catch(this.handleError);
+        //.catch(this.handleError);
     }
 
-    getTags() : Observable<ITags[]> {
+    getTags() : Observable<ITag[]> {
         return this.authHttp.get(this._apiUrl + '/tags/')
             .map((response: Response) => {
                 return response.json();
@@ -240,10 +239,42 @@ export class DataService {
             .catch(this.handleError);
     }
 
+    deleteGallery(galleryId: number) : boolean {
+        return this.authHttp.delete(this._apiUrl + '/galleries/' + galleryId)
+            .map((response: Response) => {
+                return response.json();
+            })
+            .catch(this.handleError);
+    }
+
     updatePictureName(pictureId: number, pictureName: string) : boolean {
         let body = JSON.stringify({ pictureName });
 
-        return this.authHttp.put(this._apiUrl + '/pictures/' + pictureId + '/name', body)
+        return this.authHttp.put(this._apiUrl + '/pictures/' + pictureId + '/name', body, { headers: contentHeaders })
+            .map((response: Response) => {
+                return response.json();
+            })
+            .catch(this.handleError);
+    }
+
+    getGalleryPictures(galleryId: number) : Observable<IPicture[]> {
+        return this.authHttp.get(this._apiUrl + '/galleries/' + galleryId + '/pictures')
+            .map((response: Response) => {
+                this.pictures = response.json();
+                return this.pictures;
+            })
+            .catch(this.handleError);
+    }
+
+    updateUserInfo(user: IUser) : Observable<boolean> {
+        let login = user.login;
+        let email = user.email;
+        let info = user.info;
+        let userId = user.id;
+
+        let body = JSON.stringify({ login, email, info });
+
+        return this.authHttp.put(this._apiUrl + '/users/' + userId, body, { headers: contentHeaders })
             .map((response: Response) => {
                 return response.json();
             })

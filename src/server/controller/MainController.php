@@ -34,7 +34,7 @@ class MainController
 
     protected function getFormattedToken() {
         $headers = apache_request_headers();
-        $authorizationHeader = $headers['authorization'];
+        $authorizationHeader = isset($headers['authorization']) ? $headers['authorization'] : $headers['Authorization'];
 
         return str_replace('Bearer ', '', $authorizationHeader);
     }
@@ -93,7 +93,7 @@ class MainController
 
     protected function getUserAuthToken($userId)
     {
-        if ($this->isValidUserId($userId)) {
+        if ($this->isValidId($userId)) {
             $jws  = new \Namshi\JOSE\SimpleJWS(array(
                 'alg' => ENC_ALG
             ));
@@ -112,8 +112,8 @@ class MainController
         return array('response' => false);
     }
 
-    protected function isValidUserId($userId)
+    protected function isValidId($id)
     {
-        return is_numeric($userId) && ($userId > 0);
+        return is_numeric($id) && ($id > 0);
     }
 }

@@ -131,7 +131,7 @@ class PicturesModel extends MainModel
     public function deleteComment($userId, $pictureId, $commentId)
     {
         $query = $this->pdo->prepare("delete from picture_comment where user_id = ? and id = ? and picture_id = ?");
-        $response = $query->execute(array($userId, $commentId, $pictureId));
+        $response = $query->execute(array($userId, $pictureId, $commentId));
 
         return array('response' => $response);
     }

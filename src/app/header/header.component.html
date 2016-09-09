@@ -1,14 +1,14 @@
 <div class="navbar navbar-inner navbar-fixed-top">
+    <login [hidden]="true" (emitResponse)='onEmitter()'></login>
     <div *ngIf="_isLogged">
     <div class="row">
         <div class="col-md-1 col-md-offset-10" style="margin-top: 5px;">
             <div class="dropdown">
-                <img src="../../uploads/avatars/av4.jpg" alt="..." data-toggle="dropdown" class="img-circle" style="width: 40px; height: 40px;">
+                <img [src]="user?.avatar | safeAvatar" alt="user_avatar" data-toggle="dropdown" class="img-circle round">
                 <ul class="dropdown-menu" aria-labelledby="dLabel">
-                    <li>My Profile</li>
-                    <li>My Galleries</li>
-                    <li>My Pictures</li>
-                    <li>Logout</li>
+                    <li><a href="#" (click)="profile($event)">My Profile</a></li>
+                    <li><a [routerLink]="['/friends']">Friends</a></li>
+                    <li><a href="#" (click)="logout($event)">Logout</a></li>
                 </ul>
             </div>
         </div>
@@ -49,17 +49,17 @@
             <div class="row">
                 <div class="col-xs-12">
                     <div class="form-group">
-                        <div style="margin-bottom: 0">
-                           <!-- <ng-select [data]="value"
+                       <!-- <div style="margin-bottom: 0">
+                           <ng-select [data]="value"
                             [multiple]="true"
                             [items]="tags"
                             [disabled]="uploader.queue[i].isUploaded"
                             (data)="refreshValue($event)"
                             (selected)="selected($event, uploader.queue[i])"
                             (removed)="removed($event)"
-                            placeholder="Select tags"></ng-select>-->
+                            placeholder="Select tags"></ng-select>
                            <pre>{{itemsToString(value)}}</pre>
-                        </div>
+                        </div>-->
                     </div>
                 </div>
             </div>
@@ -68,8 +68,8 @@
         <td>
             <div class="progress" style="margin-bottom: 0;">
                 <div class="progress-bar" role="progressbar" [ngStyle]="{ 'width': item.progress + '%' }"></div>
-</div>
-</td>
+            </div>
+    </td>
 <td class="text-center">
     <span *ngIf="item.isSuccess"><i class="glyphicon glyphicon-ok"></i></span>
     <span *ngIf="item.isCancel"><i class="glyphicon glyphicon-ban-circle"></i></span>
@@ -111,7 +111,7 @@
     </button>
 </div>
 <div style="margin-top: 10px" class="block-success-message" [hidden]="!uploader.showSuccessMessage">
-<div class="alert alert-success" role="alert">All pictures are uploaded!</div>
+<div class="alert alert-success" role="alert">All pictures were uploaded!</div>
 </div>
 </div>
 </div>

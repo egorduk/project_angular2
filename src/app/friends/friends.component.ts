@@ -1,63 +1,73 @@
-import { Component, Input } from '@angular/core';
-import { Router, ROUTER_DIRECTIVES } from '@angular/router';
-import { CORE_DIRECTIVES } from '@angular/common';
-import { Http } from '@angular/http';
-import { Observable } from 'rxjs/Observable';
-import {Observer} from 'rxjs/Observer';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/catch';
+import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { DataService } from '../common/service/data.service';
 import { IPicture, IUser, IComment, IGallery } from '../common/interfaces';
-import { FocusDirective } from '../common/directive/focus.directive';
 
 @Component({
     selector: 'friends',
-    directives: [ ROUTER_DIRECTIVES, CORE_DIRECTIVES, FocusDirective ],
     styleUrls: ['app/friends/style.css'],
-    templateUrl: 'app/friends/friends.html'
+    templateUrl: 'app/friends/friends.component.html'
 })
 
-export class Friends {
+export class FriendsComponent {
 
-    pictures: IPicture[];
-    users: IUser[];
-    comments: IComment[];
-    galleries: IGallery[] = [];
-    _selectedPicture: string = '';
-    _openModalWindow: boolean = false;
-    _setFocusCommentInput: boolean = false;
-    _userId: number;
+    private pictures: IPicture[] = [];
+    private users: IUser[] = [];
+    private comments: IComment[] = [];
+    private galleries: IGallery[] = [];
 
-    constructor(public router: Router, public http: Http, private dataService: DataService) {
+    private _selectedPicture: string = '';
+    private _openModalWindow: boolean = false;
+    private _setFocusCommentInput: boolean = false;
+    private _currentUserId: number = 0;
+
+    private warningNoPicturesAlert: Object =  {
+        type: 'warning',
+        msg: 'There is no pictures yet',
+        is_show: false
+    };
+
+    private warningNoFollowersAlert: Object =  {
+        type: 'warning',
+        msg: 'There is no followers',
+        is_show: false
+    };
+
+    constructor(private router: Router, private dataService: DataService) {
         let token = localStorage.getItem('id_token');
         let data = window.jwt_decode(token);
-        this._userId = data.uid;
+        this._currentUserId = data.uid;
+
         this.getFriendsPictures();
     }
 
     getFriendsPictures() {
-        this.dataService.getFriendsPictures()
+        this.dataService.getFriendsPictures(this._currentUserId)
             .subscribe((pictures: IPicture[]) => {
-                this.pictures = (pictures.response) ? pictures.pictures : null;
+                if (pictures.response) {
+                    this.pictures = pictures.pictures;
 
-                if (this.pictures) {
-                    this.pictures.forEach((value: any, key: any) => {
-                        if (value.gallery_ids) {
-                            this.pictures[key].gallery_ids = value.gallery_ids.split(',');
-                        }
-                    });
+                    if (this.pictures) {
+                        this.pictures.forEach((value: any, key: any) => {
+                            if (value.gallery_ids) {
+                                this.pictures[key].gallery_ids = value.gallery_ids.split(',');
+                            }
+                        });
+
+                        this.warningNoPicturesAlert.is_show = false;
+                    }
+                } else {
+                    this.pictures = null;
+                    this.warningNoPicturesAlert.is_show = true;
                 }
-
-                //console.log('this.pictures', this.pictures);
             });
+
         this.getUnfollowUsers();
         this.getUserGallery();
     }
 
     getUnfollowUsers() {
-        this.users = null;
-
-        this.dataService.getUnfollowUsers()
+        this.dataService.getUnfollowUsers(this._currentUserId)
             .subscribe((users: IUser[]) => {
                 //console.log(users);
                 if (users.response) {
@@ -66,14 +76,17 @@ export class Friends {
                     });
 
                     this.users = users.users;
+                } else {
+                    this.users = null;
+                    this.warningNoFollowersAlert.is_show = true;
                 }
             });
     }
 
-    followUser(event, userId, mode) {
+    followUser(event, user, mode) {
         event.preventDefault();
-        //console.log(this._selectedPicture);
-        this.dataService.followUser(userId)
+
+        this.dataService.followUser(user.id)
             .subscribe((response: boolean) => {
                 if (response.response) {
                     if (mode == 'feed') {
@@ -81,6 +94,20 @@ export class Friends {
                     } else if (mode == 'picture') {
                         this._selectedPicture.is_followed = true;
                     }
+
+                    //console.log(this.users);
+                    //let ind = this.users.findIndex(this.test(user));
+
+                  /*  let res = this.users.filter(function(u) {
+                        return user === u; // Filter out the appropriate one
+                    });
+                    //console.log(res);
+                   // console.log(ind);
+                    //this.users.rem(user);
+                    /*let ind = this.users.findIndex(user);
+                    console.log(ind);
+                    this.users.splice(ind, 1);
+                    console.log(this.users);*/
                 }
             });
     }
@@ -89,14 +116,13 @@ export class Friends {
         this._openModalWindow = false;
         this._setFocusCommentInput = false;
         this.getFriendsPictures();
-        this.getUnfollowUsers();
     }
 
     openPopup(picture) {
         this._selectedPicture = picture;
         this._selectedPicture.is_followed = true;
         this.getPictureComments(this._selectedPicture);
-        this.getPictureTags();
+        this.preparePictureTags();
         this._openModalWindow = true;
     }
 
@@ -115,13 +141,13 @@ export class Friends {
                         if (picture.cnt_like != '0') {
                             picture.cnt_like--;
                         }
+
                         picture.is_liked = '0';
                     }
                 });
         } else {
             this.dataService.likePicture(picture.picture_id)
                 .subscribe((response: boolean) => {
-                    //console.log(response);
                     if (response.response) {
                         picture.is_liked = '1';
                         picture.cnt_like++;
@@ -158,7 +184,7 @@ export class Friends {
     deleteComment(event, comment, picture) {
         event.preventDefault();
 
-        this.dataService.deletePictureComment(comment.comment_id)
+        this.dataService.deletePictureComment(picture.picture_id, comment.comment_id)
             .subscribe((response: boolean) => {
                 if (response.response) {
                     this.getPictureComments(picture);
@@ -166,11 +192,10 @@ export class Friends {
             });
     }
 
-    unfollowUser(event, userId) {
+    unfollowUser(event, picture) {
         event.preventDefault();
-        //console.log(this._selectedPicture);
 
-        this.dataService.unfollowUser(userId)
+        this.dataService.unfollowUser(picture.user_id)
             .subscribe((response: boolean) => {
                 if (response.response) {
                     this._selectedPicture.is_followed = false;
@@ -188,8 +213,9 @@ export class Friends {
         }
 
         this._selectedPicture = this.pictures[index + 1];
+        this._selectedPicture.is_followed = true;
         this.getPictureComments(this._selectedPicture);
-        this.getPictureTags();
+        this.preparePictureTags();
     }
 
     getPrevPicture(event, picture) {
@@ -198,22 +224,22 @@ export class Friends {
         let index = this.getSelectedPictureIndex(picture);
 
         if (index == 0) {
-            index = this.pictures.length - 1;
+            index = this.pictures.length;
         }
 
         this._selectedPicture = this.pictures[index - 1];
-        console.log(this._selectedPicture);
+        this._selectedPicture.is_followed = true;
         this.getPictureComments(this._selectedPicture);
-        this.getPictureTags();
+        this.preparePictureTags();
     }
 
     getSelectedPictureIndex(picture) {
         let filteredPicture = this.pictures.filter((pic) => pic === picture);
+
         return this.pictures.indexOf(filteredPicture[0]);
     }
 
-    getPictureTags() {
-        //console.log(this._selectedPicture.tags);
+    preparePictureTags() {
         if (typeof this._selectedPicture.tags === 'string') {
             this._selectedPicture.tags = this._selectedPicture.tags.split(',');
         }
@@ -236,9 +262,7 @@ export class Friends {
     }
 
     getUserGallery() {
-        this.galleries = null;
-
-        this.dataService.getUserGalleriesWithCheckedPictures()
+        this.dataService.getUserGalleries(this._currentUserId)
             .subscribe((galleries: IGallery[]) => {
                 if (galleries.response) {
                     if (galleries.galleries) {
@@ -247,21 +271,19 @@ export class Friends {
                                 galleries.galleries[key].picture_ids = value.picture_ids.split(',');
                             }
                         });
-                    } else {
-
                     }
 
                     this.galleries = galleries.galleries;
+                } else {
+                    this.galleries = null;
                 }
-
-                //console.log('this.galleries', this.galleries);
             });
     }
 
     addPictureToGallery(event, picture, gallery) {
         event.preventDefault();
 
-        this.dataService.addPictureInGallery(gallery.gallery_id, picture.picture_id)
+        this.dataService.addPictureToGallery(gallery.gallery_id, picture.picture_id)
             .subscribe((response: boolean) => {
                 if (response.response) {
                     this.getUserGallery();

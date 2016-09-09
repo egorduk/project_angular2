@@ -19,7 +19,7 @@ class PicturesController extends MainController
         $this->token = $this->getFormattedToken();
         $this->currentUserId = $this->getUserIdFromPayload($this->token);
         $this->picture = new PicturesModel();
-        $this->pictureBasePath = realpath(__DIR__ . '/..') . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'pictures';
+        $this->pictureBasePath = dirname(realpath(__DIR__ . '/..')) . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'pictures';
         $this->pictureOriginalPath =  $this->pictureBasePath . DIRECTORY_SEPARATOR . 'original' . DIRECTORY_SEPARATOR;
         $this->pictureResizePath =  $this->pictureBasePath . DIRECTORY_SEPARATOR . 'resized' . DIRECTORY_SEPARATOR;
     }
@@ -32,23 +32,28 @@ class PicturesController extends MainController
      */
     public function getAction(Request $request)
     {
+        //  api/pictures/friends/users/{user_id}
         if (isset($request->urlElements[4]) && $request->urlElements[4]  == 'friends'
             && isset($request->urlElements[5]) && $request->urlElements[5]  == 'users'
             && isset($request->urlElements[6]) && is_numeric($request->urlElements[6])
         ) {
-            $this->response = $this->picture->getUserFriendsPictures($request->urlElements[6]);
+            $userId = $request->urlElements[6];
+
+            $this->response = $this->picture->getUserFriendsPictures($userId);
         } elseif (isset($request->urlElements[4]) && $request->urlElements[4]  == 'users'
             && isset($request->urlElements[5]) && is_numeric($request->urlElements[5])
         ) {
             $this->response = $this->picture->getUserPictures($this->currentUserId, $request->urlElements[5]);
-        } elseif (isset($request->urlElements[5]) && $request->urlElements[5]  == 'comments'
-            && isset($request->urlElements[4]) && is_numeric($request->urlElements[4])
-        ) {
-            $this->response = $this->picture->getPictureComments($request->urlElements[4]);
-        } else {
+        } elseif (isset($request->urlElements[4]) && is_numeric($request->urlElements[4])
+            && isset($request->urlElements[5]) && $request->urlElements[5]  == 'comments'
+        ) {     //  api/pictures/{picture_id}/comments
+            $pictureId = $request->urlElements[4];
 
+            $this->response = $this->picture->getPictureComments($pictureId);
+        } else {
+            header('HTTP/1.1 405 Method not allowed');
+            return;
         }
-        //var_dump($request);
 
         return $this->response;
     }
@@ -67,18 +72,21 @@ class PicturesController extends MainController
             $pictureId = $request->urlElements[4];
             $comment = $request->parameters['comment'];
 
+            if (!$comment) {
+                header('HTTP/1.1 400 You must send the comment text');
+                return;
+            }
+
             $response = $this->picture->createComment($this->currentUserId, $pictureId, $comment);
 
             $this->response = array('response' => $response);
-        } elseif (isset($request->urlElements[5]) && $request->urlElements[5]  == 'likes'
-            && isset($request->urlElements[4]) && is_numeric($request->urlElements[4])
-        ) {
-            $pictureId = $request->urlElements[4];
+        } elseif (isset($request->urlElements[4]) && $request->urlElements[4]  == 'likes') {        //  api/pictures/likes
+            $pictureId = $request->parameters['pictureId'];
 
-            $response = $this->picture->createLike(6, $pictureId);
+            $response = $this->picture->createLike($this->currentUserId, $pictureId);
 
             $this->response = array('response' => $response);
-        } else {
+        } elseif (isset($_FILES)) {
             $filename = $_FILES['file']['name'];
             $tmpName = $_FILES['file']['tmp_name'];
             $error = $_FILES['file']['error'];
@@ -150,9 +158,6 @@ class PicturesController extends MainController
 
                         try {
                             $this->picture->beginTransaction();
-                            //$db = getDb();
-                            //$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                            //$db->beginTransaction();
 
                             if ($pictureId) {
                                 $this->picture->updatePicture($newHeight, $newWidth, $pictureId);
@@ -170,10 +175,8 @@ class PicturesController extends MainController
                                 }
                             }
 
-                            //$response = $db->commit();
                             $response = $this->picture->commitTransaction();
                         } catch(PDOException $e) {
-                            // $db->rollback();
                             $this->picture->rollbackTransaction();
                             echo $e->getMessage();
                         }
@@ -207,6 +210,9 @@ class PicturesController extends MainController
             }
 
             $this->response = (array('response' => $response, 'errorMsg' => $errorMsg));
+        } else {
+            header('HTTP/1.1 405 Method not allowed');
+            return;
         }
 
         return $this->response;
@@ -220,13 +226,13 @@ class PicturesController extends MainController
      */
     public function deleteAction(Request $request)
     {
-        if (isset($request->urlElements[4]) && is_numeric($request->urlElements[4])
+        if (isset($request->urlElements[4]) && is_numeric($request->urlElements[4])         //  api/pictures/likes/{user_id}
             && isset($request->urlElements[5]) && $request->urlElements[5]  == 'likes'
         ) {
             $pictureId = $request->urlElements[4];
 
             $this->response = $this->picture->deleteLike($this->currentUserId, $pictureId);
-        } elseif (isset($request->urlElements[4]) && is_numeric($request->urlElements[4])
+        } elseif (isset($request->urlElements[4]) && is_numeric($request->urlElements[4])       //  api/pictures/{picture_id}/comments/{comment_id}
             && isset($request->urlElements[5]) && $request->urlElements[5]  == 'comments'
             && isset($request->urlElements[6]) && is_numeric($request->urlElements[6])
         ) {
@@ -235,7 +241,8 @@ class PicturesController extends MainController
 
             $this->response = $this->picture->deleteComment($this->currentUserId, $pictureId, $commentId);
         } else {
-
+            header('HTTP/1.1 405 Method not allowed');
+            return;
         }
 
         return $this->response;
@@ -249,19 +256,25 @@ class PicturesController extends MainController
      */
     public function putAction(Request $request)
     {
+        //  api/pictures/(picture_id)/status
         if (isset($request->urlElements[4]) && is_numeric($request->urlElements[4])
             && isset($request->urlElements[5]) && $request->urlElements[5]  == 'status'
         ) {
             $pictureId = $request->urlElements[4];
 
             $this->response = $this->picture->updatePictureStatus($this->currentUserId, $pictureId);
-        } elseif (isset($request->urlElements[4]) && is_numeric($request->urlElements[4])
+        } elseif (isset($request->urlElements[4]) && is_numeric($request->urlElements[4])       //  api/pictures/(picture_id)/name
             && isset($request->urlElements[5]) && $request->urlElements[5]  == 'name'
         ) {
             $pictureId = $request->urlElements[4];
-            $pictureName = $request->parameters['name'];
+            $pictureName = $request->parameters['pictureName'];
 
             $this->response = $this->picture->updatePictureName($this->currentUserId, $pictureId, $pictureName);
+        } else {
+            header('HTTP/1.1 405 Method not allowed');
+            return;
         }
+
+        return $this->response;
     }
 }

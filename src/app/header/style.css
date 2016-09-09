@@ -1,3 +1,17 @@
-.drop-zone { border: dotted 3px lightgray; height: 200px }
-.nv-file-over { border: dotted 3px red; } /* Default class applied to drop zones on over */
-.another-file-over-class { border: dotted 3px green; }
+.drop-zone {
+    border: dotted 3px lightgray;
+    height: 200px ;
+}
+
+.nv-file-over {
+    border: dotted 3px red;
+}
+
+.another-file-over-class {
+    border: dotted 3px green;
+}
+
+.round {
+    width: 40px;
+    height: 40px;
+}

@@ -16,6 +16,8 @@ export interface IUser {
     login: string;
     avatar: string;
     password: string;
+    info: string;
+    page_photo: string;
     pictures: IPicture[];
 }
 

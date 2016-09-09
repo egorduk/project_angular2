@@ -1,14 +1,9 @@
-<link rel="stylesheet" type="text/css" href="../../node_modules/angular2-image-popup/directives/angular2-image-popup/css/style.css">
-<link rel="stylesheet" type="text/css" href="../../node_modules/font-awesome/css/font-awesome.css">
-<link rel="stylesheet" type="text/css" href="../../node_modules/angular2-image-popup/app/assets/css/main.css">
-<div class="jumbotron center-block friends" style="width: 70%; float: left;">
-    <h1></h1>
-    <p><a class="btn btn-primary btn-lg" role="button" (click)="getFriendsPictures()">test</a></p>
+<div *ngIf="!_openModalWindow" class="jumbotron friends">
     <div class="following-feeds">
         <div class="row" *ngFor="let picture of pictures">
-            <div class="col-md-8 col-md-offset-2">
+            <div class="col-md-10 col-md-offset-1">
                 <div class="thumbnail">
-                    <img src="../../uploads/pictures/{{ picture.filename }}" alt="user_picture" (click)="openPopup(picture)">
+                    <img src="../../uploads/pictures/original/{{ picture.filename }}" alt="user_picture" (click)="openPopup(picture)">
                     <div class="caption">
                         <h3>{{ picture.name }}</h3>
                         <p [ngSwitch]="picture.days_ago">
@@ -17,8 +12,8 @@
                         </p>
                         <div class="row">
                             <div class="col-md-3">
-                                <img src="../../uploads/avatars/{{ picture.user_avatar }}" alt="..." class="img-circle" style="width: 40px; height: 40px;">
-                                <span><a href="#">{{ picture.user_login }}</a></span>
+                                <img src="../../uploads/avatars/{{ picture.user_avatar }}" alt="user_avatar" class="img-circle" style="width: 40px; height: 40px;">
+                                <span><a [routerLink]="['/user' , picture.user_login]">{{ picture.user_login }}</a></span>
                             </div>
                             <div class="col-md-3">
                                 <button type="button" (click)="openPopupAddComment(picture)" class="btn btn-default"><span class="glyphicon glyphicon-pencil" aria-hidden="true">&nbsp;Comment</span></button>
@@ -59,43 +54,49 @@
             </div>
         </div>
     </div>
+    <alert *ngIf="warningNoPicturesAlert.is_show" [type]="warningNoPicturesAlert.type">
+        {{ warningNoPicturesAlert.msg }}
+    </alert>
 </div>
-<div class="right-sidebar" style="width: 30%; float: right;">
+
+<div class="right-sidebar">
     <div class="row">
         <div class="col-md-12 col-md-offset-1">
-            <div class="jumbotron">
-                <p style="text-align: center">You can follow</p>
+            <div class="jumbotron" style="padding-left: 60px">
+                <p style="text-align: center"><b>You can follow</b></p>
                 <div class="row" *ngFor="let user of users">
                     <div>
                         <p>
                             <img src="../../uploads/avatars/{{ user.avatar }}" alt="user_avatar" class="img-circle" style="width: 40px; height: 40px;">
-                            <span><a href="#">{{ user.login }}</a></span>
-                            <a href="#" class="btn btn-default" role="button" (click)="followUser($event, user.id, 'feed')">Follow</a><br>
-                            <span>{{ user.pictures.length }} photos</span>
+                            <span><a [routerLink]="['/user' , user.login]">{{ user.login }}</a></span>
+                            <a href="#" class="btn btn-default" role="button" (click)="followUser($event, user, 'feed')">Follow</a><br>
+                            <span>{{ user.cnt_picture }} photos</span>
                         </p>
                         <div class="media">
                             <div class="media-left">
-                                <a href="#" *ngFor="let picture of user.pictures">
-                                    <img class="img-thumbnail" src="../../uploads/pictures/{{ picture }}" alt="..." style="">
-                                </a>
+                                <p *ngFor="let picture of user.pictures">
+                                    <img class="img-thumbnail" src="../../uploads/pictures/resized/{{ picture }}" alt="user_picture">
+                                </p>
                             </div>
                         </div>
                     </div>
                 </div>
+                <alert *ngIf="warningNoFollowersAlert.is_show" [type]="warningNoFollowersAlert.type">
+                    {{ warningNoFollowersAlert.msg }}
+                </alert>
             </div>
         </div>
     </div>
 </div>
 
-
-<div *ngIf="_openModalWindow" class="modal <!--fade-->" id="imagemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false">
+<div *ngIf="_openModalWindow" class="modal modal-window" tabindex="-1" role="dialog" aria-hidden="false">
     <div class="modal-dialog" data-dismiss="modal">
         <div class="modal-content">
             <div class="modal-body">
-                <button type="button" class="close" data-dismiss="modal" (click)="closePopup()"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <button type="button" class="close" data-dismiss="modal" (click)="closePopup()"><span aria-hidden="true">Close &times;</span><span class="sr-only">Close</span></button>
                 <div class="row no-margin">
                     <div class="col-xs-10">
-                        <img src="../../uploads/pictures/original/{{ _selectedPicture.filename }}" class="imagepreview" style="width: 100%;" alt="selected_picture">
+                        <img src="../../uploads/pictures/original/{{ _selectedPicture.filename }}" style="width: 100%;" alt="user_picture">
                         <div class="image-controls">
                             <a class="left carousel-control" (click)="getPrevPicture($event, _selectedPicture)" href="#" role="button">
                                 <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
@@ -112,8 +113,8 @@
                                 <a href="#">{{ _selectedPicture.user_login }}</a>
                             </p>
                             <p>
-                                <a href="#" *ngIf="!_selectedPicture.is_followed" class="btn btn-default" role="button" (click)="followUser($event, _selectedPicture.user_id, 'picture')">Follow</a>
-                                <a href="#" *ngIf="_selectedPicture.is_followed" class="btn btn-default" role="button" (click)="unfollowUser($event, _selectedPicture.user_id)">Unfollow</a>
+                                <a href="#" *ngIf="!_selectedPicture.is_followed" class="btn btn-default" role="button" (click)="followUser($event, _selectedPicture, 'picture')">Follow</a>
+                                <a href="#" *ngIf="_selectedPicture.is_followed" class="btn btn-default" role="button" (click)="unfollowUser($event, _selectedPicture)">Unfollow</a>
                             </p>
                             <p>
                                 {{ _selectedPicture.name }}
@@ -128,7 +129,7 @@
                                         <ul class="dropdown-menu" aria-labelledby="dLabel">
                                             <li>
                                                 <div class="input-group">
-                                                    <input type="text" #elInputGallery (keyup.enter)="addUserGallery($event, elInputGallery, _selectedPicture)" class="form-control" placeholder="Album name">
+                                                    <input type="text" #elInputGallery (keyup.enter)="addUserGallery($event, elInputGallery, _selectedPicture)" class="form-control" placeholder="Album name" required>
                                                     <div class="input-group-addon">
                                                         <a href="#" (click)="addUserGallery($event, elInputGallery, _selectedPicture)"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a>
                                                     </div>
@@ -165,7 +166,7 @@
                                             <span  style="font-size: 15px" [ngSwitch]="comment.days_ago">
                                                 <span *ngSwitchCase = "'0'">today</span>
                                                 <span *ngSwitchDefault>{{ comment.days_ago }} d. ago</span>
-                                                <a (click)="deleteComment($event, comment, _selectedPicture)" href="#" style="font-size: 20px"><span *ngIf="_userId == comment.user_id" aria-hidden="true">&times;</span></a>
+                                                <a (click)="deleteComment($event, comment, _selectedPicture)" href="#" style="font-size: 20px"><span *ngIf="_currentUserId == comment.user_id" aria-hidden="true">&times;</span></a>
                                             </span>
                                         </p>
                                     </div>
@@ -185,6 +186,7 @@
         </div>
     </div>
 </div>
+
 <script>
     $('.dropdown-toggle').dropdown();
 </script>

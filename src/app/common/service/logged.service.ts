@@ -1,7 +1,10 @@
-import { EventEmitter, Injectable, Output } from "@angular/core";
+import { EventEmitter, Injectable, Input, Output } from "@angular/core";
 
 @Injectable()
-export class MessageService {
+export class LoggedService {
+
+    @Input()
+    data: boolean = false;
 
     @Output()
     _emitter: EventEmitter<boolean> = new EventEmitter<boolean>();
@@ -9,7 +12,6 @@ export class MessageService {
     public rxEmitter: any;
 
     constructor() {
-
         this.rxEmitter = this._emitter;
     }
 

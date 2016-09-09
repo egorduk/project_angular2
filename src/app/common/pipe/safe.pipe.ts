@@ -9,6 +9,8 @@ export class SafeBgPipe {
     transform(image) {
         if (image) {
             return this.sanitizer.bypassSecurityTrustStyle('url(../../uploads/pictures/original/' + image + ')');
+        } else {
+            return this.sanitizer.bypassSecurityTrustStyle('url(../../uploads/default-bg.png)');
         }
     }
 }
@@ -56,5 +58,15 @@ export class GetFileExtByFileNamePipe {
         if (fileName) {
             return fileName.match(/.jpeg|.jpg|.gif|.png/);
         }
+    }
+}
+
+@Pipe({name: 'safeAvatar'})
+
+export class SafeAvatarPipe {
+    constructor(){}
+
+    transform(image) {
+        return (image) ? '../../uploads/avatars/' + image : '../../uploads/default-avatar.png';
     }
 }

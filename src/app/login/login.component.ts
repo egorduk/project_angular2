@@ -1,7 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, Output, EventEmitter, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { DataService } from '../common/service/data.service';
+import { LoggedService } from '../common/service/logged.service';
+
 import { Md5 } from 'ts-md5/dist/md5';
 
 @Component({
@@ -18,7 +20,10 @@ export class LoginComponent {
         is_show: false
     };
 
-    constructor(private router: Router, private dataService: DataService, private md5: Md5) {
+    @Output() emitResponse: EventEmitter<string> = new EventEmitter<string>();
+
+    constructor(private router: Router, private dataService: DataService, private md5: Md5, private loggedService: LoggedService) {
+        this.emitResponse = this.loggedService.rxEmitter;
     }
 
     login(event, email, password) {
@@ -33,8 +38,9 @@ export class LoginComponent {
                 if (response.response) {
                     localStorage.setItem('id_token', response.token);
                     this.dangerAlert.is_show = false;
+                    this.emitResponse.emit("");
 
-                    this.router.navigate(['/home']);
+                    this.router.navigate(['/friends']);
                 } else {
                     this.dangerAlert.is_show = true;
                 }

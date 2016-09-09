@@ -1,48 +1,57 @@
-import { Component, OnInit, ElementRef, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ElementRef } from '@angular/core';
 import { Router } from '@angular/router';
-import { Http } from '@angular/http';
-
 import { DataService } from '../common/service/data.service';
 
-declare  var $:any;
-
-const URL = 'http://localhost:80/project_angular2/api/pictures';
+declare var $:any;
 
 @Component({
     selector: 'user',
-    //directives: [ ROUTER_DIRECTIVES, CORE_DIRECTIVES, HeaderComponent, AlertComponent/*, DropdownModule*/ ],
-    //pipes: [ SafeBgPipe ],
     styleUrls: ['app/user/style.css'],
-    templateUrl: 'app/user/user.html',
-    //changeDetection: ChangeDetectionStrategy.OnPush
+    templateUrl: 'app/user/user.component.html'
 })
 
-export class User implements OnInit {
-    //private sub: Subscription;
+export class UserComponent implements OnInit {
+
     private _userLogin: string = '';
     private _currentUserId: number = 0;
     private _isCurrentUser: boolean = false;
-    private user: IUser;
+    private _isViewGallery: boolean = false;
     //pictures: IPicture[] = [];
-   // pictures: Observable<IPicture> = [];
     pictures: Array<IPicture> = [];
     private el: HTMLElement;
     private _token: string = '';
-    private galleries: IGallery[] = [];
-    private _isHideDropDown: boolean = false;
     private _selectedPicture: IPicture;
     private _modalPopup: any;
     private _tabsMode: string = '';
 
-    public status:{isopen:boolean} = {isopen: false};
+    private galleries: IGallery[] = [];
+    private gallery: IGallery[];
+    private user: IUser;
+
+    private warningNoPicturesAlert: Object =  {
+        type: 'warning',
+        msg: 'There is no pictures yet',
+        is_show: false
+    };
+
+    private warningNoGalleriesAlert: Object =  {
+        type: 'warning',
+        msg: 'There is no galleries yet',
+        is_show: false
+    };
+
+    private successUpdateProfileAlert: Object =  {
+        type: 'success',
+        msg: 'Your profile was updated',
+        is_show: false
+    };
 
 
-    constructor(private router: Router, private http: Http, private dataService: DataService, private el: ElementRef) {
+    constructor(private router: Router, private dataService: DataService, private el: ElementRef) {
         this.el = el.nativeElement;
         this._token = localStorage.getItem('id_token');
         let data = window.jwt_decode(this._token);
         this._currentUserId = data.uid;
-       // this.router.navigate(['/hero', hero.id]);
     }
 
     onEmitter():void {
@@ -51,7 +60,7 @@ export class User implements OnInit {
 
     ngOnInit() {
         this._userLogin = this.router.url.split('/')[2];
-        this.getUserInfo();
+        this.getUserInfo(this._userLogin);
     }
 
     ngAfterViewChecked() {
@@ -67,11 +76,10 @@ export class User implements OnInit {
         imgs.wookmark(options);
     }
 
-    getUserInfo() {
-        this.dataService.getUserInfo(this._userLogin)
+    private getUserInfo(login) {
+        this.dataService.getUserInfoByLogin(login)
             .subscribe((user: IUser) => {
                 if (user.response) {
-                    //console.log(user);
                     if (user.user) {
                         this.user = user.user;
 
@@ -79,43 +87,34 @@ export class User implements OnInit {
                             this._isCurrentUser = true;
                         }
 
-                        //console.log(this.user.id);
                         this.getUserPictures(this.user.id);
                     }
                 } else {
-                    this.router.navigate(['/home']);
+                    this.router.navigate(['/friends']);
                 }
             });
-
-        //console.log(this.user);
     }
 
-    getUserPictures(userId) {
+    private getUserPictures(userId) {
         this.dataService.getUserPictures(userId)
             .subscribe((pictures: IPicture[]) => {
-                this.pictures = (pictures.response) ? pictures.pictures : null;
-                //console.log('this.pictures', this.pictures);
+                if (pictures.response) {
+                    this.pictures = pictures.pictures;
+                    this.warningNoPicturesAlert.is_show = false;
+                } else {
+                    this.pictures = null;
+                    this.warningNoPicturesAlert.is_show = true;
+                }
             });
-            /*.subscribe(
-           *//* data => {
-                // Set the products Array
-                this.pictures = data;
-                console.log('this.pictures', this.pictures);
-                console.log('data', data);
-            }*//*
-            res => this.pictures = res
-            );*/
-        //this.getPictureTags();
     }
 
-    preparePictureTags() {
-        //console.log(this._selectedPicture);
+    private preparePictureTags() {
         if (typeof this._selectedPicture.tags === 'string') {
             this._selectedPicture.tags = this._selectedPicture.tags.split(',');
         }
     }
 
-    likePicture(event, picture) {
+    private likePicture(event, picture) {
         event.preventDefault();
 
         if (picture.is_liked == '1') {
@@ -135,8 +134,9 @@ export class User implements OnInit {
         }
     }
 
-    deletePicture(picture) {
+    private deletePicture(picture) {
         let confirmAnswer = confirm("Are you sure?");
+
         if (confirmAnswer) {
             this.dataService.deletePicture(picture.picture_id)
                 .subscribe((response: boolean) => {
@@ -147,13 +147,10 @@ export class User implements OnInit {
         }
     }
 
-
-    public actionOnOpen() {
-        //console.log('open');
+    private actionOnOpen() {
     }
 
-    public actionOnClose() {
-        //console.log('close');
+    private actionOnClose() {
         this._selectedPicture = null;
     }
 
@@ -162,21 +159,22 @@ export class User implements OnInit {
         console.log(this._selectedPicture);
     }*/
 
-    openEditModalPopup(picture, modalPopup) {
+    private openEditModalPopup(picture, modalPopup) {
         this._selectedPicture = picture;
         this._modalPopup = modalPopup;
-
-        //console.log(modalPopup);
         this.preparePictureTags();
         this._modalPopup.open();
     }
 
-    onSubmit() {
-        //this.submitted = true;
+    private onSubmit() {
         this.updatePictureName();
     }
 
-    updatePictureName() {
+    private onSubmitProfileForm() {
+        this.updateUserInfo();
+    }
+
+    private updatePictureName() {
         console.log(this._selectedPicture);
 
         this.dataService.updatePictureName(this._selectedPicture.picture_id, this._selectedPicture.name)
@@ -187,21 +185,24 @@ export class User implements OnInit {
             });
     }
 
-    selectTab(event) {
+    private selectTab(event) {
         let activeTab = event.heading;
-        console.log(activeTab);
 
         if (activeTab == 'Pictures') {
             this._tabsMode = 'pictures';
         } else if (activeTab == 'Galleries') {
+            if (this._isViewGallery) {
+                this._isViewGallery = false;
+            }
+
             this._tabsMode = 'galleries';
             this.getUserGalleries();
         } else {
-
+            this._tabsMode = 'my_info';
         }
     }
 
-    getUserGalleries() {
+    private getUserGalleries() {
         this.galleries = null;
 
         this.dataService.getUserGalleries(this.user.id)
@@ -216,34 +217,56 @@ export class User implements OnInit {
                                 galleries.galleries[key].cover_picture = 'cover_default.png';
                             }
                         });
-                    } else {
                     }
 
                     this.galleries = galleries.galleries;
-                    //console.log(this.galleries);
+                    this.warningNoGalleriesAlert.is_show = false;
                 } else {
-                    this.router.navigate(['/home']);
+                    this.warningNoGalleriesAlert.is_show = true;
                 }
             });
     }
 
-  /*  public alerts:Array<Object> = [
-        {
-            type: 'danger',
-            msg: 'Oh snap! Change a few things up and try submitting again.'
-        },
-        {
-            type: 'success',
-            msg: 'Well done! You successfully read this important alert message.',
-            closable: true
-        }
-    ];
+    private viewGallery(event, gallery) {
+        event.preventDefault();
 
-    public closeAlert(i:number):void {
-        this.alerts.splice(i, 1);
+        if (gallery.cnt_pictures > 0) {
+            this.dataService.getGalleryPictures(gallery.gallery_id)
+                .subscribe((pictures: IPicture[]) => {
+                    if (pictures.response) {
+                        this.gallery = pictures;
+                        this._isViewGallery = true;
+                        this.ngAfterViewChecked();
+                    } else {
+                        this.gallery = null;
+                        this._isViewGallery = false;
+                    }
+                });
+        }
     }
 
-    public addAlert():void {
-        this.alerts.push({msg: 'Another alert!', type: 'warning', closable: true});
-    }*/
+    private deleteGallery(gallery) {
+        let confirmAnswer = confirm("Are you sure?");
+
+        if (confirmAnswer) {
+            this.dataService.deleteGallery(gallery.gallery_id)
+                .subscribe((response: boolean) => {
+                    if (response.response) {
+                        this.getUserGalleries();
+                    }
+                });
+        }
+    }
+
+    private updateUserInfo() {
+        this.dataService.updateUserInfo(this.user)
+            .subscribe((response: boolean) => {
+                if (response.response) {
+                    this.getUserInfo(this.user.login);
+                    this.successUpdateProfileAlert.is_show = true;
+                } else {
+                    this.successUpdateProfileAlert.is_show = false;
+                }
+            });
+    }
 }

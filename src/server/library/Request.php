@@ -93,7 +93,6 @@ class Request
 
         		if ($bodyParams) {
         			foreach ($bodyParams as $paramName => $paramValue) {
-        				//$parameters[$paramName] = $parameters[$paramValue];
         				$parameters[$paramName] = $paramValue;
         			}
         		}

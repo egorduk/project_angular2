@@ -1,0 +1,141 @@
+<div class="jumbotron center-block user" style="padding: 0">
+    <header (emitResponse)='onEmitter()'></header>
+    <form (ngSubmit)="onSubmit()" #editPictureForm="ngForm">
+        <modal #modalPopup title="Edit picture"
+        modalClass="modal-lg modal-sm"
+        [closeOnEscape]="true"
+        [closeOnOutsideClick]="true"
+        (onOpen)="actionOnOpen()"
+        (onClose)="actionOnClose()">
+            <modal-header>
+            </modal-header>
+            <modal-content>
+                <div *ngIf="_selectedPicture">
+                    <input type="text" class="form-control" placeholder="New picture name" [(ngModel)]="_selectedPicture.name" #name="ngModel" [ngModelOptions]="{standalone: true}" required><br>
+                    <div [hidden]="name.valid" class="alert alert-danger">
+                    Picture name is required
+                    </div>
+                    <div class="thumbnail">
+                        <img src="../../uploads/pictures/original/{{ _selectedPicture?.filename }}" alt="user_picture">
+                        <div class="caption">
+                            <span>Uploaded: {{ _selectedPicture.uploaded }}</span>
+                        </div>
+                    </div>
+                </div>
+            </modal-content>
+            <modal-footer>
+                <div *ngIf="_selectedPicture">
+                    <div class="col-xs-12">
+                        <p class="text-left">
+                            <a href="#" *ngFor="let tag of _selectedPicture?.tags"><span class="label label-primary" style="margin-right: 10px">{{ tag }}</span></a>
+                        </p>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </modal-footer>
+        </modal>
+    </form>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="row panel panel-default panel-profile m-b-0">
+            <div class="panel-heading" [style.background-image]="user?.page_photo | safeBg" style="background-position-y: -330px"></div>
+        <div class="panel-body text-center">
+            <img class="panel-profile-img" [src]="user?.avatar | safeAvatar" alt="user_avatar">
+            <h5 class="panel-title">{{ user?.login }}</h5>
+            <p class="m-b">{{ user?.info }}</p>
+        </div>
+        <div class="row">
+            <div class=".col-md-6"></div>
+            <tabset [justified]="true">
+            <tab heading="Pictures" (select)="selectTab($event)" [active]="true"></tab>
+            <tab heading="Galleries"(select)="selectTab($event)"></tab>
+            <tab *ngIf="_isCurrentUser" heading="My Info"(select)="selectTab($event)"></tab>
+            </tabset>
+        </div>
+    </div>
+
+    <div *ngIf="_tabsMode == 'pictures'" style="position: relative;">
+        <div id="main" role="main">
+            <ul id="tiles" class="unstyled" style="list-style-type:none">
+                <li *ngFor="let picture of pictures" style="display: list-item;">
+                <div class="view view-first hovereffect">
+                    <img width="{{ picture.resize_width }}" height="{{ picture.resize_height }}" src="../../uploads/pictures/resized/{{ picture.filename }}" alt="">
+                    <div class="overlay">
+                        <h2>{{ picture.name }}</h2>
+                        <span *ngIf="!_isCurrentUser" (click)="likePicture($event, picture)" [ngClass]="{ 'picture-liked': picture.is_liked == '1' }" class="info glyphicon glyphicon-heart" aria-hidden="true"></span>
+                        <span *ngIf="_isCurrentUser" (click)="deletePicture(picture)" class="info glyphicon glyphicon-trash" aria-hidden="true"></span>
+                        <span *ngIf="_isCurrentUser" (click)="openEditModalPopup(picture, modalPopup)" class="info glyphicon glyphicon-edit" aria-hidden="true"></span>
+                    </div>
+                </div>
+                </li>
+            </ul>
+        </div>
+        <alert *ngIf="warningNoPicturesAlert.is_show" [type]="warningNoPicturesAlert.type">
+            {{ warningNoPicturesAlert.msg }}
+        </alert>
+    </div>
+
+    <div *ngIf="_tabsMode == 'galleries'" class="row" style="position: relative;">
+        <div [hidden]="_isViewGallery" *ngFor="let gallery of galleries" class="col-lg-3 col-md-4 col-xs-6 thumb">
+            <div class="thumbnail">
+                <img src="../../uploads/pictures/resized/{{ gallery?.cover_picture }}" alt="user_gallery" style="max-height: 250px">
+                <div class="caption">
+                    <h3>{{ gallery.name }}</h3>
+                    <p>{{ gallery.cnt_pictures }} photos</p>
+                    <p>
+                        <a href="#" (click)="viewGallery($event, gallery)" class="btn btn-primary" role="button">View</a>
+                        <span *ngIf="_isCurrentUser" (click)="deleteGallery(gallery)" class="info glyphicon glyphicon-trash" aria-hidden="true"></span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div *ngIf="_isViewGallery" class="row">
+            <div id="main" role="main">
+                <ul id="tiles" class="unstyled" style="list-style-type:none">
+                    <li *ngFor="let picture of gallery.pictures" style="display: list-item;">
+                    <div class="view view-first hovereffect">
+                        <img width="{{ picture.resize_width }}" height="{{ picture.resize_height }}" src="../../uploads/pictures/resized/{{ picture.filename }}" alt="">
+                        <div class="overlay">
+                            <h2>{{ picture.name }}</h2>
+                        </div>
+                    </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <alert *ngIf="warningNoGalleriesAlert.is_show" [type]="warningNoGalleriesAlert.type">
+        {{ warningNoGalleriesAlert.msg }}
+        </alert>
+    </div>
+
+    <div *ngIf="_tabsMode == 'my_info'" style="position: relative;">
+        <div class="row">
+            <alert *ngIf="successUpdateProfileAlert.is_show" [type]="successUpdateProfileAlert.type">
+            {{ successUpdateProfileAlert.msg }}
+            </alert>
+            <form (ngSubmit)="onSubmitProfileForm()" #editProfileForm="ngForm">
+                <div class="form-group">
+                    <label for="login">Your login</label>
+                    <input type="text" [(ngModel)]="user.login" #login="ngModel" required name="login" class="form-control" id="login" placeholder="Your login">
+                </div>
+                <div class="form-group">
+                    <label for="email">Your email</label>
+                    <input type="email" [(ngModel)]="user.email" #email="ngModel" required name="email" class="form-control" id="email" placeholder="Your email">
+                </div>
+                <div class="form-group">
+                    <label for="info">Your info</label>
+                    <textarea name="" [(ngModel)]="user.info" #info="ngModel" required name="info" placeholder="Your info" id="info" class="form-control"></textarea>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+</div>
+</div>

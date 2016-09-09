@@ -45,3 +45,18 @@
 .dropdown-menu>li>a {
     display: inline; !important;
 }
+
+.modal-window {
+    display: block;
+    overflow: overlay;
+}
+
+.friends {
+    width: 70%;
+    float: left;
+}
+
+.right-sidebar {
+   width: 30%;
+   float: right;
+}
