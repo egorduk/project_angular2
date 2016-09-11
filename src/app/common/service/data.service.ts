@@ -28,8 +28,8 @@ export class DataService {
         this._apiUrl = this.globalService.getApiUrl();
     }
 
-    signup(email, password) : any {
-        let body = JSON.stringify({ email, password });
+    signup(email: string, password: string, login: string) : any {
+        let body = JSON.stringify({ email, password, login });
 
         return this.http.post(this._apiUrl + '/unsecured/users', body, { headers: contentHeaders })
             .map((response: Response) => {

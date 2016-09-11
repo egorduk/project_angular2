@@ -6,7 +6,11 @@
     <alert *ngIf="dangerAlert.is_show" [type]="dangerAlert.type">
         {{ dangerAlert.msg }}
     </alert>
-    <form role="form" (submit)="signup($event, email.value, password.value)">
+    <form role="form" (submit)="signup($event, email.value, password.value, login.value)">
+        <div class="form-group">
+            <label for="login">Login</label>
+            <input type="text" class="form-control" #login id="login" placeholder="Login" required>
+        </div>
         <div class="form-group">
             <label for="email">Email</label>
             <input type="text" class="form-control" #email id="email" placeholder="Email" required>

@@ -56,13 +56,14 @@ class UnsecuredController extends MainController
         if (isset($request->urlElements[4]) && $request->urlElements[4] == 'users') {       //  api/unsecured/users
             $email = $request->parameters['email'];
             $password = md5($request->parameters['password']);
+            $login = $request->parameters['login'];
 
-            if (!$email || !$password) {
-                header('HTTP/1.1 400 You must send the email and the password');
+            if (!$email || !$password || !$login) {
+                header('HTTP/1.1 400 You must send the email and the password and the login');
                 return;
             }
 
-            $response = $this->user->createUser($email, $password);
+            $response = $this->user->createUser($email, $password, $login);
 
             $this->response = array('response' => $response);
         }

@@ -22,22 +22,17 @@ export class SignupComponent {
         is_show: false
     };
 
-    constructor(private router: Router, private dataService: DataService) {
+    constructor(private router: Router, private dataService: DataService) {}
 
-    }
-
-    signup(event, email, password) {
+    signup(event, email, password, login) {
         event.preventDefault();
 
-        this.dataService.signup(email, password)
+        this.dataService.signup(email, password, login)
             .subscribe((response: any) => {
                 if (response.response) {
-                    //localStorage.setItem('id_token', response.id_token);
                     this.successAlert.is_show = true;
                     this.successAlert.type = 'success';
                     this.dangerAlert.is_show = false;
-
-                    //this.router.navigate(['/home']);
                 } else {
                     this.dangerAlert.is_show = true;
                     this.dangerAlert.type = 'danger';

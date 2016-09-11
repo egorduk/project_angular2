@@ -1,5 +1,9 @@
 <?php
 
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: POST, GET, PUT, DELETE, OPTIONS');
+header('Access-Control-Allow-Headers: X-Requested-With, content-type');
+
 /**
  * Overwriting of the default __autoload
  */
@@ -7,7 +11,6 @@ spl_autoload_register('apiAutoLoad');
 
 function apiAutoLoad($className) {
     if (strpos($className, 'Namshi') === false) {
-        //var_dump($className);
         try {
             $class = null;
 

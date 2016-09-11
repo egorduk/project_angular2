@@ -41,11 +41,11 @@ class UsersModel extends MainModel
         }
     }
 
-    public function createUser($email, $password)
+    public function createUser($email, $password, $login)
     {
-        $query = $this->pdo->prepare("insert into user(email, password) values(?, ?)");
+        $query = $this->pdo->prepare("insert into user(email, password, login) values(?, ?, ?)");
 
-        return $query->execute(array($email, $password));
+        return $query->execute(array($email, $password, $login));
     }
 
     public function getUserIdByEmailPassword($email, $password)
