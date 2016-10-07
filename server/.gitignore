@@ -1,17 +1,3 @@
-# NPM
-node_modules
-npm-debug.log
-
-# Code Editor Settings
-.idea
-.vs
-
-# Build Generated Files
-src/app/**/*.js
-src/app/**/*.js.map
-
-!src/systemjs.config.js
-
 /web/bundles/
 /app/bootstrap.php.cache
 /app/cache/*
@@ -24,4 +10,3 @@ src/app/**/*.js.map
 /vendor/
 /bin/
 /composer.phar
-
