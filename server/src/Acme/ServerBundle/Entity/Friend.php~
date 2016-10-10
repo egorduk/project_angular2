@@ -1,0 +1,42 @@
+<?php
+
+namespace Acme\ServerBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * Friend
+ *
+ * @ORM\Table(name="friend", indexes={@ORM\Index(name="FK_friend_user_id", columns={"user_id"})})
+ * @ORM\Entity
+ */
+class Friend
+{
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="friend_id", type="integer", nullable=false)
+     */
+    private $friendId;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $id;
+
+    /**
+     * @var \Acme\ServerBundle\Entity\User
+     *
+     * @ORM\ManyToOne(targetEntity="Acme\ServerBundle\Entity\User")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="user_id", referencedColumnName="id")
+     * })
+     */
+    private $user;
+
+
+}

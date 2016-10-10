@@ -1,0 +1,56 @@
+<?php
+
+namespace Acme\ServerBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * PictureComment
+ *
+ * @ORM\Table(name="picture_comment", indexes={@ORM\Index(name="FK_picture_comment_picture_id", columns={"picture_id"})})
+ * @ORM\Entity
+ */
+class PictureComment
+{
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="date_comment", type="datetime", nullable=false)
+     */
+    private $dateComment;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="user_id", type="integer", nullable=false)
+     */
+    private $userId;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="comment", type="string", length=50, nullable=false)
+     */
+    private $comment;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $id;
+
+    /**
+     * @var \Acme\ServerBundle\Entity\Picture
+     *
+     * @ORM\ManyToOne(targetEntity="Acme\ServerBundle\Entity\Picture")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="picture_id", referencedColumnName="id")
+     * })
+     */
+    private $picture;
+
+
+}

@@ -1,0 +1,55 @@
+<?php
+
+namespace Acme\ServerBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * GalleryHasPicture
+ *
+ * @ORM\Table(name="gallery_has_picture", indexes={@ORM\Index(name="FK_gallery_has_picture_picture_gallery", columns={"gallery_id"}), @ORM\Index(name="FK_gallery_has_picture_picture", columns={"picture_id"}), @ORM\Index(name="FK_gallery_has_picture_user_id", columns={"user_id"})})
+ * @ORM\Entity
+ */
+class GalleryHasPicture
+{
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $id;
+
+    /**
+     * @var \Acme\ServerBundle\Entity\User
+     *
+     * @ORM\ManyToOne(targetEntity="Acme\ServerBundle\Entity\User")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="user_id", referencedColumnName="id")
+     * })
+     */
+    private $user;
+
+    /**
+     * @var \Acme\ServerBundle\Entity\PictureGallery
+     *
+     * @ORM\ManyToOne(targetEntity="Acme\ServerBundle\Entity\PictureGallery")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="gallery_id", referencedColumnName="id")
+     * })
+     */
+    private $gallery;
+
+    /**
+     * @var \Acme\ServerBundle\Entity\Picture
+     *
+     * @ORM\ManyToOne(targetEntity="Acme\ServerBundle\Entity\Picture")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="picture_id", referencedColumnName="id")
+     * })
+     */
+    private $picture;
+
+
+}

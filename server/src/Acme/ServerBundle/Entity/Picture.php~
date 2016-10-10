@@ -1,0 +1,74 @@
+<?php
+
+namespace Acme\ServerBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * Picture
+ *
+ * @ORM\Table(name="picture")
+ * @ORM\Entity
+ */
+class Picture
+{
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="user_id", type="integer", nullable=false)
+     */
+    private $userId;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="name", type="string", length=50, nullable=false)
+     */
+    private $name;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="date_upload", type="datetime", nullable=false)
+     */
+    private $dateUpload;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="filename", type="string", length=50, nullable=false)
+     */
+    private $filename;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="resize_height", type="smallint", nullable=false)
+     */
+    private $resizeHeight;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="resize_width", type="smallint", nullable=false)
+     */
+    private $resizeWidth;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="is_show_host", type="boolean", nullable=false)
+     */
+    private $isShowHost;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $id;
+
+
+}

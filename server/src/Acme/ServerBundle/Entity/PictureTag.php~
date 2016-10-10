@@ -1,0 +1,45 @@
+<?php
+
+namespace Acme\ServerBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * PictureTag
+ *
+ * @ORM\Table(name="picture_tag", indexes={@ORM\Index(name="FK_picture_tag_picture", columns={"picture_id"}), @ORM\Index(name="FK_picture_tag_tag", columns={"tag_id"})})
+ * @ORM\Entity
+ */
+class PictureTag
+{
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $id;
+
+    /**
+     * @var \Acme\ServerBundle\Entity\Tag
+     *
+     * @ORM\ManyToOne(targetEntity="Acme\ServerBundle\Entity\Tag")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="tag_id", referencedColumnName="id")
+     * })
+     */
+    private $tag;
+
+    /**
+     * @var \Acme\ServerBundle\Entity\Picture
+     *
+     * @ORM\ManyToOne(targetEntity="Acme\ServerBundle\Entity\Picture")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="picture_id", referencedColumnName="id")
+     * })
+     */
+    private $picture;
+
+
+}
