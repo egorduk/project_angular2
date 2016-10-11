@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * PictureGallery
  *
  * @ORM\Table(name="picture_gallery")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Acme\ServerBundle\Repository\PictureGalleryRepository")
  */
 class PictureGallery
 {

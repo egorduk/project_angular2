@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * GalleryHasPicture
  *
  * @ORM\Table(name="gallery_has_picture", indexes={@ORM\Index(name="FK_gallery_has_picture_picture_gallery", columns={"gallery_id"}), @ORM\Index(name="FK_gallery_has_picture_picture", columns={"picture_id"}), @ORM\Index(name="FK_gallery_has_picture_user_id", columns={"user_id"})})
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Acme\ServerBundle\Repository\GalleryHasPictureRepository")
  */
 class GalleryHasPicture
 {

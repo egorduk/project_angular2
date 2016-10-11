@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * PictureLike
  *
  * @ORM\Table(name="picture_like", indexes={@ORM\Index(name="FK_picture_like_picture_id", columns={"picture_id"}), @ORM\Index(name="FK_picture_like_user_id", columns={"user_id"})})
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Acme\ServerBundle\Repository\PictureLikeRepository")
  */
 class PictureLike
 {
