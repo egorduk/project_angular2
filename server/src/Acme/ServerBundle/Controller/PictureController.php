@@ -5,6 +5,7 @@ namespace Acme\ServerBundle\Controller;
 use Acme\ServerBundle\Entity\Picture;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\Controller\FOSRestController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 
@@ -79,6 +80,43 @@ class PictureController extends FOSRestController
             $view = $this->view($pictures);
 
             return $this->handleView($view);
+        }
+    }
+
+    /**
+     * Create a picture
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Creates a new picture",
+     *   input = "Acme\BlogBundle\Form\PageType",
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     400 = "Returned when errors"
+     *   }
+     * )
+     *
+     * @param Request $request the request object
+     *
+     * @return FormTypeInterface|View
+     */
+    public function postPageAction(Request $request)
+    {
+        try {
+            // Hey Page handler create a new Page.
+            $newPage = $this->container->get('acme_blog.page.handler')->post(
+                $request->request->all()
+            );
+
+            $routeOptions = array(
+                'id' => $newPage->getId(),
+                '_format' => $request->get('_format')
+            );
+
+            return $this->routeRedirectView('api_1_get_page', $routeOptions, Codes::HTTP_CREATED);
+        } catch (InvalidFormException $exception) {
+
+            return $exception->getForm();
         }
     }
 }
