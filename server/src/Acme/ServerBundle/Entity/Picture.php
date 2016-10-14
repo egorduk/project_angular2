@@ -3,6 +3,7 @@
 namespace Acme\ServerBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Picture
@@ -16,6 +17,8 @@ class Picture
      * @var integer
      *
      * @ORM\Column(name="user_id", type="integer", nullable=false)
+     *
+     * @Assert\NotBlank()
      */
     private $userId;
 
@@ -23,6 +26,8 @@ class Picture
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=50, nullable=false)
+     *
+     * @Assert\NotBlank()
      */
     private $name;
 
@@ -37,6 +42,8 @@ class Picture
      * @var string
      *
      * @ORM\Column(name="filename", type="string", length=50, nullable=false)
+     *
+     * @Assert\NotBlank()
      */
     private $filename;
 
@@ -44,6 +51,8 @@ class Picture
      * @var integer
      *
      * @ORM\Column(name="resize_height", type="smallint", nullable=false)
+     *
+     * @Assert\NotBlank()
      */
     private $resizeHeight;
 
@@ -51,6 +60,8 @@ class Picture
      * @var integer
      *
      * @ORM\Column(name="resize_width", type="smallint", nullable=false)
+     *
+     * @Assert\NotBlank()
      */
     private $resizeWidth;
 
