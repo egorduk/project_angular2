@@ -3,8 +3,10 @@
 namespace Acme\ServerBundle\Controller;
 
 use Acme\ServerBundle\Entity\Picture;
+use Acme\ServerBundle\Exception\InvalidFormException;
 use Acme\ServerBundle\Form\PictureType;
 use FOS\RestBundle\Exception\InvalidParameterException;
+use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\View;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\Controller\Annotations as RestAnnotations;
@@ -16,11 +18,6 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 
 class PictureController extends FOSRestController
 {
-    public function indexAction()
-    {
-        return $this->render('AcmeServerBundle:Default:index.html.twig');
-    }
-
     /**
      * Gets single picture
      *
@@ -38,22 +35,17 @@ class PictureController extends FOSRestController
      *
      * @return Picture
      *
-     * @throws NotFoundHttpException when picture not exist
+     * @throws NotFoundHttpException when picture does not exist
      */
     public function getPictureAction($id)
     {
-        $picture = $this->getDoctrine()
-            ->getRepository('AcmeServerBundle:Picture')
-            ->find($id);
-
-        if (!$picture) {
+        if (!($picture = $this->container->get('rest.picture.handler')->get($id))) {
             throw new NotFoundHttpException(sprintf('The picture with id = \'%s\' was not found.', $id));
-        } else {
-            $view = $this->view(array('picture' => $picture));
-
-            return $this->handleView($view);
         }
 
+        $view = $this->view(array('picture' => $picture));
+
+        return $this->handleView($view);
     }
 
     /**
@@ -69,24 +61,29 @@ class PictureController extends FOSRestController
      *   }
      * )
      *
+     * @RestAnnotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing pictures")
+     * @RestAnnotations\QueryParam(name="limit", requirements="\d+", default="5", description="How many pictures to return")
+     *
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     *
      * @return Picture[]
      *
      * @throws NotFoundHttpException when pictures not exist
      */
-    public function getPicturesAction()
+    public function getPicturesAction(ParamFetcherInterface $paramFetcher)
     {
-        $pictures = $this->getDoctrine()
-            ->getRepository('AcmeServerBundle:Picture')
-            ->findAll();
+        $offset = $paramFetcher->get('offset');
+        $offset = null == $offset ? 0 : $offset;
+        $limit = $paramFetcher->get('limit');
 
-        if (!count($pictures)) {
+        $pictures = $this->container->get('rest.picture.handler')->all($limit, $offset);
+
+        if ( !count($pictures) ) {
             throw new NotFoundHttpException(sprintf('The pictures were not found.'));
         } else {
             $view = $this->view(array('pictures' => $pictures));
 
             return $this->handleView($view);
-            //return $pictures;
-            //return new Response($pictures);
         }
     }
 
@@ -110,7 +107,25 @@ class PictureController extends FOSRestController
      */
     public function postPictureAction(Request $request)
     {
-        return $this->createPicture(new Picture(), $request);
+        try {
+            $picture = $this->container->get('rest.picture.handler')->post(
+                $request->request->all()
+            );
+
+            $routeOptions = array(
+                'id' => $picture->getId(),
+                '_format' => $request->get('_format')
+            );
+
+            $view = View::createRouteRedirect('api_1_get_picture', $routeOptions);
+
+            return $this->handleView($view);
+        } catch (InvalidFormException $exception) {
+            //var_dump($exception);die;
+            //return $exception->getForm();
+            $view = View::createRouteRedirect('api_1_get_picture', $routeOptions);
+            return $this->handleView($view);
+        }
     }
 
     private function createPicture(Picture $picture, $request)

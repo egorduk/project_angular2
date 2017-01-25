@@ -2,6 +2,7 @@
 
 namespace Acme\ServerBundle\Handler;
 
+use Acme\ServerBundle\Entity\Picture;
 use Acme\ServerBundle\Model\RestInterface;
 
 interface RestHandlerInterface
@@ -48,7 +49,7 @@ interface RestHandlerInterface
      *
      * @return RestInterface
      */
-    public function put(RestInterface $page, array $parameters);
+    public function put(Picture $picture, array $parameters);
 
     /**
      * Partially update a Page.
@@ -60,7 +61,7 @@ interface RestHandlerInterface
      *
      * @return RestInterface
      */
-    public function patch(RestInterface $page, array $parameters);
+    public function patch(Picture $picture, array $parameters);
 
     /**
      * Delete a picture by it's id
