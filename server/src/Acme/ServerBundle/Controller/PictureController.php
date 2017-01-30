@@ -19,7 +19,7 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 class PictureController extends FOSRestController
 {
     /**
-     * Gets single picture
+     * Get single picture
      *
      * @ApiDoc(
      *   resource = true,
@@ -31,7 +31,7 @@ class PictureController extends FOSRestController
      *   }
      * )
      *
-     * @param int     $id      the picture id
+     * @param int $id the picture id
      *
      * @return Picture
      *
@@ -39,17 +39,19 @@ class PictureController extends FOSRestController
      */
     public function getPictureAction($id)
     {
-        if (!($picture = $this->container->get('rest.picture.handler')->get($id))) {
+        if (!($picture = $this->get('rest.picture.handler')->get($id))) {
             throw new NotFoundHttpException(sprintf('The picture with id = \'%s\' was not found.', $id));
         }
 
-        $view = $this->view(array('picture' => $picture));
+        $view = $this->view([
+            'picture' => $picture,
+        ]);
 
         return $this->handleView($view);
     }
 
     /**
-     * Gets all pictures
+     * Get all pictures
      *
      * @ApiDoc(
      *   resource = true,
@@ -76,9 +78,9 @@ class PictureController extends FOSRestController
         $offset = null == $offset ? 0 : $offset;
         $limit = $paramFetcher->get('limit');
 
-        $pictures = $this->container->get('rest.picture.handler')->all($limit, $offset);
+        $pictures = $this->get('rest.picture.handler')->all($limit, $offset);
 
-        if ( !count($pictures) ) {
+        if (!count($pictures)) {
             throw new NotFoundHttpException(sprintf('The pictures were not found.'));
         } else {
             $view = $this->view(array('pictures' => $pictures));
@@ -88,7 +90,7 @@ class PictureController extends FOSRestController
     }
 
     /**
-     * Creates a picture
+     * Create a picture
      *
      * @ApiDoc(
      *   resource = true,
@@ -100,32 +102,28 @@ class PictureController extends FOSRestController
      *   }
      * )
      *
-     * @param Request $request the request object
+     * @param Request $request
      *
-     * @return View view instance
-     *
+     * @return Response
      */
     public function postPictureAction(Request $request)
     {
         try {
-            $picture = $this->container->get('rest.picture.handler')->post(
+            $picture = $this->get('rest.picture.handler')->post(
                 $request->request->all()
             );
 
-            $routeOptions = array(
+            $routeOptions = [
                 'id' => $picture->getId(),
-                '_format' => $request->get('_format')
-            );
+                '_format' => $request->get('_format'),
+            ];
 
             $view = View::createRouteRedirect('api_1_get_picture', $routeOptions);
-
-            return $this->handleView($view);
         } catch (InvalidFormException $exception) {
-            //var_dump($exception);die;
-            //return $exception->getForm();
-            $view = View::createRouteRedirect('api_1_get_picture', $routeOptions);
-            return $this->handleView($view);
+            $view = View::create($exception->getMessage(), 400);
         }
+
+        return $this->handleView($view);
     }
 
     private function createPicture(Picture $picture, $request)
@@ -159,7 +157,7 @@ class PictureController extends FOSRestController
     }
 
     /**
-     * Updates existing picture from the submitted data or creates a new picture at a specific location.
+     * Updates\ existing picture from the submitted data or creates a new picture at a specific location.
      *
      * @ApiDoc(
      *   resource = true,
@@ -176,7 +174,7 @@ class PictureController extends FOSRestController
      *
      * @return View view instance
      *
-     * @throws NotFoundHttpException when picture not exist
+     * @throws NotFoundHttpException when picture does not exist
      */
     public function putPictureAction(Request $request, $id)
     {

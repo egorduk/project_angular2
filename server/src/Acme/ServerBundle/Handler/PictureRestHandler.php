@@ -92,9 +92,9 @@ class PictureRestHandler implements RestHandlerInterface
     /**
      * Processes the form
      *
-     * @param Picture       $picture
-     * @param array         $parameters
-     * @param String        $method
+     * @param Picture $picture
+     * @param array   $parameters
+     * @param String  $method
      *
      * @return Picture
      *
@@ -102,7 +102,7 @@ class PictureRestHandler implements RestHandlerInterface
      */
     private function processForm(Picture $picture, array $parameters, $method = "PUT")
     {
-        $form = $this->formFactory->create(new PictureType(), $picture, array('method' => $method));
+        $form = $this->formFactory->create(new PictureType(), $picture, ['method' => $method]);
         $form->submit($parameters, 'PATCH' !== $method);
 
         if ($form->isValid()) {
@@ -115,7 +115,10 @@ class PictureRestHandler implements RestHandlerInterface
             return $picture;
         }
 
-        throw new InvalidFormException('Invalid submitted data', $form);
+        throw new InvalidFormException(
+            'Invalid submitted data: ' . (string)$form->getErrors(true, false),
+            $form
+        );
     }
 
     private function createPicture()

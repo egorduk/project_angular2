@@ -13,7 +13,14 @@ class PictureType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('userId')->add('name')->add('dateUpload')->add('filename')->add('resizeHeight')->add('resizeWidth')->add('isShowHost');
+        $builder
+            ->add('userId')
+            ->add('name')
+            ->add('dateUpload')
+            ->add('filename')
+            ->add('resizeHeight')
+            ->add('resizeWidth')
+            ->add('isShowHost');
     }
     
     /**
@@ -21,10 +28,11 @@ class PictureType extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(array(
+        $resolver->setDefaults([
             'data_class' => 'Acme\ServerBundle\Entity\Picture',
             'csrf_protection' => false,
-        ));
+            'allow_extra_fields' => true,
+        ]);
     }
 
     /**
@@ -34,6 +42,4 @@ class PictureType extends AbstractType
     {
         return 'acme_serverbundle_picture';
     }
-
-
 }

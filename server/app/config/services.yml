@@ -6,4 +6,4 @@ parameters:
 services:
     rest.picture.handler:
         class: Acme\ServerBundle\Handler\PictureRestHandler
-        arguments: ["@doctrine.orm.entity_manager", "@form.factory", "%picture_class%"]
+        arguments: ['@doctrine.orm.entity_manager', '@form.factory', '%picture_class%']

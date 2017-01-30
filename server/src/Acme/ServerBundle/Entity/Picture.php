@@ -6,13 +6,20 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * Picture
- *
  * @ORM\Table(name="picture")
  * @ORM\Entity(repositoryClass="Acme\ServerBundle\Repository\PictureRepository")
  */
 class Picture
 {
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $id;
+
     /**
      * @var integer
      *
@@ -72,15 +79,12 @@ class Picture
      */
     private $isShowHost;
 
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
-     */
-    private $id;
 
+    public function __construct()
+    {
+        $this->setDateUpload(new \DateTime());
+        $this->setIsShowHost(true);
+    }
 
 
     /**
