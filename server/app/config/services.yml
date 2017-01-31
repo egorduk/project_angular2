@@ -4,6 +4,10 @@ parameters:
     picture_class: Acme\ServerBundle\Entity\Picture
 
 services:
-    rest.picture.handler:
-        class: Acme\ServerBundle\Handler\PictureRestHandler
+    rest.picture.helper:
+        class: Acme\ServerBundle\Helper\PictureRestHelper
         arguments: ['@doctrine.orm.entity_manager', '@form.factory', '%picture_class%']
+
+    rest.auth.helper:
+        class: Acme\ServerBundle\Helper\AuthHelper
+        arguments: ['@doctrine.orm.entity_manager']

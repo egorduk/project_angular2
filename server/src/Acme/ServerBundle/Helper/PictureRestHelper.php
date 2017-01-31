@@ -1,6 +1,6 @@
 <?php
 
-namespace Acme\ServerBundle\Handler;
+namespace Acme\ServerBundle\Helper;
 
 use Acme\ServerBundle\Entity\Picture;
 use Doctrine\Common\Persistence\ObjectManager;
@@ -9,7 +9,7 @@ use Symfony\Component\Form\FormFactoryInterface;
 use Acme\ServerBundle\Form\PictureType;
 use Acme\ServerBundle\Exception\InvalidFormException;
 
-class PictureRestHandler implements RestHandlerInterface
+class PictureRestHelper implements RestHandlerInterface
 {
     private $om;
     private $entityClass;
@@ -64,10 +64,10 @@ class PictureRestHandler implements RestHandlerInterface
     }
 
     /**
-     * Edit a Page.
+     * Edit a picture
      *
      * @param Picture $picture
-     * @param array         $parameters
+     * @param array   $parameters
      *
      * @return Picture
      */
@@ -90,7 +90,7 @@ class PictureRestHandler implements RestHandlerInterface
     }
 
     /**
-     * Processes the form
+     * Process the form
      *
      * @param Picture $picture
      * @param array   $parameters
@@ -107,8 +107,7 @@ class PictureRestHandler implements RestHandlerInterface
 
         if ($form->isValid()) {
             $picture = $form->getData();
-            $picture->setDateUpload(new \DateTime());
-            $picture->setIsShowHost(true);
+            $picture->setDateUploadAndIsShowHost();
 
             $this->repository->save($picture, true);
 

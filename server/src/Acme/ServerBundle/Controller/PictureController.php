@@ -18,12 +18,16 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 
 class PictureController extends FOSRestController
 {
+    const CREATED_CODE = 201;
+    const NO_CONTENT_CODE = 204;
+    const BAD_REQUEST_CODE = 400;
+
     /**
      * Get single picture
      *
      * @ApiDoc(
      *   resource = true,
-     *   description = "Gets a picture for a given id",
+     *   description = "Get a picture for a given id",
      *   output = "Acme\ServerBundle\Entity\Picture",
      *   statusCodes = {
      *     200 = "Returned when successful",
@@ -39,8 +43,8 @@ class PictureController extends FOSRestController
      */
     public function getPictureAction($id)
     {
-        if (!($picture = $this->get('rest.picture.handler')->get($id))) {
-            throw new NotFoundHttpException(sprintf('The picture with id = \'%s\' was not found.', $id));
+        if (!($picture = $this->get('rest.picture.helper')->get($id))) {
+            throw new NotFoundHttpException();
         }
 
         $view = $this->view([
@@ -55,7 +59,7 @@ class PictureController extends FOSRestController
      *
      * @ApiDoc(
      *   resource = true,
-     *   description = "Gets all pictures",
+     *   description = "Get all pictures",
      *   output = "Acme\ServerBundle\Entity\Picture",
      *   statusCodes = {
      *     200 = "Returned when successful",
@@ -78,14 +82,14 @@ class PictureController extends FOSRestController
         $offset = null == $offset ? 0 : $offset;
         $limit = $paramFetcher->get('limit');
 
-        $pictures = $this->get('rest.picture.handler')->all($limit, $offset);
+        $pictures = $this->get('rest.picture.helper')->all($limit, $offset);
 
-        if (!count($pictures)) {
-            throw new NotFoundHttpException(sprintf('The pictures were not found.'));
-        } else {
+        if (count($pictures)) {
             $view = $this->view(array('pictures' => $pictures));
 
             return $this->handleView($view);
+        } else {
+            throw new NotFoundHttpException();
         }
     }
 
@@ -94,7 +98,7 @@ class PictureController extends FOSRestController
      *
      * @ApiDoc(
      *   resource = true,
-     *   description = "Creates a new picture",
+     *   description = "Create a new picture",
      *   input = "Acme\ServerBundle\Form\PictureType",
      *   statusCodes = {
      *     200 = "Returned when successful",
@@ -109,7 +113,7 @@ class PictureController extends FOSRestController
     public function postPictureAction(Request $request)
     {
         try {
-            $picture = $this->get('rest.picture.handler')->post(
+            $picture = $this->get('rest.picture.helper')->post(
                 $request->request->all()
             );
 
@@ -120,47 +124,18 @@ class PictureController extends FOSRestController
 
             $view = View::createRouteRedirect('api_1_get_picture', $routeOptions);
         } catch (InvalidFormException $exception) {
-            $view = View::create($exception->getMessage(), 400);
-        }
-
-        return $this->handleView($view);
-    }
-
-    private function createPicture(Picture $picture, $request)
-    {
-        $form = $this->createForm(new PictureType(), $picture);
-        $form->submit($request->request->all());
-
-        if ($form->isValid()) {
-            $pictureId = $picture->getId();
-
-            //if (!isset($pictureId)) {
-                $picture->setDateUpload(new \DateTime());
-                $picture->setIsShowHost(true);
-            //}
-
-            $this->getDoctrine()
-                ->getRepository('AcmeServerBundle:Picture')
-                ->save($picture, true);
-
-            $routeOptions = array(
-                'id' => $picture->getId(),
-                //'_format' => $request->get('_format')
-            );
-
-            $view = View::createRouteRedirect('api_1_get_picture', $routeOptions);
-        } else {
-            $view = View::create($form);
+            $view = View::create($exception->getMessage(), self::BAD_REQUEST_CODE);
         }
 
         return $this->handleView($view);
     }
 
     /**
-     * Updates\ existing picture from the submitted data or creates a new picture at a specific location.
+     * Update existing picture from the submitted data or create a new picture.
      *
      * @ApiDoc(
      *   resource = true,
+     *   description = "Update existing picture or create it",
      *   input = "Acme\ServerBundle\Form\PictureType",
      *   statusCodes = {
      *     201 = "Returned when the picture is created",
@@ -169,67 +144,80 @@ class PictureController extends FOSRestController
      *   }
      * )
      *
-     * @param Request $request the request object
-     * @param int     $id      the picture id
+     * @param Request $request  the request object
+     * @param int     $id       the picture id
      *
-     * @return View view instance
-     *
-     * @throws NotFoundHttpException when picture does not exist
+     * @return Response
      */
     public function putPictureAction(Request $request, $id)
     {
-        //try {
-        $picture = $this->getDoctrine()
-            ->getRepository('AcmeServerBundle:Picture')
-            ->find($id);
+        try {
+            $picture = $this->getDoctrine()
+                ->getRepository('AcmeServerBundle:Picture')
+                ->find($id);
 
-            if (!$picture) {
-                $statusCode = 201;
-                $this->createPicture(new Picture(), $request);
-               /* $page = $this->container->get('acme_blog.page.handler')->post(
+            if (!is_null($picture)) {
+                $statusCode = self::NO_CONTENT_CODE;
+
+                $picture = $this->get('rest.picture.handler')->put(
+                    $picture,
                     $request->request->all()
-                );*/
+                );
             } else {
-                $statusCode = 204;
+                $statusCode = self::CREATED_CODE;
 
-                $this->createPicture($picture, $request);
-               /* $page = $this->container->get('acme_blog.page.handler')->put(
-                    $page,
+                $picture = $this->get('rest.picture.helper')->post(
                     $request->request->all()
-                );*/
+                );
             }
 
-            $routeOptions = array(
+            $routeOptions = [
                 'id' => $picture->getId(),
-                //'_format' => $request->get('_format')
-            );
+                '_format' => $request->get('_format'),
+            ];
 
             $view = View::createRouteRedirect('api_1_get_picture', $routeOptions, $statusCode);
+        } catch (InvalidFormException $exception) {
+            $view = View::create($exception->getMessage(), self::BAD_REQUEST_CODE);
+        }
 
         return $this->handleView($view);
-
-       /* } catch (InvalidFormException $exception) {
-
-            return $exception->getForm();
-        }*/
     }
 
+    /**
+     * Delete existing picture.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Delete existing picture",
+     *   statusCodes = {
+     *     204 = "Returned when successful",
+     *     400 = "Returned when errors"
+     *   }
+     * )
+     *
+     * @param int $id the picture id
+     *
+     * @return Response
+     *
+     * @throws NotFoundHttpException when picture does not exist
+     */
     public function deletePictureAction($id)
     {
         $picture = $this->getDoctrine()
             ->getRepository('AcmeServerBundle:Picture')
             ->find($id);
 
-        if ($picture) {
-            $response = $this->getDoctrine()
-                ->getRepository('AcmeServerBundle:Picture')
-                ->remove($picture, true);
+        if (!is_null($picture)) {
+            $this->get('rest.picture.helper')->delete(
+                $picture
+            );
 
-            $view = $this->view(array('response' => $response));
+            $view = View::createRouteRedirect('api_1_get_pictures', [], self::NO_CONTENT_CODE);
 
             return $this->handleView($view);
         } else {
-            throw new NotFoundHttpException('The picture is not found');
+            throw new NotFoundHttpException();
         }
     }
 }

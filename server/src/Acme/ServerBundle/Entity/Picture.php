@@ -82,8 +82,7 @@ class Picture
 
     public function __construct()
     {
-        $this->setDateUpload(new \DateTime());
-        $this->setIsShowHost(true);
+        $this->setDateUploadAndIsShowHost();
     }
 
 
@@ -256,5 +255,16 @@ class Picture
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * @return $this
+     */
+    public function setDateUploadAndIsShowHost()
+    {
+        $this->setDateUpload(new \DateTime());
+        $this->setIsShowHost(true);
+
+        return $this;
     }
 }
