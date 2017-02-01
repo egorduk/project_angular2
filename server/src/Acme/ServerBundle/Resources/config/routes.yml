@@ -9,3 +9,15 @@ acme_server_Pictures:
     prefix: /v1
     resource: "Acme\\ServerBundle\\Controller\\PictureController"
     name_prefix:  api_1_ # naming collision
+
+acme_server_User:
+    type: rest
+    prefix: /v1
+    resource: "Acme\\ServerBundle\\Controller\\UserController"
+    name_prefix:  api_1_ # naming collision
+
+acme_server_Users:
+    type: rest
+    prefix: /v1
+    resource: "Acme\\ServerBundle\\Controller\\UserController"
+    name_prefix:  api_1_ # naming collision

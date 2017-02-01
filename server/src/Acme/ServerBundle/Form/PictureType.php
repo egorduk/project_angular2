@@ -34,12 +34,4 @@ class PictureType extends AbstractType
             'allow_extra_fields' => true,
         ]);
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getBlockPrefix()
-    {
-        return 'acme_serverbundle_picture';
-    }
 }

@@ -159,7 +159,7 @@ class PictureController extends FOSRestController
             if (!is_null($picture)) {
                 $statusCode = self::NO_CONTENT_CODE;
 
-                $picture = $this->get('rest.picture.handler')->put(
+                $picture = $this->get('rest.picture.helper')->put(
                     $picture,
                     $request->request->all()
                 );
