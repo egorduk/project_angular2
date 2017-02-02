@@ -16,7 +16,6 @@ class PictureType extends AbstractType
         $builder
             ->add('userId')
             ->add('name')
-            ->add('dateUpload')
             ->add('filename')
             ->add('resizeHeight')
             ->add('resizeWidth')

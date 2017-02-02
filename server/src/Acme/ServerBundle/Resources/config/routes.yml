@@ -1,23 +1,33 @@
-acme_server_Picture:
+picture:
     type: rest
     prefix: /v1
-    resource: "Acme\\ServerBundle\\Controller\\PictureController"
-    name_prefix:  api_1_ # naming collision
+    resource: Acme\ServerBundle\Controller\PictureController
+    name_prefix: api_1_ # naming collision
 
-acme_server_Pictures:
+pictures:
     type: rest
     prefix: /v1
-    resource: "Acme\\ServerBundle\\Controller\\PictureController"
-    name_prefix:  api_1_ # naming collision
+    resource: Acme\ServerBundle\Controller\PictureController
+    name_prefix: api_1_ # naming collision
 
-acme_server_User:
+user:
     type: rest
     prefix: /v1
-    resource: "Acme\\ServerBundle\\Controller\\UserController"
-    name_prefix:  api_1_ # naming collision
+    resource: Acme\ServerBundle\Controller\UserController
+    name_prefix: api_1_ # naming collision
 
-acme_server_Users:
+users:
     type: rest
     prefix: /v1
-    resource: "Acme\\ServerBundle\\Controller\\UserController"
-    name_prefix:  api_1_ # naming collision
+    resource: Acme\ServerBundle\Controller\UserController
+    name_prefix: api_1_ # naming collision
+
+#user_by_id:
+#    type: rest
+#    prefix: /v1
+#    pattern: /users/id/{id}
+#    defaults: { _controller: AcmeServerBundle:User:getUser, _format: ~ }
+#    requirements:
+#        _method: GET
+    #resource: "Acme\\ServerBundle\\Controller\\UserController"
+#    name_prefix: api_1_ # naming collision

@@ -2,6 +2,7 @@
 
 namespace Acme\ServerBundle\Entity;
 
+use Acme\ServerBundle\Model\RestEntityInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -9,7 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(name="picture")
  * @ORM\Entity(repositoryClass="Acme\ServerBundle\Repository\PictureRepository")
  */
-class Picture
+class Picture implements RestEntityInterface
 {
     /**
      * @var integer
@@ -84,7 +85,6 @@ class Picture
     {
         $this->setDateUploadAndIsShowHost();
     }
-
 
     /**
      * Set userId
@@ -250,7 +250,7 @@ class Picture
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {

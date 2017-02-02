@@ -2,23 +2,15 @@
 
 namespace Acme\ServerBundle\Entity;
 
+use Acme\ServerBundle\Model\RestEntityInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Friend
- *
  * @ORM\Table(name="friend", indexes={@ORM\Index(name="FK_friend_user_id", columns={"user_id"})})
  * @ORM\Entity(repositoryClass="Acme\ServerBundle\Repository\FriendRepository")
  */
-class Friend
+class Friend implements RestEntityInterface
 {
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="friend_id", type="integer", nullable=false)
-     */
-    private $friendId;
-
     /**
      * @var integer
      *
@@ -29,15 +21,18 @@ class Friend
     private $id;
 
     /**
-     * @var \Acme\ServerBundle\Entity\User
+     * @var integer
      *
-     * @ORM\ManyToOne(targetEntity="Acme\ServerBundle\Entity\User")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="user_id", referencedColumnName="id")
-     * })
+     * @ORM\Column(name="friend_id", type="integer", nullable=false)
      */
-    private $user;
+    private $friendId;
 
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="user_id", type="integer", nullable=false)
+     */
+    private $userId;
 
 
     /**
@@ -76,10 +71,10 @@ class Friend
     /**
      * Set user
      *
-     * @param \Acme\ServerBundle\Entity\User $user
+     * @param int $user
      * @return Friend
      */
-    public function setUser(\Acme\ServerBundle\Entity\User $user = null)
+    public function setUser($user)
     {
         $this->user = $user;
 
@@ -89,10 +84,10 @@ class Friend
     /**
      * Get user
      *
-     * @return \Acme\ServerBundle\Entity\User 
+     * @return int
      */
-    public function getUser()
+    public function getUserId()
     {
-        return $this->user;
+        return $this->userId;
     }
 }

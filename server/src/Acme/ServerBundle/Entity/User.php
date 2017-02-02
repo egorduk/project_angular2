@@ -2,13 +2,14 @@
 
 namespace Acme\ServerBundle\Entity;
 
+use Acme\ServerBundle\Model\RestEntityInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Table(name="user", uniqueConstraints={@ORM\UniqueConstraint(name="email", columns={"email"})})
  * @ORM\Entity(repositoryClass="Acme\ServerBundle\Repository\UserRepository")
  */
-class User
+class User implements RestEntityInterface
 {
     /**
      * @var integer

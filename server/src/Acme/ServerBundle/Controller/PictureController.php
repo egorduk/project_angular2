@@ -209,9 +209,7 @@ class PictureController extends FOSRestController
             ->find($id);
 
         if (!is_null($picture)) {
-            $this->get('rest.picture.helper')->delete(
-                $picture
-            );
+            $this->get('rest.picture.helper')->delete($picture);
 
             $view = View::createRouteRedirect('api_1_get_pictures', [], self::NO_CONTENT_CODE);
 

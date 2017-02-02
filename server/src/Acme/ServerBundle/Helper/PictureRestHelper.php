@@ -3,13 +3,13 @@
 namespace Acme\ServerBundle\Helper;
 
 use Acme\ServerBundle\Entity\Picture;
+use Acme\ServerBundle\Model\RestEntityInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Component\Form\FormFactoryInterface;
-//use Acme\BlogBundle\Model\PageInterface;
 use Acme\ServerBundle\Form\PictureType;
 use Acme\ServerBundle\Exception\InvalidFormException;
 
-class PictureRestHelper implements RestHandlerInterface
+class PictureRestHelper implements RestHelperInterface
 {
     private $om;
     private $entityClass;
@@ -42,7 +42,7 @@ class PictureRestHelper implements RestHandlerInterface
      * @param int $limit  the limit of the result
      * @param int $offset starting from the offset
      *
-     * @return array
+     * @return Picture[]
      */
     public function all($limit = 5, $offset = 0)
     {
@@ -66,12 +66,12 @@ class PictureRestHelper implements RestHandlerInterface
     /**
      * Edit a picture
      *
-     * @param Picture $picture
-     * @param array   $parameters
+     * @param RestEntityInterface $picture
+     * @param array               $parameters
      *
      * @return Picture
      */
-    public function put(Picture $picture, array $parameters)
+    public function put(RestEntityInterface $picture, array $parameters)
     {
         return $this->processForm($picture, $parameters, 'PUT');
     }
@@ -79,12 +79,12 @@ class PictureRestHelper implements RestHandlerInterface
     /**
      * Partially update a picture
      *
-     * @param Picture $picture
-     * @param array         $parameters
+     * @param RestEntityInterface $picture
+     * @param array               $parameters
      *
      * @return Picture
      */
-    public function patch(Picture $picture, array $parameters)
+    public function patch(RestEntityInterface $picture, array $parameters)
     {
         return $this->processForm($picture, $parameters, 'PATCH');
     }
@@ -92,7 +92,7 @@ class PictureRestHelper implements RestHandlerInterface
     /**
      * Process the form
      *
-     * @param Picture $picture
+     * @param RestEntityInterface $picture
      * @param array   $parameters
      * @param String  $method
      *
@@ -100,7 +100,7 @@ class PictureRestHelper implements RestHandlerInterface
      *
      * @throws \Acme\ServerBundle\Exception\InvalidFormException
      */
-    private function processForm(Picture $picture, array $parameters, $method = "PUT")
+    private function processForm(RestEntityInterface $picture, array $parameters, $method = "PUT")
     {
         $form = $this->formFactory->create(new PictureType(), $picture, ['method' => $method]);
         $form->submit($parameters, 'PATCH' !== $method);
@@ -125,7 +125,12 @@ class PictureRestHelper implements RestHandlerInterface
         return new $this->entityClass();
     }
 
-    public function delete($picture)
+    /**
+     * @param RestEntityInterface $picture
+     *
+     * @return bool
+     */
+    public function delete(RestEntityInterface $picture)
     {
         return $this->repository->remove($picture, true);
     }
