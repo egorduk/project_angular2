@@ -13,7 +13,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Picture implements RestEntityInterface
 {
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
@@ -22,7 +22,7 @@ class Picture implements RestEntityInterface
     private $id;
 
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="user_id", type="integer", nullable=false)
      *
@@ -56,7 +56,7 @@ class Picture implements RestEntityInterface
     private $filename;
 
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="resize_height", type="smallint", nullable=false)
      *
@@ -65,7 +65,7 @@ class Picture implements RestEntityInterface
     private $resizeHeight;
 
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="resize_width", type="smallint", nullable=false)
      *
@@ -74,12 +74,11 @@ class Picture implements RestEntityInterface
     private $resizeWidth;
 
     /**
-     * @var boolean
+     * @var bool
      *
      * @ORM\Column(name="is_show_host", type="boolean", nullable=false)
      */
     private $isShowHost;
-
 
     public function __construct()
     {
@@ -87,9 +86,10 @@ class Picture implements RestEntityInterface
     }
 
     /**
-     * Set userId
+     * Set userId.
      *
-     * @param integer $userId
+     * @param int $userId
+     *
      * @return Picture
      */
     public function setUserId($userId)
@@ -100,9 +100,9 @@ class Picture implements RestEntityInterface
     }
 
     /**
-     * Get userId
+     * Get userId.
      *
-     * @return integer 
+     * @return int
      */
     public function getUserId()
     {
@@ -110,9 +110,10 @@ class Picture implements RestEntityInterface
     }
 
     /**
-     * Set name
+     * Set name.
      *
      * @param string $name
+     *
      * @return Picture
      */
     public function setName($name)
@@ -123,9 +124,9 @@ class Picture implements RestEntityInterface
     }
 
     /**
-     * Get name
+     * Get name.
      *
-     * @return string 
+     * @return string
      */
     public function getName()
     {
@@ -133,9 +134,10 @@ class Picture implements RestEntityInterface
     }
 
     /**
-     * Set dateUpload
+     * Set dateUpload.
      *
      * @param \DateTime $dateUpload
+     *
      * @return Picture
      */
     public function setDateUpload($dateUpload)
@@ -146,9 +148,9 @@ class Picture implements RestEntityInterface
     }
 
     /**
-     * Get dateUpload
+     * Get dateUpload.
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getDateUpload()
     {
@@ -156,9 +158,10 @@ class Picture implements RestEntityInterface
     }
 
     /**
-     * Set filename
+     * Set filename.
      *
      * @param string $filename
+     *
      * @return Picture
      */
     public function setFilename($filename)
@@ -169,9 +172,9 @@ class Picture implements RestEntityInterface
     }
 
     /**
-     * Get filename
+     * Get filename.
      *
-     * @return string 
+     * @return string
      */
     public function getFilename()
     {
@@ -179,9 +182,10 @@ class Picture implements RestEntityInterface
     }
 
     /**
-     * Set resizeHeight
+     * Set resizeHeight.
      *
-     * @param integer $resizeHeight
+     * @param int $resizeHeight
+     *
      * @return Picture
      */
     public function setResizeHeight($resizeHeight)
@@ -192,9 +196,9 @@ class Picture implements RestEntityInterface
     }
 
     /**
-     * Get resizeHeight
+     * Get resizeHeight.
      *
-     * @return integer 
+     * @return int
      */
     public function getResizeHeight()
     {
@@ -202,9 +206,10 @@ class Picture implements RestEntityInterface
     }
 
     /**
-     * Set resizeWidth
+     * Set resizeWidth.
      *
-     * @param integer $resizeWidth
+     * @param int $resizeWidth
+     *
      * @return Picture
      */
     public function setResizeWidth($resizeWidth)
@@ -215,9 +220,9 @@ class Picture implements RestEntityInterface
     }
 
     /**
-     * Get resizeWidth
+     * Get resizeWidth.
      *
-     * @return integer 
+     * @return int
      */
     public function getResizeWidth()
     {
@@ -225,9 +230,10 @@ class Picture implements RestEntityInterface
     }
 
     /**
-     * Set isShowHost
+     * Set isShowHost.
      *
-     * @param boolean $isShowHost
+     * @param bool $isShowHost
+     *
      * @return Picture
      */
     public function setIsShowHost($isShowHost)
@@ -238,9 +244,9 @@ class Picture implements RestEntityInterface
     }
 
     /**
-     * Get isShowHost
+     * Get isShowHost.
      *
-     * @return boolean 
+     * @return bool
      */
     public function getIsShowHost()
     {
@@ -248,9 +254,9 @@ class Picture implements RestEntityInterface
     }
 
     /**
-     * Get id
+     * Get id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {

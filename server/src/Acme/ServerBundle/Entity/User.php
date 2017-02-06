@@ -3,6 +3,7 @@
 namespace Acme\ServerBundle\Entity;
 
 use Acme\ServerBundle\Model\RestEntityInterface;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -12,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
 class User implements RestEntityInterface
 {
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
@@ -62,11 +63,46 @@ class User implements RestEntityInterface
      */
     private $pagePhoto;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="token", type="string", length=415, nullable=false)
+     */
+    private $token;
 
     /**
-     * Set email
+     * @ORM\OneToMany(targetEntity="Acme\ServerBundle\Entity\Friend", mappedBy="friend")
+     */
+    private $friends;
+
+    /**
+     * @ORM\OneToMany(targetEntity="Acme\ServerBundle\Entity\Friend", mappedBy="user")
+     */
+    private $users;
+
+    private $regInfo;
+
+    /**
+     * User constructor.
+     *
+     * @param string $avatar
+     */
+    public function __construct()
+    {
+        $this->avatar = 'default.png';
+        $this->pagePhoto = 'default.png';
+        $this->info = 'No info';
+        $this->token = '';
+
+        $this->users = new ArrayCollection();
+        $this->friends = new ArrayCollection();
+    }
+
+    /**
+     * Set email.
      *
      * @param string $email
+     *
      * @return User
      */
     public function setEmail($email)
@@ -77,9 +113,9 @@ class User implements RestEntityInterface
     }
 
     /**
-     * Get email
+     * Get email.
      *
-     * @return string 
+     * @return string
      */
     public function getEmail()
     {
@@ -87,9 +123,10 @@ class User implements RestEntityInterface
     }
 
     /**
-     * Set password
+     * Set password.
      *
      * @param string $password
+     *
      * @return User
      */
     public function setPassword($password)
@@ -100,9 +137,9 @@ class User implements RestEntityInterface
     }
 
     /**
-     * Get password
+     * Get password.
      *
-     * @return string 
+     * @return string
      */
     public function getPassword()
     {
@@ -110,9 +147,10 @@ class User implements RestEntityInterface
     }
 
     /**
-     * Set login
+     * Set login.
      *
      * @param string $login
+     *
      * @return User
      */
     public function setLogin($login)
@@ -123,9 +161,9 @@ class User implements RestEntityInterface
     }
 
     /**
-     * Get login
+     * Get login.
      *
-     * @return string 
+     * @return string
      */
     public function getLogin()
     {
@@ -133,9 +171,10 @@ class User implements RestEntityInterface
     }
 
     /**
-     * Set avatar
+     * Set avatar.
      *
      * @param string $avatar
+     *
      * @return User
      */
     public function setAvatar($avatar)
@@ -146,9 +185,9 @@ class User implements RestEntityInterface
     }
 
     /**
-     * Get avatar
+     * Get avatar.
      *
-     * @return string 
+     * @return string
      */
     public function getAvatar()
     {
@@ -156,9 +195,10 @@ class User implements RestEntityInterface
     }
 
     /**
-     * Set info
+     * Set info.
      *
      * @param string $info
+     *
      * @return User
      */
     public function setInfo($info)
@@ -169,9 +209,9 @@ class User implements RestEntityInterface
     }
 
     /**
-     * Get info
+     * Get info.
      *
-     * @return string 
+     * @return string
      */
     public function getInfo()
     {
@@ -179,9 +219,10 @@ class User implements RestEntityInterface
     }
 
     /**
-     * Set pagePhoto
+     * Set pagePhoto.
      *
      * @param string $pagePhoto
+     *
      * @return User
      */
     public function setPagePhoto($pagePhoto)
@@ -192,9 +233,9 @@ class User implements RestEntityInterface
     }
 
     /**
-     * Get pagePhoto
+     * Get pagePhoto.
      *
-     * @return string 
+     * @return string
      */
     public function getPagePhoto()
     {
@@ -202,12 +243,81 @@ class User implements RestEntityInterface
     }
 
     /**
-     * Get id
+     * Get id.
      *
-     * @return integer 
+     * @return int
      */
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getToken()
+    {
+        return $this->token;
+    }
+
+    /**
+     * @param string $token
+     */
+    public function setToken($token)
+    {
+        $this->token = $token;
+    }
+
+    public function __toString()
+    {
+        return 'user';
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getFriends()
+    {
+        return $this->friends;
+    }
+
+    /**
+     * @param mixed $friends
+     */
+    public function setFriends($friends)
+    {
+        $this->friends = $friends;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getUsers()
+    {
+        return $this->users;
+    }
+
+    /**
+     * @param mixed $users
+     */
+    public function setUsers($users)
+    {
+        $this->users = $users;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRegInfo()
+    {
+        return $this->regInfo;
+    }
+
+    /**
+     * @param mixed $regInfo
+     */
+    public function setRegInfo($regInfo)
+    {
+        $this->regInfo = $regInfo;
     }
 }

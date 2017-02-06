@@ -5,7 +5,7 @@ namespace Acme\ServerBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Tag
+ * Tag.
  *
  * @ORM\Table(name="tag")
  * @ORM\Entity(repositoryClass="Acme\ServerBundle\Repository\TagRepository")
@@ -20,7 +20,7 @@ class Tag
     private $name;
 
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
@@ -28,12 +28,11 @@ class Tag
      */
     private $id;
 
-
-
     /**
-     * Set name
+     * Set name.
      *
      * @param string $name
+     *
      * @return Tag
      */
     public function setName($name)
@@ -44,9 +43,9 @@ class Tag
     }
 
     /**
-     * Get name
+     * Get name.
      *
-     * @return string 
+     * @return string
      */
     public function getName()
     {
@@ -54,9 +53,9 @@ class Tag
     }
 
     /**
-     * Get id
+     * Get id.
      *
-     * @return integer 
+     * @return int
      */
     public function getId()
     {

@@ -12,7 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
 class Friend implements RestEntityInterface
 {
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
@@ -21,47 +21,25 @@ class Friend implements RestEntityInterface
     private $id;
 
     /**
-     * @var integer
+     * @var int
      *
-     * @ORM\Column(name="friend_id", type="integer", nullable=false)
+     * @ORM\ManyToOne(targetEntity="Acme\ServerBundle\Entity\User", inversedBy="friends")
+     * @ORM\JoinColumn(name="friend_id", referencedColumnName="id")
      */
-    private $friendId;
+    private $friend;
 
     /**
-     * @var integer
+     * @var int
      *
-     * @ORM\Column(name="user_id", type="integer", nullable=false)
+     * @ORM\ManyToOne(targetEntity="Acme\ServerBundle\Entity\User", inversedBy="users")
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      */
-    private $userId;
-
+    private $user;
 
     /**
-     * Set friendId
+     * Get id.
      *
-     * @param integer $friendId
-     * @return Friend
-     */
-    public function setFriendId($friendId)
-    {
-        $this->friendId = $friendId;
-
-        return $this;
-    }
-
-    /**
-     * Get friendId
-     *
-     * @return integer 
-     */
-    public function getFriendId()
-    {
-        return $this->friendId;
-    }
-
-    /**
-     * Get id
-     *
-     * @return integer 
+     * @return int
      */
     public function getId()
     {
@@ -69,25 +47,34 @@ class Friend implements RestEntityInterface
     }
 
     /**
-     * Set user
-     *
+     * @return int
+     */
+    public function getFriend()
+    {
+        return $this->friend;
+    }
+
+    /**
+     * @param int $friend
+     */
+    public function setFriend($friend)
+    {
+        $this->friend = $friend;
+    }
+
+    /**
+     * @return int
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
+
+    /**
      * @param int $user
-     * @return Friend
      */
     public function setUser($user)
     {
         $this->user = $user;
-
-        return $this;
-    }
-
-    /**
-     * Get user
-     *
-     * @return int
-     */
-    public function getUserId()
-    {
-        return $this->userId;
     }
 }

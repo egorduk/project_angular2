@@ -5,7 +5,7 @@ namespace Acme\ServerBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * PictureTag
+ * PictureTag.
  *
  * @ORM\Table(name="picture_tag", indexes={@ORM\Index(name="FK_picture_tag_picture", columns={"picture_id"}), @ORM\Index(name="FK_picture_tag_tag", columns={"tag_id"})})
  * @ORM\Entity(repositoryClass="Acme\ServerBundle\Repository\PictureTagRepository")
@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
 class PictureTag
 {
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
@@ -41,12 +41,10 @@ class PictureTag
      */
     private $picture;
 
-
-
     /**
-     * Get id
+     * Get id.
      *
-     * @return integer 
+     * @return int
      */
     public function getId()
     {
@@ -54,9 +52,10 @@ class PictureTag
     }
 
     /**
-     * Set tag
+     * Set tag.
      *
      * @param \Acme\ServerBundle\Entity\Tag $tag
+     *
      * @return PictureTag
      */
     public function setTag(\Acme\ServerBundle\Entity\Tag $tag = null)
@@ -67,9 +66,9 @@ class PictureTag
     }
 
     /**
-     * Get tag
+     * Get tag.
      *
-     * @return \Acme\ServerBundle\Entity\Tag 
+     * @return \Acme\ServerBundle\Entity\Tag
      */
     public function getTag()
     {
@@ -77,9 +76,10 @@ class PictureTag
     }
 
     /**
-     * Set picture
+     * Set picture.
      *
      * @param \Acme\ServerBundle\Entity\Picture $picture
+     *
      * @return PictureTag
      */
     public function setPicture(\Acme\ServerBundle\Entity\Picture $picture = null)
@@ -90,9 +90,9 @@ class PictureTag
     }
 
     /**
-     * Get picture
+     * Get picture.
      *
-     * @return \Acme\ServerBundle\Entity\Picture 
+     * @return \Acme\ServerBundle\Entity\Picture
      */
     public function getPicture()
     {

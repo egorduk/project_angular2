@@ -5,8 +5,8 @@ acme_server:
 
 app:
     resource: "@AppBundle/Controller/"
-    type:     annotation
+    type: annotation
 
 NelmioApiDocBundle:
     resource: "@NelmioApiDocBundle/Resources/config/routing.yml"
-    prefix:   /api/doc
+    prefix: /api/doc

@@ -4,20 +4,16 @@ namespace Acme\BlogBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Util\Codes;
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\View\View;
 use FOS\RestBundle\Request\ParamFetcherInterface;
-
 use Symfony\Component\Form\FormTypeInterface;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
-
 use Acme\BlogBundle\Exception\InvalidFormException;
 use Acme\BlogBundle\Form\PageType;
 use Acme\BlogBundle\Model\PageInterface;
-
 
 class PageController extends FOSRestController
 {
@@ -67,7 +63,7 @@ class PageController extends FOSRestController
      *
      * @Annotations\View(templateVar="page")
      *
-     * @param int     $id      the page id
+     * @param int $id the page id
      *
      * @return array
      *
@@ -133,13 +129,11 @@ class PageController extends FOSRestController
 
             $routeOptions = array(
                 'id' => $newPage->getId(),
-                '_format' => $request->get('_format')
+                '_format' => $request->get('_format'),
             );
 
             return $this->routeRedirectView('api_1_get_page', $routeOptions, Codes::HTTP_CREATED);
-
         } catch (InvalidFormException $exception) {
-
             return $exception->getForm();
         }
     }
@@ -187,13 +181,11 @@ class PageController extends FOSRestController
 
             $routeOptions = array(
                 'id' => $page->getId(),
-                '_format' => $request->get('_format')
+                '_format' => $request->get('_format'),
             );
 
             return $this->routeRedirectView('api_1_get_page', $routeOptions, $statusCode);
-
         } catch (InvalidFormException $exception) {
-
             return $exception->getForm();
         }
     }
@@ -232,13 +224,11 @@ class PageController extends FOSRestController
 
             $routeOptions = array(
                 'id' => $page->getId(),
-                '_format' => $request->get('_format')
+                '_format' => $request->get('_format'),
             );
 
             return $this->routeRedirectView('api_1_get_page', $routeOptions, Codes::HTTP_NO_CONTENT);
-
         } catch (InvalidFormException $exception) {
-
             return $exception->getForm();
         }
     }
@@ -255,7 +245,7 @@ class PageController extends FOSRestController
     protected function getOr404($id)
     {
         if (!($page = $this->container->get('acme_blog.page.handler')->get($id))) {
-            throw new NotFoundHttpException(sprintf('The resource \'%s\' was not found.',$id));
+            throw new NotFoundHttpException(sprintf('The resource \'%s\' was not found.', $id));
         }
 
         return $page;

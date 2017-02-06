@@ -5,7 +5,7 @@ namespace Acme\ServerBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * PictureComment
+ * PictureComment.
  *
  * @ORM\Table(name="picture_comment", indexes={@ORM\Index(name="FK_picture_comment_picture_id", columns={"picture_id"})})
  * @ORM\Entity(repositoryClass="Acme\ServerBundle\Repository\PictureCommentRepository")
@@ -20,7 +20,7 @@ class PictureComment
     private $dateComment;
 
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="user_id", type="integer", nullable=false)
      */
@@ -34,7 +34,7 @@ class PictureComment
     private $comment;
 
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
@@ -52,12 +52,11 @@ class PictureComment
      */
     private $picture;
 
-
-
     /**
-     * Set dateComment
+     * Set dateComment.
      *
      * @param \DateTime $dateComment
+     *
      * @return PictureComment
      */
     public function setDateComment($dateComment)
@@ -68,9 +67,9 @@ class PictureComment
     }
 
     /**
-     * Get dateComment
+     * Get dateComment.
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getDateComment()
     {
@@ -78,9 +77,10 @@ class PictureComment
     }
 
     /**
-     * Set userId
+     * Set userId.
      *
-     * @param integer $userId
+     * @param int $userId
+     *
      * @return PictureComment
      */
     public function setUserId($userId)
@@ -91,9 +91,9 @@ class PictureComment
     }
 
     /**
-     * Get userId
+     * Get userId.
      *
-     * @return integer 
+     * @return int
      */
     public function getUserId()
     {
@@ -101,9 +101,10 @@ class PictureComment
     }
 
     /**
-     * Set comment
+     * Set comment.
      *
      * @param string $comment
+     *
      * @return PictureComment
      */
     public function setComment($comment)
@@ -114,9 +115,9 @@ class PictureComment
     }
 
     /**
-     * Get comment
+     * Get comment.
      *
-     * @return string 
+     * @return string
      */
     public function getComment()
     {
@@ -124,9 +125,9 @@ class PictureComment
     }
 
     /**
-     * Get id
+     * Get id.
      *
-     * @return integer 
+     * @return int
      */
     public function getId()
     {
@@ -134,9 +135,10 @@ class PictureComment
     }
 
     /**
-     * Set picture
+     * Set picture.
      *
      * @param \Acme\ServerBundle\Entity\Picture $picture
+     *
      * @return PictureComment
      */
     public function setPicture(\Acme\ServerBundle\Entity\Picture $picture = null)
@@ -147,9 +149,9 @@ class PictureComment
     }
 
     /**
-     * Get picture
+     * Get picture.
      *
-     * @return \Acme\ServerBundle\Entity\Picture 
+     * @return \Acme\ServerBundle\Entity\Picture
      */
     public function getPicture()
     {

@@ -5,44 +5,33 @@ namespace Acme\ServerBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
-class LoginType extends AbstractType
+class ProfileType extends AbstractType
 {
-    /**
-     * {@inheritdoc}
-     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('email', EmailType::class, [
+            ->add('regInfo', RegistrationType::class)
+            ->add('info', TextType::class, [
                 'constraints' => [
-                    new Email(),
-                    new NotBlank(),
-                    new Length(array('max' => 50)),
-                ],
-            ])
-            ->add('password', PasswordType::class, [
-                'constraints' => [
-                    new NotBlank(),
                     new Length(array('max' => 50)),
                 ],
             ]);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
             'data_class' => 'Acme\ServerBundle\Entity\User',
             'csrf_protection' => false,
             'allow_extra_fields' => true,
+            'cascade_validation' => true,
         ]);
     }
 }

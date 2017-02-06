@@ -5,7 +5,7 @@ namespace Acme\ServerBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * PictureGallery
+ * PictureGallery.
  *
  * @ORM\Table(name="picture_gallery")
  * @ORM\Entity(repositoryClass="Acme\ServerBundle\Repository\PictureGalleryRepository")
@@ -20,7 +20,7 @@ class PictureGallery
     private $name;
 
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
@@ -28,12 +28,11 @@ class PictureGallery
      */
     private $id;
 
-
-
     /**
-     * Set name
+     * Set name.
      *
      * @param string $name
+     *
      * @return PictureGallery
      */
     public function setName($name)
@@ -44,9 +43,9 @@ class PictureGallery
     }
 
     /**
-     * Get name
+     * Get name.
      *
-     * @return string 
+     * @return string
      */
     public function getName()
     {
@@ -54,9 +53,9 @@ class PictureGallery
     }
 
     /**
-     * Get id
+     * Get id.
      *
-     * @return integer 
+     * @return int
      */
     public function getId()
     {

@@ -7,7 +7,7 @@ use Acme\ServerBundle\Model\RestEntityInterface;
 interface RestHelperInterface
 {
     /**
-     * Get the item
+     * Get the item.
      *
      * @api
      *
@@ -18,7 +18,7 @@ interface RestHelperInterface
     public function get($id);
 
     /**
-     * Get a list of items
+     * Get a list of items.
      *
      * @param int $limit  the limit of the result
      * @param int $offset starting from the offset
@@ -28,7 +28,7 @@ interface RestHelperInterface
     public function all($limit = 5, $offset = 0);
 
     /**
-     * Create new item
+     * Create new item.
      *
      * @api
      *
@@ -39,31 +39,31 @@ interface RestHelperInterface
     public function post(array $parameters);
 
     /**
-     * Edit an item
+     * Edit an item.
      *
      * @api
      *
-     * @param RestEntityInterface   $obj
-     * @param array                 $parameters
+     * @param RestEntityInterface $obj
+     * @param array               $parameters
      *
      * @return RestEntityInterface
      */
     public function put(RestEntityInterface $obj, array $parameters);
 
     /**
-     * Partially update the item
+     * Partially update the item.
      *
      * @api
      *
-     * @param RestEntityInterface   $obj
-     * @param array                 $parameters
+     * @param RestEntityInterface $obj
+     * @param array               $parameters
      *
      * @return RestEntityInterface
      */
     public function patch(RestEntityInterface $obj, array $parameters);
 
     /**
-     * Delete the item
+     * Delete the item.
      *
      * @api
      *

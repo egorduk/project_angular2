@@ -1,4 +1,5 @@
 <?php
+
 namespace Acme\ServerBundle\Exception;
 
 class InvalidFormException extends \RuntimeException

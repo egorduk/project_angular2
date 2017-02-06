@@ -5,7 +5,7 @@ namespace Acme\ServerBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * PictureLike
+ * PictureLike.
  *
  * @ORM\Table(name="picture_like", indexes={@ORM\Index(name="FK_picture_like_picture_id", columns={"picture_id"}), @ORM\Index(name="FK_picture_like_user_id", columns={"user_id"})})
  * @ORM\Entity(repositoryClass="Acme\ServerBundle\Repository\PictureLikeRepository")
@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
 class PictureLike
 {
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
@@ -41,12 +41,10 @@ class PictureLike
      */
     private $picture;
 
-
-
     /**
-     * Get id
+     * Get id.
      *
-     * @return integer 
+     * @return int
      */
     public function getId()
     {
@@ -54,9 +52,10 @@ class PictureLike
     }
 
     /**
-     * Set user
+     * Set user.
      *
      * @param \Acme\ServerBundle\Entity\User $user
+     *
      * @return PictureLike
      */
     public function setUser(\Acme\ServerBundle\Entity\User $user = null)
@@ -67,9 +66,9 @@ class PictureLike
     }
 
     /**
-     * Get user
+     * Get user.
      *
-     * @return \Acme\ServerBundle\Entity\User 
+     * @return \Acme\ServerBundle\Entity\User
      */
     public function getUser()
     {
@@ -77,9 +76,10 @@ class PictureLike
     }
 
     /**
-     * Set picture
+     * Set picture.
      *
      * @param \Acme\ServerBundle\Entity\Picture $picture
+     *
      * @return PictureLike
      */
     public function setPicture(\Acme\ServerBundle\Entity\Picture $picture = null)
@@ -90,9 +90,9 @@ class PictureLike
     }
 
     /**
-     * Get picture
+     * Get picture.
      *
-     * @return \Acme\ServerBundle\Entity\Picture 
+     * @return \Acme\ServerBundle\Entity\Picture
      */
     public function getPicture()
     {

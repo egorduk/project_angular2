@@ -2,10 +2,10 @@
 
 namespace Acme\ServerBundle\Model;
 
-Interface RestEntityInterface
+interface RestEntityInterface
 {
     /**
-     * @return string 
+     * @return string
      */
     public function getId();
 }

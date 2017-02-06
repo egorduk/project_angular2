@@ -1,13 +1,23 @@
 # Learn more about services, parameters and containers at
 # http://symfony.com/doc/current/book/service_container.html
 parameters:
-    picture_class: Acme\ServerBundle\Entity\Picture
-    user_class: Acme\ServerBundle\Entity\User
+    picture_entity: Acme\ServerBundle\Entity\Picture
+    user_entity: Acme\ServerBundle\Entity\User
+    friend_entity: Acme\ServerBundle\Entity\Friend
 
 services:
+    api_token_user_provider:
+        class: Acme\ServerBundle\Security\ApiTokenUserProvider
+        arguments: ['@doctrine.orm.entity_manager']
+
+    api_token_authenticator:
+        class: Acme\ServerBundle\Security\ApiTokenAuthenticator
+        arguments: ["@security.http_utils"]
+        public: false
+
     rest.picture.helper:
         class: Acme\ServerBundle\Helper\PictureRestHelper
-        arguments: ['@doctrine.orm.entity_manager', '@form.factory', '%picture_class%']
+        arguments: ['@doctrine.orm.entity_manager', '@form.factory', '%picture_entity%']
 
     rest.auth.helper:
         class: Acme\ServerBundle\Helper\AuthHelper
@@ -15,4 +25,8 @@ services:
 
     rest.user.helper:
         class: Acme\ServerBundle\Helper\UserRestHelper
-        arguments: ['@doctrine.orm.entity_manager', '@form.factory', '%user_class%']
+        arguments: ['@doctrine.orm.entity_manager', '@form.factory', '@rest.auth.helper', '%user_entity%']
+
+    rest.friend.helper:
+        class: Acme\ServerBundle\Helper\FriendRestHelper
+        arguments: ['@doctrine.orm.entity_manager', '%friend_entity%']

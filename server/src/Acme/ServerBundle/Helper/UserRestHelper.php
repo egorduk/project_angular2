@@ -3,8 +3,10 @@
 namespace Acme\ServerBundle\Helper;
 
 use Acme\ServerBundle\Entity\User;
+use Acme\ServerBundle\Form\LoginType;
+use Acme\ServerBundle\Form\ProfileType;
+use Acme\ServerBundle\Form\RegistrationType;
 use Acme\ServerBundle\Model\RestEntityInterface;
-use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\Form\FormFactoryInterface;
 use Acme\ServerBundle\Exception\InvalidFormException;
@@ -13,19 +15,19 @@ class UserRestHelper implements RestHelperInterface
 {
     const UNFOLLOWS_USERS_LIMIT = 3;
 
-    private $om;
     private $em;
     private $entityClass;
     private $repository;
     private $formFactory;
+    private $authHelper;
 
-    public function __construct(EntityManager $em, FormFactoryInterface $formFactory, $entityClass)
+    public function __construct(EntityManager $em, FormFactoryInterface $formFactory, AuthHelper $authHelper, $entityClass)
     {
-        //$this->om = $om;
         $this->em = $em;
         $this->entityClass = $entityClass;
         $this->repository = $this->em->getRepository($this->entityClass);
         $this->formFactory = $formFactory;
+        $this->authHelper = $authHelper;
     }
 
     /**
@@ -66,9 +68,7 @@ class UserRestHelper implements RestHelperInterface
      */
     public function post(array $parameters)
     {
-        $picture = $this->createPicture();
-
-        return $this->processForm($picture, $parameters, 'POST');
+        return $this->processRegistrationForm($this->createEntity(), $parameters, 'POST');
     }
 
     /**
@@ -86,32 +86,39 @@ class UserRestHelper implements RestHelperInterface
      * @param RestEntityInterface $user
      * @param array               $parameters
      *
-     * @return User
+     * @return RestEntityInterface
      */
-    public function patch(RestEntityInterface $user, array $parameters)
+    public function patch(RestEntityInterface $user, array $parameters = null)
     {
-        return $this->processForm($user, $parameters, 'PATCH');
+        if (is_null($parameters)) {
+            return $this->repository->save($user, true);
+        } else {
+            return $this->processProfileForm($user, $parameters, 'PATCH');
+        }
     }
 
     /**
-     * Process the form
+     * Process profile form.
      *
-     * @param RestEntityInterface $picture
+     * @param RestEntityInterface $user
      * @param array               $parameters
-     * @param String              $method
+     * @param string              $method
      *
      * @return User
      *
-     * @throws \Acme\ServerBundle\Exception\InvalidFormException
+     * @throws InvalidFormException
      */
-    private function processForm(RestEntityInterface $user, array $parameters, $method = "PUT")
+    private function processProfileForm(RestEntityInterface $user, array $parameters = null, $method)
     {
-        $form = $this->formFactory->create(new PictureType(), $user, ['method' => $method]);
-        $form->submit($parameters, 'PATCH' !== $method);
+        $form = $this->formFactory->create(new ProfileType(), $user, ['method' => $method]);
+        $form->submit($parameters);
 
         if ($form->isValid()) {
             $user = $form->getData();
-            //$user->setDateUploadAndIsShowHost();
+            $regInfo = $form->get('regInfo')->getData();
+            $user->setPassword(md5($regInfo->getPassword()));
+            $user->setLogin($regInfo->getLogin());
+            $user->setEmail($regInfo->getEmail());
 
             $this->repository->save($user, true);
 
@@ -119,12 +126,107 @@ class UserRestHelper implements RestHelperInterface
         }
 
         throw new InvalidFormException(
-            'Invalid submitted data: ' . (string)$form->getErrors(true, false),
+            'Invalid submitted data: '.(string) $form->getErrors(true, false),
             $form
         );
     }
 
-    private function createPicture()
+    /**
+     * Process registration form.
+     *
+     * @param RestEntityInterface $user
+     * @param array               $parameters
+     * @param string              $method
+     *
+     * @return User
+     *
+     * @throws InvalidFormException
+     */
+    private function processRegistrationForm(RestEntityInterface $user, array $parameters = null, $method = 'PUT')
+    {
+        $form = $this->formFactory->create(new RegistrationType(), $user, ['method' => $method]);
+        $form->submit($parameters, 'PATCH' !== $method);
+
+        if ($form->isValid()) {
+            $user = $form->getData();
+            $user->setPassword(md5($user->getPassword()));
+
+            $this->repository->save($user, true);
+
+            return $user;
+        }
+
+        throw new InvalidFormException(
+            'Invalid submitted data: '.(string) $form->getErrors(true, false),
+            $form
+        );
+    }
+
+    /**
+     * Process the form.
+     *
+     * @param RestEntityInterface $user
+     * @param array               $parameters
+     * @param string              $method
+     *
+     * @return User
+     *
+     * @throws InvalidFormException
+     */
+    private function processForm(RestEntityInterface $user, array $parameters = null, $method = 'PUT')
+    {
+        $form = $this->formFactory->create(new RegistrationType(), $user, ['method' => $method]);
+        $form->submit($parameters, 'PATCH' !== $method);
+
+        if ($form->isValid()) {
+            $user = $form->getData();
+            $user->setPassword(md5($user->getPassword()));
+
+            $this->repository->save($user, true);
+
+            return $user;
+        }
+
+        throw new InvalidFormException(
+            'Invalid submitted data: '.(string) $form->getErrors(true, false),
+            $form
+        );
+    }
+
+    /**
+     * Process login form.
+     *
+     * @param array $parameters
+     *
+     * @return User
+     *
+     * @throws InvalidFormException
+     */
+    public function processLoginForm(array $parameters)
+    {
+        $form = $this->formFactory->create(new LoginType(), $this->createEntity());
+        $form->submit($parameters);
+
+        if ($form->isValid()) {
+            $userData = $form->getData();
+
+            $user = $this->repository->findOneBy(
+                [
+                    'email' => $userData->getEmail(),
+                    'password' => md5($userData->getPassword()),
+                ]
+            );
+
+            return $user;
+        }
+
+        throw new InvalidFormException(
+            'Invalid submitted data: '.(string) $form->getErrors(true, false),
+            $form
+        );
+    }
+
+    private function createEntity()
     {
         return new $this->entityClass();
     }

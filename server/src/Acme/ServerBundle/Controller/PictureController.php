@@ -4,11 +4,8 @@ namespace Acme\ServerBundle\Controller;
 
 use Acme\ServerBundle\Entity\Picture;
 use Acme\ServerBundle\Exception\InvalidFormException;
-use Acme\ServerBundle\Form\PictureType;
-use FOS\RestBundle\Exception\InvalidParameterException;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\View;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\Controller\Annotations as RestAnnotations;
 use FOS\RestBundle\Controller\FOSRestController;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,11 +20,11 @@ class PictureController extends FOSRestController
     const BAD_REQUEST_CODE = 400;
 
     /**
-     * Get single picture
+     * Get a picture by id.
      *
      * @ApiDoc(
      *   resource = true,
-     *   description = "Get a picture for a given id",
+     *   description = "Get a picture by id",
      *   output = "Acme\ServerBundle\Entity\Picture",
      *   statusCodes = {
      *     200 = "Returned when successful",
@@ -55,7 +52,7 @@ class PictureController extends FOSRestController
     }
 
     /**
-     * Get all pictures
+     * Get all pictures.
      *
      * @ApiDoc(
      *   resource = true,
@@ -70,7 +67,7 @@ class PictureController extends FOSRestController
      * @RestAnnotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing pictures")
      * @RestAnnotations\QueryParam(name="limit", requirements="\d+", default="5", description="How many pictures to return")
      *
-     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param ParamFetcherInterface $paramFetcher
      *
      * @return Picture[]
      *
@@ -94,7 +91,7 @@ class PictureController extends FOSRestController
     }
 
     /**
-     * Create a picture
+     * Create a picture.
      *
      * @ApiDoc(
      *   resource = true,
@@ -124,7 +121,7 @@ class PictureController extends FOSRestController
 
             $view = View::createRouteRedirect('api_1_get_picture', $routeOptions);
         } catch (InvalidFormException $exception) {
-            $view = View::create($exception->getMessage(), self::BAD_REQUEST_CODE);
+            $view = View::create($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
         return $this->handleView($view);
@@ -144,8 +141,8 @@ class PictureController extends FOSRestController
      *   }
      * )
      *
-     * @param Request $request  the request object
-     * @param int     $id       the picture id
+     * @param Request $request the request object
+     * @param int     $id      the picture id
      *
      * @return Response
      */
@@ -157,14 +154,14 @@ class PictureController extends FOSRestController
                 ->find($id);
 
             if (!is_null($picture)) {
-                $statusCode = self::NO_CONTENT_CODE;
+                $statusCode = Response::HTTP_NO_CONTENT;
 
                 $picture = $this->get('rest.picture.helper')->put(
                     $picture,
                     $request->request->all()
                 );
             } else {
-                $statusCode = self::CREATED_CODE;
+                $statusCode = Response::HTTP_CREATED;
 
                 $picture = $this->get('rest.picture.helper')->post(
                     $request->request->all()
@@ -211,7 +208,7 @@ class PictureController extends FOSRestController
         if (!is_null($picture)) {
             $this->get('rest.picture.helper')->delete($picture);
 
-            $view = View::createRouteRedirect('api_1_get_pictures', [], self::NO_CONTENT_CODE);
+            $view = View::createRouteRedirect('api_1_get_pictures', [], Response::HTTP_NO_CONTENT);
 
             return $this->handleView($view);
         } else {

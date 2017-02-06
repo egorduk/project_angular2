@@ -4,8 +4,10 @@ security:
 
     # http://symfony.com/doc/current/book/security.html#where-do-users-come-from-user-providers
     providers:
-        in_memory:
-            memory: ~
+        #in_memory:
+        #    memory: ~
+        api_token_user_provider:
+            id: api_token_user_provider
 
     firewalls:
         # disables authentication for assets and the profiler, adapt it according to your needs
@@ -13,8 +15,8 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
 
-        main:
-            anonymous: ~
+        #main:
+        #    anonymous: ~
             # activate different ways to authenticate
 
             # http_basic: ~
@@ -22,3 +24,14 @@ security:
 
             # form_login: ~
             # http://symfony.com/doc/current/cookbook/security/form_login_setup.html
+        secured_area:
+            pattern: ^/api/v1
+            stateless: true
+            simple_preauth:
+                authenticator: api_token_authenticator
+            provider: api_token_user_provider
+    access_control:
+        - { path: ^/api/doc, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/v1/users, roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: POST }
+        #- { path: ^/api/v1/test, roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: GET }
+        - { path: ^/api/v1, roles: ROLE_API }

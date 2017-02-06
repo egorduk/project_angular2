@@ -5,7 +5,7 @@ namespace Acme\ServerBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * GalleryHasPicture
+ * GalleryHasPicture.
  *
  * @ORM\Table(name="gallery_has_picture", indexes={@ORM\Index(name="FK_gallery_has_picture_picture_gallery", columns={"gallery_id"}), @ORM\Index(name="FK_gallery_has_picture_picture", columns={"picture_id"}), @ORM\Index(name="FK_gallery_has_picture_user_id", columns={"user_id"})})
  * @ORM\Entity(repositoryClass="Acme\ServerBundle\Repository\GalleryHasPictureRepository")
@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
 class GalleryHasPicture
 {
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
@@ -51,12 +51,10 @@ class GalleryHasPicture
      */
     private $picture;
 
-
-
     /**
-     * Get id
+     * Get id.
      *
-     * @return integer 
+     * @return int
      */
     public function getId()
     {
@@ -64,9 +62,10 @@ class GalleryHasPicture
     }
 
     /**
-     * Set user
+     * Set user.
      *
      * @param \Acme\ServerBundle\Entity\User $user
+     *
      * @return GalleryHasPicture
      */
     public function setUser(\Acme\ServerBundle\Entity\User $user = null)
@@ -77,9 +76,9 @@ class GalleryHasPicture
     }
 
     /**
-     * Get user
+     * Get user.
      *
-     * @return \Acme\ServerBundle\Entity\User 
+     * @return \Acme\ServerBundle\Entity\User
      */
     public function getUser()
     {
@@ -87,9 +86,10 @@ class GalleryHasPicture
     }
 
     /**
-     * Set gallery
+     * Set gallery.
      *
      * @param \Acme\ServerBundle\Entity\PictureGallery $gallery
+     *
      * @return GalleryHasPicture
      */
     public function setGallery(\Acme\ServerBundle\Entity\PictureGallery $gallery = null)
@@ -100,9 +100,9 @@ class GalleryHasPicture
     }
 
     /**
-     * Get gallery
+     * Get gallery.
      *
-     * @return \Acme\ServerBundle\Entity\PictureGallery 
+     * @return \Acme\ServerBundle\Entity\PictureGallery
      */
     public function getGallery()
     {
@@ -110,9 +110,10 @@ class GalleryHasPicture
     }
 
     /**
-     * Set picture
+     * Set picture.
      *
      * @param \Acme\ServerBundle\Entity\Picture $picture
+     *
      * @return GalleryHasPicture
      */
     public function setPicture(\Acme\ServerBundle\Entity\Picture $picture = null)
@@ -123,9 +124,9 @@ class GalleryHasPicture
     }
 
     /**
-     * Get picture
+     * Get picture.
      *
-     * @return \Acme\ServerBundle\Entity\Picture 
+     * @return \Acme\ServerBundle\Entity\Picture
      */
     public function getPicture()
     {

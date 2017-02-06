@@ -21,7 +21,7 @@ class PictureType extends AbstractType
             ->add('resizeWidth')
             ->add('isShowHost');
     }
-    
+
     /**
      * {@inheritdoc}
      */

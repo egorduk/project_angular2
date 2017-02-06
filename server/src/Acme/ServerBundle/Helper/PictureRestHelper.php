@@ -25,7 +25,7 @@ class PictureRestHelper implements RestHelperInterface
     }
 
     /**
-     * Get a picture
+     * Get a picture.
      *
      * @param mixed $id
      *
@@ -37,7 +37,7 @@ class PictureRestHelper implements RestHelperInterface
     }
 
     /**
-     * Get a list of pictures
+     * Get a list of pictures.
      *
      * @param int $limit  the limit of the result
      * @param int $offset starting from the offset
@@ -50,7 +50,7 @@ class PictureRestHelper implements RestHelperInterface
     }
 
     /**
-     * Create a new picture
+     * Create a new picture.
      *
      * @param array $parameters
      *
@@ -64,7 +64,7 @@ class PictureRestHelper implements RestHelperInterface
     }
 
     /**
-     * Edit a picture
+     * Edit a picture.
      *
      * @param RestEntityInterface $picture
      * @param array               $parameters
@@ -77,7 +77,7 @@ class PictureRestHelper implements RestHelperInterface
     }
 
     /**
-     * Partially update a picture
+     * Partially update a picture.
      *
      * @param RestEntityInterface $picture
      * @param array               $parameters
@@ -90,17 +90,17 @@ class PictureRestHelper implements RestHelperInterface
     }
 
     /**
-     * Process the form
+     * Process the form.
      *
      * @param RestEntityInterface $picture
-     * @param array   $parameters
-     * @param String  $method
+     * @param array               $parameters
+     * @param string              $method
      *
      * @return Picture
      *
      * @throws \Acme\ServerBundle\Exception\InvalidFormException
      */
-    private function processForm(RestEntityInterface $picture, array $parameters, $method = "PUT")
+    private function processForm(RestEntityInterface $picture, array $parameters, $method = 'PUT')
     {
         $form = $this->formFactory->create(new PictureType(), $picture, ['method' => $method]);
         $form->submit($parameters, 'PATCH' !== $method);
@@ -115,7 +115,7 @@ class PictureRestHelper implements RestHelperInterface
         }
 
         throw new InvalidFormException(
-            'Invalid submitted data: ' . (string)$form->getErrors(true, false),
+            'Invalid submitted data: '.(string) $form->getErrors(true, false),
             $form
         );
     }
