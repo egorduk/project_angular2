@@ -3,6 +3,7 @@
 namespace Acme\ServerBundle\Entity;
 
 use Acme\ServerBundle\Model\RestEntityInterface;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -79,9 +80,16 @@ class Picture implements RestEntityInterface
      */
     private $isShowHost;
 
+    /**
+     * @ORM\OneToMany(targetEntity="Acme\ServerBundle\Entity\PictureComment", mappedBy="picture")
+     */
+    private $comments;
+
     public function __construct()
     {
         $this->setDateUploadAndIsShowHost();
+
+        $this->comments = new ArrayCollection();
     }
 
     /**

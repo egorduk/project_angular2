@@ -5,8 +5,6 @@ namespace Acme\ServerBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * PictureTag.
- *
  * @ORM\Table(name="picture_tag", indexes={@ORM\Index(name="FK_picture_tag_picture", columns={"picture_id"}), @ORM\Index(name="FK_picture_tag_tag", columns={"tag_id"})})
  * @ORM\Entity(repositoryClass="Acme\ServerBundle\Repository\PictureTagRepository")
  */

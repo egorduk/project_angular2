@@ -5,34 +5,11 @@ namespace Acme\ServerBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * PictureComment.
- *
  * @ORM\Table(name="picture_comment", indexes={@ORM\Index(name="FK_picture_comment_picture_id", columns={"picture_id"})})
  * @ORM\Entity(repositoryClass="Acme\ServerBundle\Repository\PictureCommentRepository")
  */
 class PictureComment
 {
-    /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="date_comment", type="datetime", nullable=false)
-     */
-    private $dateComment;
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="user_id", type="integer", nullable=false)
-     */
-    private $userId;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="comment", type="string", length=50, nullable=false)
-     */
-    private $comment;
-
     /**
      * @var int
      *
@@ -43,14 +20,46 @@ class PictureComment
     private $id;
 
     /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="date_comment", type="datetime", nullable=false)
+     */
+    private $dateComment;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="comment", type="string", length=50, nullable=false)
+     */
+    private $comment;
+
+    /**
+     * @var \Acme\ServerBundle\Entity\User
+     *
+     * @ORM\ManyToOne(targetEntity="Acme\ServerBundle\Entity\User", inversedBy="users")
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
+     */
+    private $user;
+
+    /**
      * @var \Acme\ServerBundle\Entity\Picture
      *
-     * @ORM\ManyToOne(targetEntity="Acme\ServerBundle\Entity\Picture")
+     * @ORM\ManyToOne(targetEntity="Acme\ServerBundle\Entity\Picture", inversedBy="comments")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="picture_id", referencedColumnName="id")
      * })
      */
     private $picture;
+
+    /**
+     * PictureComment constructor.
+     * @param \DateTime $dateComment
+     */
+    public function __construct()
+    {
+        $this->dateComment = new \DateTime();
+    }
+
 
     /**
      * Set dateComment.
@@ -74,30 +83,6 @@ class PictureComment
     public function getDateComment()
     {
         return $this->dateComment;
-    }
-
-    /**
-     * Set userId.
-     *
-     * @param int $userId
-     *
-     * @return PictureComment
-     */
-    public function setUserId($userId)
-    {
-        $this->userId = $userId;
-
-        return $this;
-    }
-
-    /**
-     * Get userId.
-     *
-     * @return int
-     */
-    public function getUserId()
-    {
-        return $this->userId;
     }
 
     /**
@@ -156,5 +141,21 @@ class PictureComment
     public function getPicture()
     {
         return $this->picture;
+    }
+
+    /**
+     * @return User
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
+
+    /**
+     * @param User $user
+     */
+    public function setUser($user)
+    {
+        $this->user = $user;
     }
 }

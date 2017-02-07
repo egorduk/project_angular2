@@ -73,7 +73,7 @@ class PictureRestHelper implements RestHelperInterface
      * @param int $limit  the limit of the result
      * @param int $offset starting from the offset
      *
-     * @return Picture[]
+     * @return RestEntityInterface[]
      */
     public function all($limit = 5, $offset = 0)
     {
@@ -85,13 +85,13 @@ class PictureRestHelper implements RestHelperInterface
      *
      * @param array $parameters
      *
-     * @return Picture
+     * @return RestEntityInterface
      */
     public function post(array $parameters)
     {
-        $picture = $this->createPicture();
+        $entity = $this->createPicture();
 
-        return $this->processForm($picture, $parameters, 'POST');
+        return $this->processForm($entity, $parameters, 'POST');
     }
 
     /**
@@ -110,20 +110,20 @@ class PictureRestHelper implements RestHelperInterface
     /**
      * Partially update a picture.
      *
-     * @param RestEntityInterface $picture
+     * @param RestEntityInterface $obj
      * @param array               $parameters
      *
      * @return Picture
      */
-    public function patch(RestEntityInterface $picture, array $parameters)
+    public function patch(RestEntityInterface $obj, array $parameters)
     {
-        return $this->processForm($picture, $parameters, 'PATCH');
+        return $this->processForm($obj, $parameters, 'PATCH');
     }
 
     /**
      * Process the form.
      *
-     * @param RestEntityInterface $picture
+     * @param RestEntityInterface $obj
      * @param array               $parameters
      * @param string              $method
      *
@@ -131,7 +131,7 @@ class PictureRestHelper implements RestHelperInterface
      *
      * @throws \Acme\ServerBundle\Exception\InvalidFormException
      */
-    private function processForm(RestEntityInterface $picture, array $parameters, $method = 'PUT')
+    private function processForm(RestEntityInterface $obj, array $parameters, $method = 'PUT')
     {
         $form = $this->formFactory->create(new PictureType(), $picture, ['method' => $method]);
         $form->submit($parameters, 'PATCH' !== $method);

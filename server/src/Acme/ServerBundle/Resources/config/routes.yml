@@ -34,6 +34,12 @@ friend:
     resource: Acme\ServerBundle\Controller\FriendController
     name_prefix: api_1_ # naming collision
 
+comments:
+    type: rest
+    prefix: /v1
+    resource: Acme\ServerBundle\Controller\CommentController
+    name_prefix: api_1_ # naming collision
+
 #user_by_id:
 #    type: rest
 #    prefix: /v1

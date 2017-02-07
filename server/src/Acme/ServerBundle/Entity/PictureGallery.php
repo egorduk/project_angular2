@@ -5,20 +5,11 @@ namespace Acme\ServerBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * PictureGallery.
- *
  * @ORM\Table(name="picture_gallery")
  * @ORM\Entity(repositoryClass="Acme\ServerBundle\Repository\PictureGalleryRepository")
  */
 class PictureGallery
 {
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="name", type="string", length=50, nullable=false)
-     */
-    private $name;
-
     /**
      * @var int
      *
@@ -27,6 +18,13 @@ class PictureGallery
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $id;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="name", type="string", length=50, nullable=false)
+     */
+    private $name;
 
     /**
      * Set name.

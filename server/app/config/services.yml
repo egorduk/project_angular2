@@ -4,6 +4,7 @@ parameters:
     picture_entity: Acme\ServerBundle\Entity\Picture
     user_entity: Acme\ServerBundle\Entity\User
     friend_entity: Acme\ServerBundle\Entity\Friend
+    picture_comment_entity: Acme\ServerBundle\Entity\PictureComment
 
 services:
     api_token_user_provider:
@@ -30,3 +31,7 @@ services:
     rest.friend.helper:
         class: Acme\ServerBundle\Helper\FriendRestHelper
         arguments: ['@doctrine.orm.entity_manager', '%friend_entity%']
+
+    rest.comment.helper:
+        class: Acme\ServerBundle\Helper\CommentRestHelper
+        arguments: ['@doctrine.orm.entity_manager', '@form.factory', '%picture_comment_entity%']
