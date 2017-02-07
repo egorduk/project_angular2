@@ -3,24 +3,25 @@
 namespace Acme\ServerBundle\Helper;
 
 use Acme\ServerBundle\Entity\Picture;
+use Acme\ServerBundle\Entity\User;
 use Acme\ServerBundle\Model\RestEntityInterface;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ORM\EntityManager;
 use Symfony\Component\Form\FormFactoryInterface;
 use Acme\ServerBundle\Form\PictureType;
 use Acme\ServerBundle\Exception\InvalidFormException;
 
 class PictureRestHelper implements RestHelperInterface
 {
-    private $om;
+    private $em;
     private $entityClass;
     private $repository;
     private $formFactory;
 
-    public function __construct(ObjectManager $om, FormFactoryInterface $formFactory, $entityClass)
+    public function __construct(EntityManager $em, FormFactoryInterface $formFactory, $entityClass)
     {
-        $this->om = $om;
+        $this->em = $em;
         $this->entityClass = $entityClass;
-        $this->repository = $this->om->getRepository($this->entityClass);
+        $this->repository = $this->em->getRepository($this->entityClass);
         $this->formFactory = $formFactory;
     }
 
@@ -34,6 +35,36 @@ class PictureRestHelper implements RestHelperInterface
     public function get($id)
     {
         return $this->repository->find($id);
+    }
+
+    /**
+     * Get pictures.
+     *
+     * @param User $user
+     *
+     * @return Picture[]
+     */
+    public function getFriendsPictures(User $user)
+    {
+        return $this->em->createQueryBuilder()
+            ->select('p.id AS pictureId, p.filename, p.name, DATE_DIFF(CURRENT_DATE(), p.dateUpload) daysAgo, 
+                u.login userLogin, u.avatar userAvatar, u.id userId,
+                CASE WHEN (SELECT pl2.id FROM AcmeServerBundle:PictureLike pl2 WHERE pl2.user = f.user AND pl2.picture = p) > 0 THEN true ELSE false AS isLiked,
+                (SELECT COUNT(pl1.id) from AcmeServerBundle:PictureLike pl1 where pl1.picture = p) cntLikes,
+                GROUP_CONCAT(DISTINCT t.name) tags, GROUP_CONCAT(DISTINCT ghp.id) galleryIds')
+            ->from('AcmeServerBundle:Friend', 'f')
+            ->innerJoin('AcmeServerBundle:Picture', 'p', 'WITH', 'p.user = f.friend')
+            ->innerJoin('AcmeServerBundle:User', 'u', 'WITH', 'u = f.friend')
+            ->leftJoin('AcmeServerBundle:PictureLike', 'pl', 'WITH', 'p = pl.picture')
+            ->leftJoin('AcmeServerBundle:PictureTag', 'pt', 'WITH', 'p = pt.picture')
+            ->leftJoin('AcmeServerBundle:Tag', 't', 'WITH', 't = pt.tag')
+            ->leftJoin('AcmeServerBundle:GalleryHasPicture', 'ghp', 'WITH', 'ghp.picture = p')
+            ->where('f.user = :user')
+            ->groupBy('p.id')
+            ->orderBy('p.dateUpload', 'DESC')
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->getResult();
     }
 
     /**

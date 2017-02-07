@@ -15,10 +15,6 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 
 class PictureController extends FOSRestController
 {
-    const CREATED_CODE = 201;
-    const NO_CONTENT_CODE = 204;
-    const BAD_REQUEST_CODE = 400;
-
     /**
      * Get a picture by id.
      *
@@ -28,19 +24,21 @@ class PictureController extends FOSRestController
      *   output = "Acme\ServerBundle\Entity\Picture",
      *   statusCodes = {
      *     200 = "Returned when successful",
-     *     404 = "Returned when the product is not found"
+     *     404 = "Returned when the picture is not found"
      *   }
      * )
      *
-     * @param int $id the picture id
+     * @RestAnnotations\Get("/pictures/{pictureId}", requirements = { "pictureId" = "\d+" }, name="get_picture_by_id", options = { "method_prefix" = false })
      *
-     * @return Picture
+     * @param int $pictureId
+     *
+     * @return Response
      *
      * @throws NotFoundHttpException when picture does not exist
      */
-    public function getPictureAction($id)
+    public function getPictureAction($pictureId)
     {
-        if (!($picture = $this->get('rest.picture.helper')->get($id))) {
+        if (!($picture = $this->get('rest.picture.helper')->get($pictureId))) {
             throw new NotFoundHttpException();
         }
 
@@ -69,7 +67,7 @@ class PictureController extends FOSRestController
      *
      * @param ParamFetcherInterface $paramFetcher
      *
-     * @return Picture[]
+     * @return Response
      *
      * @throws NotFoundHttpException when pictures not exist
      */
@@ -141,8 +139,8 @@ class PictureController extends FOSRestController
      *   }
      * )
      *
-     * @param Request $request the request object
-     * @param int     $id      the picture id
+     * @param Request $request
+     * @param int     $id
      *
      * @return Response
      */
@@ -175,7 +173,7 @@ class PictureController extends FOSRestController
 
             $view = View::createRouteRedirect('api_1_get_picture', $routeOptions, $statusCode);
         } catch (InvalidFormException $exception) {
-            $view = View::create($exception->getMessage(), self::BAD_REQUEST_CODE);
+            $view = View::create($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
         return $this->handleView($view);
@@ -193,7 +191,7 @@ class PictureController extends FOSRestController
      *   }
      * )
      *
-     * @param int $id the picture id
+     * @param int $id
      *
      * @return Response
      *
@@ -214,5 +212,34 @@ class PictureController extends FOSRestController
         } else {
             throw new NotFoundHttpException();
         }
+    }
+
+    /**
+     * Get friends pictures.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Get friends pictures",
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     404 = "Returned when the pictures are not found"
+     *   }
+     * )
+     *
+     * @RestAnnotations\Get("/pictures/friends", name="get_friends_pictures", options={ "method_prefix" = false })
+     *
+     * @return Response
+     *
+     * @throws NotFoundHttpException when pictures are not found
+     */
+    public function getFriendPicturesAction()
+    {
+        if (!($pictures = $this->get('rest.picture.helper')->getFriendsPictures($this->getUser()))) {
+            throw new NotFoundHttpException();
+        }
+
+        $view = $this->view(['pictures' => $pictures], Response::HTTP_OK);
+
+        return $this->handleView($view);
     }
 }

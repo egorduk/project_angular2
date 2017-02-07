@@ -116,9 +116,8 @@ class UserRestHelper implements RestHelperInterface
         if ($form->isValid()) {
             $user = $form->getData();
             $regInfo = $form->get('regInfo')->getData();
-            $user->setPassword(md5($regInfo->getPassword()));
-            $user->setLogin($regInfo->getLogin());
-            $user->setEmail($regInfo->getEmail());
+
+            $user->setEmailLoginPassword($regInfo->getEmail(), $regInfo->getLogin(), md5($regInfo->getPassword()));
 
             $this->repository->save($user, true);
 
@@ -242,20 +241,34 @@ class UserRestHelper implements RestHelperInterface
     }
 
     /**
-     * @param int $userId
+     * @param User $user
      *
-     * @return array
+     * @return User[]
      */
-    public function getUnfollowsUsers($userId)
+    public function getUnfollowsUsers($user)
     {
-        $query = $this->em->createQuery(
-            'select u.id, u.login, u.avatar, GROUP_CONCAT(p.filename) pictures, count(u.id) as cnt_picture from AcmeServerBundle:User u
-            inner join AcmeServerBundle:Picture p with p.userId = u.id
-            where u.id not in (select f.friendId from AcmeServerBundle:Friend f where f.userId = :userId) and u.id != :userId
-            group by u.id
-            order by u.id'
-        )->setMaxResults(self::UNFOLLOWS_USERS_LIMIT)->setParameter('userId', $userId);
+        $qb = $this->em->createQueryBuilder();
+        $qb1 = $this->em->createQueryBuilder();
 
-        return $query->getResult();
+        $sub = $qb1->select('f.id')
+            ->from('AcmeServerBundle:Friend', 'f')
+            ->where('f.user = :user')
+            ->setParameter('user', $user);
+
+        return $qb
+            ->select('u.id, u.login, u.avatar, GROUP_CONCAT(p.filename) pictures, COUNT(u.id) cntPictures')
+            ->from('AcmeServerBundle:User', 'u')
+            ->innerJoin('AcmeServerBundle:Picture', 'p', 'WITH', 'p.user = u')
+            ->where('f.user = :user')
+            ->where(
+                $qb->expr()->notIn('u', $sub->getDQL())
+            )
+            ->andWhere('u != :user')
+            ->groupBy('u.id')
+            ->orderBy('u.id')
+            ->setMaxResults(self::UNFOLLOWS_USERS_LIMIT)
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->getResult();
     }
 }

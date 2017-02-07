@@ -252,6 +252,11 @@ class User implements RestEntityInterface
         return $this->id;
     }
 
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+
     /**
      * @return string
      */
@@ -319,5 +324,12 @@ class User implements RestEntityInterface
     public function setRegInfo($regInfo)
     {
         $this->regInfo = $regInfo;
+    }
+
+    public function setEmailLoginPassword($email, $login, $password)
+    {
+        $this->email = $email;
+        $this->login = $login;
+        $this->password = $password;
     }
 }

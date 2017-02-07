@@ -24,11 +24,10 @@ class Picture implements RestEntityInterface
     /**
      * @var int
      *
-     * @ORM\Column(name="user_id", type="integer", nullable=false)
-     *
-     * @Assert\NotBlank()
+     * @ORM\ManyToOne(targetEntity="Acme\ServerBundle\Entity\User", inversedBy="users")
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      */
-    private $userId;
+    private $user;
 
     /**
      * @var string
@@ -83,30 +82,6 @@ class Picture implements RestEntityInterface
     public function __construct()
     {
         $this->setDateUploadAndIsShowHost();
-    }
-
-    /**
-     * Set userId.
-     *
-     * @param int $userId
-     *
-     * @return Picture
-     */
-    public function setUserId($userId)
-    {
-        $this->userId = $userId;
-
-        return $this;
-    }
-
-    /**
-     * Get userId.
-     *
-     * @return int
-     */
-    public function getUserId()
-    {
-        return $this->userId;
     }
 
     /**
@@ -272,5 +247,21 @@ class Picture implements RestEntityInterface
         $this->setIsShowHost(true);
 
         return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
+
+    /**
+     * @param int $user
+     */
+    public function setUser($user)
+    {
+        $this->user = $user;
     }
 }

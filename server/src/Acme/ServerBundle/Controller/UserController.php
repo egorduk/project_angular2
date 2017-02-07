@@ -4,14 +4,13 @@ namespace Acme\ServerBundle\Controller;
 
 use Acme\ServerBundle\Entity\User;
 use Acme\ServerBundle\Exception\InvalidFormException;
-use FOS\RestBundle\Request\ParamFetcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use FOS\RestBundle\Controller\Annotations\Get;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
-use FOS\RestBundle\Controller\Annotations\Get;
 
 class UserController extends FOSRestController
 {
@@ -96,23 +95,19 @@ class UserController extends FOSRestController
      *   }
      * )
      *
-     * @Get("/users/{id}/unfollows", name="get_unfollows_users", requirements = { "id" = "\d+" }, options={ "method_prefix" = false })
-     *
-     * @param int $id
+     * @Get("/users/unfollows", name="get_unfollows_users", options={ "method_prefix" = false })
      *
      * @return User[]
      *
      * @throws NotFoundHttpException when users are not exist
      */
-    public function getUnfollowsUsersAction($id)
+    public function getUnfollowsUsersAction()
     {
-        if (!($users = $this->get('rest.user.helper')->getUnfollowsUsers($id))) {
+        if (!($users = $this->get('rest.user.helper')->getUnfollowsUsers($this->getUser()))) {
             throw new NotFoundHttpException();
         }
 
-        $view = $this->view([
-            'users' => $users,
-        ]);
+        $view = $this->view(['users' => $users], Response::HTTP_OK);
 
         return $this->handleView($view);
     }

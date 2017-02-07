@@ -13,11 +13,6 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class FriendController extends FOSRestController
 {
-    const OK_CODE = 200;
-    const CREATED_CODE = 201;
-    const NO_CONTENT_CODE = 204;
-    const BAD_REQUEST_CODE = 400;
-
     /**
      * Follow the user.
      *
@@ -54,9 +49,9 @@ class FriendController extends FOSRestController
                 ]
             );
 
-            $view = View::create(null, $response ? self::OK_CODE : self::BAD_REQUEST_CODE);
+            $view = View::create(null, $response ? Response::HTTP_OK : Response::HTTP_BAD_REQUEST);
         } catch (InvalidFormException $exception) {
-            $view = View::create($exception->getMessage(), self::BAD_REQUEST_CODE);
+            $view = View::create($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
         return $this->handleView($view);
@@ -98,9 +93,9 @@ class FriendController extends FOSRestController
 
             $response = $this->get('rest.friend.helper')->delete($friend);
 
-            $view = View::create(null, $response ? self::OK_CODE : self::BAD_REQUEST_CODE);
+            $view = View::create(null, $response ? Response::HTTP_OK : Response::HTTP_BAD_REQUEST);
         } catch (InvalidFormException $exception) {
-            $view = View::create($exception->getMessage(), self::BAD_REQUEST_CODE);
+            $view = View::create($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
         return $this->handleView($view);
