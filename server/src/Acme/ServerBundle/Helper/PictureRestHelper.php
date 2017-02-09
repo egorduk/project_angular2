@@ -38,6 +38,16 @@ class PictureRestHelper implements RestHelperInterface
     }
 
     /**
+     * @param array $parameters
+     *
+     * @return RestEntityInterface
+     */
+    public function getOneBy(array $parameters)
+    {
+        return $this->repository->findOneBy($parameters);
+    }
+
+    /**
      * Get pictures.
      *
      * @param User $user
@@ -97,14 +107,14 @@ class PictureRestHelper implements RestHelperInterface
     /**
      * Edit a picture.
      *
-     * @param RestEntityInterface $picture
+     * @param RestEntityInterface $obj
      * @param array               $parameters
      *
      * @return Picture
      */
-    public function put(RestEntityInterface $picture, array $parameters)
+    public function put(RestEntityInterface $obj, array $parameters)
     {
-        return $this->processForm($picture, $parameters, 'PUT');
+        return $this->processForm($obj, $parameters, 'PUT');
     }
 
     /**
@@ -133,12 +143,18 @@ class PictureRestHelper implements RestHelperInterface
      */
     private function processForm(RestEntityInterface $obj, array $parameters, $method = 'PUT')
     {
-        $form = $this->formFactory->create(new PictureType(), $picture, ['method' => $method]);
+        $form = $this->formFactory->create(new PictureType(), $obj, ['method' => $method]);
         $form->submit($parameters, 'PATCH' !== $method);
 
         if ($form->isValid()) {
             $picture = $form->getData();
-            $picture->setDateUploadAndIsShowHost();
+           // dump($parameters);die;
+
+            if ($method === 'POST') {
+                $picture->setDateUploadAndIsShowHost();
+            } elseif ($method === 'PATCH') {
+                $picture->setName($parameters['name']);
+            }
 
             $this->repository->save($picture, true);
 
@@ -157,12 +173,12 @@ class PictureRestHelper implements RestHelperInterface
     }
 
     /**
-     * @param RestEntityInterface $picture
+     * @param RestEntityInterface $obj
      *
      * @return bool
      */
-    public function delete(RestEntityInterface $picture)
+    public function delete(RestEntityInterface $obj)
     {
-        return $this->repository->remove($picture, true);
+        return $this->repository->remove($obj, true);
     }
 }

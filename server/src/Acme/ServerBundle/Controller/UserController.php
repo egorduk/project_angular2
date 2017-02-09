@@ -56,8 +56,8 @@ class UserController extends FOSRestController
      *   description = "Get user by login",
      *   output = "Acme\ServerBundle\Entity\User",
      *   statusCodes = {
-     *     200 = "Returned when successful",
-     *     404 = "Returned when the user is not found"
+     *     Response::HTTP_OK = "Returned when successful",
+     *     Response::HTTP_NOT_FOUND = "Returned when the user is not found"
      *   }
      * )
      *
@@ -90,8 +90,8 @@ class UserController extends FOSRestController
      *   description = "Get unfollows users for current user",
      *   output = "Acme\ServerBundle\Entity\User",
      *   statusCodes = {
-     *     200 = "Returned when successful",
-     *     404 = "Returned when users were not found"
+     *     Response::HTTP_OK = "Returned when successful",
+     *     Response::HTTP_NOT_FOUND = "Returned when users were not found"
      *   }
      * )
      *
@@ -206,8 +206,8 @@ class UserController extends FOSRestController
      *   description = "Update user",
      *   input = "Acme\ServerBundle\Form\ProfileType",
      *   statusCodes = {
-     *     200 = "Returned when successful",
-     *     400 = "Returned when errors"
+     *     Response::HTTP_NO_CONTENT = "Returned when successful",
+     *     Response::HTTP_BAD_REQUEST = "Returned when errors"
      *   }
      * )
      *

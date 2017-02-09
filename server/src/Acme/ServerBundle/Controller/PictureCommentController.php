@@ -21,8 +21,8 @@ class PictureCommentController extends FOSRestController
      *   description = "Get picture comment",
      *   output = "Acme\ServerBundle\Entity\PictureComment",
      *   statusCodes = {
-     *     200 = "Returned when successful",
-     *     404 = "Returned when the comment is not found"
+     *     Response::HTTP_OK = "Returned when successful",
+     *     Response::HTTP_NOT_FOUND = "Returned when the comment is not found"
      *   }
      * )
      *

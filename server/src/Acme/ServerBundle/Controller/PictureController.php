@@ -23,8 +23,8 @@ class PictureController extends FOSRestController
      *   description = "Get a picture by id",
      *   output = "Acme\ServerBundle\Entity\Picture",
      *   statusCodes = {
-     *     200 = "Returned when successful",
-     *     404 = "Returned when the picture is not found"
+     *     Response::HTTP_OK = "Returned when successful",
+     *     Response::HTTP_NOT_FOUND = "Returned when the picture is not found"
      *   }
      * )
      *
@@ -57,8 +57,8 @@ class PictureController extends FOSRestController
      *   description = "Get all pictures",
      *   output = "Acme\ServerBundle\Entity\Picture",
      *   statusCodes = {
-     *     200 = "Returned when successful",
-     *     404 = "Returned when the products are not found"
+     *     Response::HTTP_OK = "Returned when successful",
+     *     Response::HTTP_NOT_FOUND = "Returned when the products are not found"
      *   }
      * )
      *
@@ -96,8 +96,8 @@ class PictureController extends FOSRestController
      *   description = "Create a new picture",
      *   input = "Acme\ServerBundle\Form\PictureType",
      *   statusCodes = {
-     *     200 = "Returned when successful",
-     *     400 = "Returned when errors"
+     *     Response::HTTP_OK = "Returned when successful",
+     *     Response::HTTP_BAD_REQUEST = "Returned when errors"
      *   }
      * )
      *
@@ -119,7 +119,7 @@ class PictureController extends FOSRestController
 
             $view = View::createRouteRedirect('api_1_get_picture', $routeOptions);
         } catch (InvalidFormException $exception) {
-            $view = View::create($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+            $view = $this->view($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
         return $this->handleView($view);
@@ -133,9 +133,9 @@ class PictureController extends FOSRestController
      *   description = "Update existing picture or create it",
      *   input = "Acme\ServerBundle\Form\PictureType",
      *   statusCodes = {
-     *     201 = "Returned when the picture is created",
-     *     204 = "Returned when successful",
-     *     400 = "Returned when the form has errors"
+     *     Response::HTTP_CREATED = "Returned when the picture is created",
+     *     Response::HTTP_NO_CONTENT = "Returned when successful",
+     *     Response::HTTP_BAD_REQUEST = "Returned when the form has errors"
      *   }
      * )
      *
@@ -147,9 +147,7 @@ class PictureController extends FOSRestController
     public function putPictureAction(Request $request, $id)
     {
         try {
-            $picture = $this->getDoctrine()
-                ->getRepository('AcmeServerBundle:Picture')
-                ->find($id);
+            $picture = $this->get('rest.picture.helper')->get($id);
 
             if (!is_null($picture)) {
                 $statusCode = Response::HTTP_NO_CONTENT;
@@ -173,7 +171,7 @@ class PictureController extends FOSRestController
 
             $view = View::createRouteRedirect('api_1_get_picture', $routeOptions, $statusCode);
         } catch (InvalidFormException $exception) {
-            $view = View::create($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+            $view = $this->view($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
         return $this->handleView($view);
@@ -186,8 +184,8 @@ class PictureController extends FOSRestController
      *   resource = true,
      *   description = "Delete existing picture",
      *   statusCodes = {
-     *     204 = "Returned when successful",
-     *     400 = "Returned when errors"
+     *     Response::HTTP_NO_CONTENT = "Returned when successful",
+     *     Response::HTTP_NOT_FOUND = "Returned when errors"
      *   }
      * )
      *
@@ -221,8 +219,8 @@ class PictureController extends FOSRestController
      *   resource = true,
      *   description = "Get friends pictures",
      *   statusCodes = {
-     *     200 = "Returned when successful",
-     *     404 = "Returned when the pictures are not found"
+     *     Response::HTTP_OK = "Returned when successful",
+     *     Response::HTTP_NOT_FOUND = "Returned when the pictures are not found"
      *   }
      * )
      *
@@ -239,6 +237,49 @@ class PictureController extends FOSRestController
         }
 
         $view = $this->view(['pictures' => $pictures], Response::HTTP_OK);
+
+        return $this->handleView($view);
+    }
+
+    /**
+     * Update picture name.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Update picture name",
+     *   input = "Acme\ServerBundle\Form\PictureType",
+     *   statusCodes = {
+     *     Response::HTTP_NO_CONTENT = "Returned when successful",
+     *     Response::HTTP_BAD_REQUEST = "Returned when errors",
+     *     Response::HTTP_NOT_FOUND = "Returned when picture does not found"
+     *   }
+     * )
+     *
+     * @RestAnnotations\Patch("/pictures/{pictureId}/name", name="update_picture_name", requirements = { "pictureId" = "\d+" }, options={ "method_prefix" = false })
+     *
+     * @param Request $request
+     * @param int     $pictureId
+     *
+     * @return Response
+     */
+    public function patchPictureNameAction(Request $request, $pictureId)
+    {
+        try {
+            if ($picture = $this->get('rest.picture.helper')->getOneBy(['id' => $pictureId, 'user' => $this->getUser()])) {
+                $picture = $this->get('rest.picture.helper')->patch($picture, $request->request->all());
+
+                $routeOptions = [
+                    'pictureId' => $picture->getId(),
+                    '_format' => $request->get('_format'),
+                ];
+
+                $view = View::createRouteRedirect('api_1_get_picture_by_id', $routeOptions, Response::HTTP_NO_CONTENT);
+            } else {
+                $view = $this->view(null, Response::HTTP_NOT_FOUND);
+            }
+        } catch (InvalidFormException $exception) {
+            $view = $this->view($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
 
         return $this->handleView($view);
     }
