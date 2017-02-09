@@ -2,13 +2,14 @@
 
 namespace Acme\ServerBundle\Entity;
 
+use Acme\ServerBundle\Model\RestEntityInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Table(name="picture_comment", indexes={@ORM\Index(name="FK_picture_comment_picture_id", columns={"picture_id"})})
  * @ORM\Entity(repositoryClass="Acme\ServerBundle\Repository\PictureCommentRepository")
  */
-class PictureComment
+class PictureComment implements RestEntityInterface
 {
     /**
      * @var int
@@ -53,13 +54,13 @@ class PictureComment
 
     /**
      * PictureComment constructor.
+     *
      * @param \DateTime $dateComment
      */
     public function __construct()
     {
         $this->dateComment = new \DateTime();
     }
-
 
     /**
      * Set dateComment.

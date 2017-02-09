@@ -2,15 +2,14 @@
 
 namespace Acme\ServerBundle\Entity;
 
+use Acme\ServerBundle\Model\RestEntityInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * PictureLike.
- *
  * @ORM\Table(name="picture_like", indexes={@ORM\Index(name="FK_picture_like_picture_id", columns={"picture_id"}), @ORM\Index(name="FK_picture_like_user_id", columns={"user_id"})})
  * @ORM\Entity(repositoryClass="Acme\ServerBundle\Repository\PictureLikeRepository")
  */
-class PictureLike
+class PictureLike implements RestEntityInterface
 {
     /**
      * @var int
@@ -24,7 +23,7 @@ class PictureLike
     /**
      * @var \Acme\ServerBundle\Entity\User
      *
-     * @ORM\ManyToOne(targetEntity="Acme\ServerBundle\Entity\User")
+     * @ORM\ManyToOne(targetEntity="Acme\ServerBundle\Entity\User", inversedBy="users")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      * })
@@ -34,7 +33,7 @@ class PictureLike
     /**
      * @var \Acme\ServerBundle\Entity\Picture
      *
-     * @ORM\ManyToOne(targetEntity="Acme\ServerBundle\Entity\Picture")
+     * @ORM\ManyToOne(targetEntity="Acme\ServerBundle\Entity\Picture", inversedBy="pictures")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="picture_id", referencedColumnName="id")
      * })
@@ -54,11 +53,11 @@ class PictureLike
     /**
      * Set user.
      *
-     * @param \Acme\ServerBundle\Entity\User $user
+     * @param User $user
      *
      * @return PictureLike
      */
-    public function setUser(\Acme\ServerBundle\Entity\User $user = null)
+    public function setUser(User $user = null)
     {
         $this->user = $user;
 
@@ -68,7 +67,7 @@ class PictureLike
     /**
      * Get user.
      *
-     * @return \Acme\ServerBundle\Entity\User
+     * @return User
      */
     public function getUser()
     {
@@ -78,11 +77,11 @@ class PictureLike
     /**
      * Set picture.
      *
-     * @param \Acme\ServerBundle\Entity\Picture $picture
+     * @param Picture $picture
      *
      * @return PictureLike
      */
-    public function setPicture(\Acme\ServerBundle\Entity\Picture $picture = null)
+    public function setPicture(Picture $picture = null)
     {
         $this->picture = $picture;
 
@@ -92,7 +91,7 @@ class PictureLike
     /**
      * Get picture.
      *
-     * @return \Acme\ServerBundle\Entity\Picture
+     * @return Picture
      */
     public function getPicture()
     {

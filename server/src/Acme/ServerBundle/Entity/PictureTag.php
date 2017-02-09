@@ -22,7 +22,7 @@ class PictureTag
     /**
      * @var \Acme\ServerBundle\Entity\Tag
      *
-     * @ORM\ManyToOne(targetEntity="Acme\ServerBundle\Entity\Tag")
+     * @ORM\ManyToOne(targetEntity="Acme\ServerBundle\Entity\Tag", inversedBy="tags"))
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="tag_id", referencedColumnName="id")
      * })
@@ -32,7 +32,7 @@ class PictureTag
     /**
      * @var \Acme\ServerBundle\Entity\Picture
      *
-     * @ORM\ManyToOne(targetEntity="Acme\ServerBundle\Entity\Picture")
+     * @ORM\ManyToOne(targetEntity="Acme\ServerBundle\Entity\Picture", inversedBy="pictures"))
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="picture_id", referencedColumnName="id")
      * })

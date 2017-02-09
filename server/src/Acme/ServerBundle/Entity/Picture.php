@@ -85,11 +85,17 @@ class Picture implements RestEntityInterface
      */
     private $comments;
 
+    /**
+     * @ORM\OneToMany(targetEntity="Acme\ServerBundle\Entity\PictureLike", mappedBy="picture")
+     */
+    private $pictures;
+
     public function __construct()
     {
         $this->setDateUploadAndIsShowHost();
 
         $this->comments = new ArrayCollection();
+        $this->pictures = new ArrayCollection();
     }
 
     /**

@@ -2,24 +2,30 @@
 
 namespace Acme\ServerBundle\Helper;
 
+use Acme\ServerBundle\Entity\PictureLike;
+use Acme\ServerBundle\Exception\InvalidFormException;
+use Acme\ServerBundle\Form\LikeType;
 use Acme\ServerBundle\Model\RestEntityInterface;
 use Doctrine\ORM\EntityManager;
+use Symfony\Component\Form\FormFactoryInterface;
 
-class FriendRestHelper implements RestHelperInterface
+class TagRestHelper implements RestHelperInterface
 {
     private $em;
     private $entityClass;
     private $repository;
+    private $formFactory;
 
-    public function __construct(EntityManager $em, $entityClass)
+    public function __construct(EntityManager $em, FormFactoryInterface $formFactory, $entityClass)
     {
         $this->em = $em;
         $this->entityClass = $entityClass;
         $this->repository = $this->em->getRepository($this->entityClass);
+        $this->formFactory = $formFactory;
     }
 
     /**
-     * @param mixed $id
+     * @param int $id
      *
      * @return RestEntityInterface
      */
@@ -42,16 +48,14 @@ class FriendRestHelper implements RestHelperInterface
      * @param int $limit  the limit of the result
      * @param int $offset starting from the offset
      *
-     * @return array
+     * @return RestEntityInterface[]
      */
     public function all($limit = 5, $offset = 0)
     {
-        return $this->repository->findBy(array(), null, $limit, $offset);
+        return $this->repository->findBy([], null, $limit, $offset);
     }
 
     /**
-     * Edit a picture.
-     *
      * @param RestEntityInterface $obj
      * @param array               $parameters
      *
@@ -63,8 +67,6 @@ class FriendRestHelper implements RestHelperInterface
     }
 
     /**
-     * Partially update a picture.
-     *
      * @param RestEntityInterface $obj
      * @param array               $parameters
      *
@@ -83,10 +85,39 @@ class FriendRestHelper implements RestHelperInterface
     public function post(array $parameters)
     {
         $entity = $this->createEntity();
-        $entity->setUser($parameters['user']);
-        $entity->setFriend($parameters['friend']);
 
-        return $this->repository->save($entity, true);
+        return $this->processForm($entity, $parameters, 'POST');
+    }
+
+    /**
+     * Process the form.
+     *
+     * @param PictureLike $obj
+     * @param array       $parameters
+     * @param string      $method
+     *
+     * @return RestEntityInterface
+     *
+     * @throws \Acme\ServerBundle\Exception\InvalidFormException
+     */
+    private function processForm(PictureLike $obj, array $parameters, $method = 'PUT')
+    {
+        $form = $this->formFactory->create(new LikeType(), $obj, ['method' => $method]);
+        $form->submit($parameters, 'PATCH' !== $method);
+
+        if ($form->isValid()) {
+            $like = $form->getData();
+            $like->setUser($parameters['user']);
+
+            $this->repository->save($like, true);
+
+            return $like;
+        }
+
+        throw new InvalidFormException(
+            'Invalid submitted data: '.(string) $form->getErrors(true, false),
+            $form
+        );
     }
 
     private function createEntity()

@@ -5,6 +5,9 @@ parameters:
     user_entity: Acme\ServerBundle\Entity\User
     friend_entity: Acme\ServerBundle\Entity\Friend
     picture_comment_entity: Acme\ServerBundle\Entity\PictureComment
+    picture_like_entity: Acme\ServerBundle\Entity\PictureLike
+    picture_tag_entity: Acme\ServerBundle\Entity\PictureTag
+    tag_entity: Acme\ServerBundle\Entity\Tag
 
 services:
     api_token_user_provider:
@@ -35,3 +38,15 @@ services:
     rest.comment.helper:
         class: Acme\ServerBundle\Helper\CommentRestHelper
         arguments: ['@doctrine.orm.entity_manager', '@form.factory', '%picture_comment_entity%']
+
+    rest.like.helper:
+        class: Acme\ServerBundle\Helper\LikeRestHelper
+        arguments: ['@doctrine.orm.entity_manager', '@form.factory', '%picture_like_entity%']
+
+    rest.picture.tag.helper:
+        class: Acme\ServerBundle\Helper\PictureTagRestHelper
+        arguments: ['@doctrine.orm.entity_manager', '@form.factory', '%picture_tag_entity%']
+
+    rest.tag.helper:
+        class: Acme\ServerBundle\Helper\TagRestHelper
+        arguments: ['@doctrine.orm.entity_manager', '@form.factory', '%tag_entity%']

@@ -111,8 +111,8 @@ class CommentRestHelper implements RestHelperInterface
      * Process the form.
      *
      * @param PictureComment $obj
-     * @param array               $parameters
-     * @param string              $method
+     * @param array          $parameters
+     * @param string         $method
      *
      * @return RestEntityInterface
      *

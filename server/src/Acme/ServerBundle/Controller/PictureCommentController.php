@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class CommentController extends FOSRestController
+class PictureCommentController extends FOSRestController
 {
     /**
      * Get picture comment.
@@ -120,5 +120,40 @@ class CommentController extends FOSRestController
         }
 
         return $this->handleView($view);
+    }
+
+    /**
+     * Delete existing comment.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Delete existing comment",
+     *   statusCodes = {
+     *     204 = "Returned when successful",
+     *     400 = "Returned when errors"
+     *   }
+     * )
+     *
+     * @RestAnnotations\Delete("/pictures/comments/{commentId}", requirements = { "commentId" = "\d+" }, options = { "method_prefix" = false })
+     *
+     * @param int $commentId
+     *
+     * @return Response
+     *
+     * @throws NotFoundHttpException when comment does not exist
+     */
+    public function deletePictureCommentAction($commentId)
+    {
+        $comment = $this->get('rest.comment.helper')->getOneBy(['id' => $commentId, 'user' => $this->getUser()]);
+
+        if (!is_null($comment)) {
+            $this->get('rest.comment.helper')->delete($comment);
+
+            $view = View::create(null, Response::HTTP_NO_CONTENT);
+
+            return $this->handleView($view);
+        } else {
+            throw new NotFoundHttpException();
+        }
     }
 }

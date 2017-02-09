@@ -2,23 +2,16 @@
 
 namespace Acme\ServerBundle\Entity;
 
+use Acme\ServerBundle\Model\RestEntityInterface;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Tag.
- *
  * @ORM\Table(name="tag")
  * @ORM\Entity(repositoryClass="Acme\ServerBundle\Repository\TagRepository")
  */
-class Tag
+class Tag implements RestEntityInterface
 {
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="name", type="string", length=50, nullable=false)
-     */
-    private $name;
-
     /**
      * @var int
      *
@@ -27,6 +20,23 @@ class Tag
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $id;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="name", type="string", length=50, nullable=false)
+     */
+    private $name;
+
+    /**
+     * @ORM\OneToMany(targetEntity="Acme\ServerBundle\Entity\PictureLike", mappedBy="picture")
+     */
+    private $pictures;
+
+    public function __construct()
+    {
+        $this->pictures = new ArrayCollection();
+    }
 
     /**
      * Set name.

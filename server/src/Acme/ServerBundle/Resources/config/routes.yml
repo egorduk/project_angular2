@@ -37,7 +37,19 @@ friend:
 comments:
     type: rest
     prefix: /v1
-    resource: Acme\ServerBundle\Controller\CommentController
+    resource: Acme\ServerBundle\Controller\PictureCommentController
+    name_prefix: api_1_ # naming collision
+
+likes:
+    type: rest
+    prefix: /v1
+    resource: Acme\ServerBundle\Controller\PictureLikeController
+    name_prefix: api_1_ # naming collision
+
+tags:
+    type: rest
+    prefix: /v1
+    resource: Acme\ServerBundle\Controller\PictureTagController
     name_prefix: api_1_ # naming collision
 
 #user_by_id:
