@@ -5,8 +5,6 @@ namespace Acme\ServerBundle\Helper;
 use Doctrine\Common\Persistence\ObjectManager;
 use Namshi\JOSE\SimpleJWS;
 
-//require_once "../Library/JOSE/autoloader.php";
-
 class AuthHelper
 {
     const ENCODE_ALGORITHM = 'RS256';

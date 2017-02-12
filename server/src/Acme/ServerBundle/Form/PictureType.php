@@ -3,9 +3,13 @@
 namespace Acme\ServerBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\Validator\Constraints\Image;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Regex;
@@ -21,23 +25,25 @@ class PictureType extends AbstractType
                     new Length(['max' => 50]),
                 ],
             ])
-            ->add('filename', TextType::class, [
+            ->add('file', FileType::class, [
+                'required' => false,
+                'mapped' => false,
                 'constraints' => [
                     new NotBlank(),
-                    new Length(['max' => 50]),
+                    new File([
+                        'mimeTypes' => [
+                            'image/png',
+                            'image/jpeg',
+                            'image/gif',
+                        ],
+                        'maxSize' => ini_get('upload_max_filesize'),
+                    ]),
                 ],
             ])
-            ->add('resizeHeight', TextType::class, [
-                'constraints' => [
-                    new NotBlank(),
-                    new Regex('/\d+/'),
-                ],
-            ])
-            ->add('resizeWidth', TextType::class, [
-                'constraints' => [
-                    new NotBlank(),
-                    new Regex('/\d+/'),
-                ],
+            ->add('isShowHost', CheckboxType::class, [
+                'required' => false,
+                'mapped' => false,
+                'data' => true,
             ]);
     }
 

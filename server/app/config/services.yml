@@ -1,5 +1,3 @@
-# Learn more about services, parameters and containers at
-# http://symfony.com/doc/current/book/service_container.html
 parameters:
     picture_entity: Acme\ServerBundle\Entity\Picture
     user_entity: Acme\ServerBundle\Entity\User
@@ -8,6 +6,8 @@ parameters:
     picture_like_entity: Acme\ServerBundle\Entity\PictureLike
     picture_tag_entity: Acme\ServerBundle\Entity\PictureTag
     tag_entity: Acme\ServerBundle\Entity\Tag
+    gallery_entity: Acme\ServerBundle\Entity\PictureGallery
+    ghp_entity: Acme\ServerBundle\Entity\GalleryHasPicture
 
 services:
     api_token_user_provider:
@@ -21,7 +21,7 @@ services:
 
     rest.picture.helper:
         class: Acme\ServerBundle\Helper\PictureRestHelper
-        arguments: ['@doctrine.orm.entity_manager', '@form.factory', '%picture_entity%']
+        arguments: ['@doctrine.orm.entity_manager', '@form.factory', '@image.thumbnail.helper', '%picture_entity%', '%images_upload_directory%']
 
     rest.auth.helper:
         class: Acme\ServerBundle\Helper\AuthHelper
@@ -43,10 +43,14 @@ services:
         class: Acme\ServerBundle\Helper\LikeRestHelper
         arguments: ['@doctrine.orm.entity_manager', '@form.factory', '%picture_like_entity%']
 
-    rest.picture.tag.helper:
-        class: Acme\ServerBundle\Helper\PictureTagRestHelper
-        arguments: ['@doctrine.orm.entity_manager', '@form.factory', '%picture_tag_entity%']
-
     rest.tag.helper:
         class: Acme\ServerBundle\Helper\TagRestHelper
         arguments: ['@doctrine.orm.entity_manager', '@form.factory', '%tag_entity%']
+
+    rest.gallery.helper:
+        class: Acme\ServerBundle\Helper\GalleryRestHelper
+        arguments: ['@doctrine.orm.entity_manager', '@form.factory', '%gallery_entity%', '%ghp_entity%']
+
+    image.thumbnail.helper:
+        class: Acme\ServerBundle\Helper\ImageThumbnailHelper
+        arguments: ['%images_upload_directory%']

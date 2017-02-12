@@ -50,8 +50,6 @@ class FriendRestHelper implements RestHelperInterface
     }
 
     /**
-     * Edit a picture.
-     *
      * @param RestEntityInterface $obj
      * @param array               $parameters
      *
@@ -59,12 +57,10 @@ class FriendRestHelper implements RestHelperInterface
      */
     public function put(RestEntityInterface $obj, array $parameters)
     {
-        //return $this->processForm($picture, $parameters, 'PUT');
+        return $obj;
     }
 
     /**
-     * Partially update a picture.
-     *
      * @param RestEntityInterface $obj
      * @param array               $parameters
      *
@@ -72,7 +68,7 @@ class FriendRestHelper implements RestHelperInterface
      */
     public function patch(RestEntityInterface $obj, array $parameters)
     {
-        //return $this->processForm($picture, $parameters, 'PATCH');
+        return $obj;
     }
 
     /**
@@ -83,8 +79,7 @@ class FriendRestHelper implements RestHelperInterface
     public function post(array $parameters)
     {
         $entity = $this->createEntity();
-        $entity->setUser($parameters['user']);
-        $entity->setFriend($parameters['friend']);
+        $entity->setUserFriend($parameters['user'], $parameters['friend']);
 
         return $this->repository->save($entity, true);
     }

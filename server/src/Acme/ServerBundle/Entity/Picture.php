@@ -5,7 +5,7 @@ namespace Acme\ServerBundle\Entity;
 use Acme\ServerBundle\Model\RestEntityInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\HttpFoundation\File\File;
 
 /**
  * @ORM\Table(name="picture")
@@ -23,7 +23,7 @@ class Picture implements RestEntityInterface
     private $id;
 
     /**
-     * @var int
+     * @var User
      *
      * @ORM\ManyToOne(targetEntity="Acme\ServerBundle\Entity\User", inversedBy="users")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
@@ -34,8 +34,6 @@ class Picture implements RestEntityInterface
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=50, nullable=false)
-     *
-     * @Assert\NotBlank()
      */
     private $name;
 
@@ -50,8 +48,6 @@ class Picture implements RestEntityInterface
      * @var string
      *
      * @ORM\Column(name="filename", type="string", length=50, nullable=false)
-     *
-     * @Assert\NotBlank()
      */
     private $filename;
 
@@ -59,8 +55,6 @@ class Picture implements RestEntityInterface
      * @var int
      *
      * @ORM\Column(name="resize_height", type="smallint", nullable=false)
-     *
-     * @Assert\NotBlank()
      */
     private $resizeHeight;
 
@@ -68,15 +62,13 @@ class Picture implements RestEntityInterface
      * @var int
      *
      * @ORM\Column(name="resize_width", type="smallint", nullable=false)
-     *
-     * @Assert\NotBlank()
      */
     private $resizeWidth;
 
     /**
-     * @var bool
+     * @var int
      *
-     * @ORM\Column(name="is_show_host", type="boolean", nullable=false)
+     * @ORM\Column(name="is_show_host", type="smallint", nullable=false)
      */
     private $isShowHost;
 
@@ -90,9 +82,16 @@ class Picture implements RestEntityInterface
      */
     private $pictures;
 
+    private $file;
+
+    public function setFile(File $file)
+    {
+        $this->file = $file;
+    }
+
     public function __construct()
     {
-        $this->setDateUploadAndIsShowHost();
+        $this->setDateUploadIsShowHost();
 
         $this->comments = new ArrayCollection();
         $this->pictures = new ArrayCollection();
@@ -221,7 +220,7 @@ class Picture implements RestEntityInterface
     /**
      * Set isShowHost.
      *
-     * @param bool $isShowHost
+     * @param int $isShowHost
      *
      * @return Picture
      */
@@ -235,7 +234,7 @@ class Picture implements RestEntityInterface
     /**
      * Get isShowHost.
      *
-     * @return bool
+     * @return int
      */
     public function getIsShowHost()
     {
@@ -255,16 +254,16 @@ class Picture implements RestEntityInterface
     /**
      * @return $this
      */
-    public function setDateUploadAndIsShowHost()
+    public function setDateUploadIsShowHost()
     {
-        $this->setDateUpload(new \DateTime());
-        $this->setIsShowHost(true);
+        $this->dateUpload = new \DateTime();
+        $this->isShowHost = 1;
 
         return $this;
     }
 
     /**
-     * @return int
+     * @return User
      */
     public function getUser()
     {
@@ -272,10 +271,38 @@ class Picture implements RestEntityInterface
     }
 
     /**
-     * @param int $user
+     * @param User $user
      */
     public function setUser($user)
     {
         $this->user = $user;
+    }
+
+    /**
+     * @param string $name
+     * @param int    $isShowHost
+     *
+     * @return $this
+     */
+    public function setNameIsShowHost($name, $isShowHost)
+    {
+        $this->name = $name;
+        $this->isShowHost = $isShowHost;
+
+        return $this;
+    }
+
+    /**
+     * @param int $width
+     * @param int $height
+     *
+     * @return $this
+     */
+    public function setResizeWidthHeight($width, $height)
+    {
+        $this->resizeWidth = $width;
+        $this->resizeHeight = $height;
+
+        return $this;
     }
 }

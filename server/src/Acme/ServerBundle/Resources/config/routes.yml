@@ -1,19 +1,7 @@
-picture:
-    type: rest
-    prefix: /v1
-    resource: Acme\ServerBundle\Controller\PictureController
-    name_prefix: api_1_ # naming collision
-
 pictures:
     type: rest
     prefix: /v1
     resource: Acme\ServerBundle\Controller\PictureController
-    name_prefix: api_1_ # naming collision
-
-user:
-    type: rest
-    prefix: /v1
-    resource: Acme\ServerBundle\Controller\UserController
     name_prefix: api_1_ # naming collision
 
 users:
@@ -23,12 +11,6 @@ users:
     name_prefix: api_1_ # naming collision
 
 friends:
-    type: rest
-    prefix: /v1
-    resource: Acme\ServerBundle\Controller\FriendController
-    name_prefix: api_1_ # naming collision
-
-friend:
     type: rest
     prefix: /v1
     resource: Acme\ServerBundle\Controller\FriendController
@@ -50,6 +32,12 @@ tags:
     type: rest
     prefix: /v1
     resource: Acme\ServerBundle\Controller\PictureTagController
+    name_prefix: api_1_ # naming collision
+
+galleries:
+    type: rest
+    prefix: /v1
+    resource: Acme\ServerBundle\Controller\GalleryController
     name_prefix: api_1_ # naming collision
 
 #user_by_id:

@@ -20,8 +20,9 @@ class FriendController extends FOSRestController
      *   resource = true,
      *   description = "Follow the user",
      *   statusCodes = {
-     *     200 = "Returned when successful",
-     *     400 = "Returned when errors"
+     *     Response::HTTP_CREATED = "Returned when successful",
+     *     Response::HTTP_BAD_REQUEST = "Returned when errors",
+     *     Response::HTTP_NOT_FOUND = "Returned when user does not exist"
      *   }
      * )
      *
@@ -42,16 +43,16 @@ class FriendController extends FOSRestController
                 throw new NotFoundHttpException();
             }
 
-            $response = $this->get('rest.friend.helper')->post(
+            $this->get('rest.friend.helper')->post(
                 [
                     'friend' => $friend,
                     'user' => $this->getUser(),
                 ]
             );
 
-            $view = View::create(null, $response ? Response::HTTP_OK : Response::HTTP_BAD_REQUEST);
+            $view = $this->view(null, Response::HTTP_CREATED);
         } catch (InvalidFormException $exception) {
-            $view = View::create($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+            $view = $this->view($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
         return $this->handleView($view);
@@ -64,24 +65,20 @@ class FriendController extends FOSRestController
      *   resource = true,
      *   description = "Delete existing following user",
      *   statusCodes = {
-     *     204 = "Returned when successful",
-     *     400 = "Returned when errors"
+     *     Response::HTTP_NO_CONTENT = "Returned when successful",
+     *     Response::HTTP_BAD_REQUEST = "Returned when errors"
      *   }
      * )
      *
-     * @param ParamFetcherInterface $paramFetcher
-     *
-     * @RestAnnotations\RequestParam(name="friendId", requirements="\d+", description="Friend id")
+     * @param int $friendId
      *
      * @return Response
      *
      * @throws NotFoundHttpException when friend does not exist
      */
-    public function deleteFollowsAction(ParamFetcherInterface $paramFetcher)
+    public function deleteFollowsAction($friendId)
     {
         try {
-            $friendId = $paramFetcher->get('friendId');
-
             if (!($friend = $this->get('rest.friend.helper')->getOneBy(
                 [
                     'friend' => $this->get('rest.user.helper')->get($friendId),
@@ -91,11 +88,11 @@ class FriendController extends FOSRestController
                 throw new NotFoundHttpException();
             }
 
-            $response = $this->get('rest.friend.helper')->delete($friend);
+            $this->get('rest.friend.helper')->delete($friend);
 
-            $view = View::create(null, $response ? Response::HTTP_OK : Response::HTTP_BAD_REQUEST);
+            $view = $this->view(null, Response::HTTP_NO_CONTENT);
         } catch (InvalidFormException $exception) {
-            $view = View::create($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+            $view = $this->view($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
         return $this->handleView($view);

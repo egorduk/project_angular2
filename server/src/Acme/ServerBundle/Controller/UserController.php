@@ -22,22 +22,22 @@ class UserController extends FOSRestController
      *   description = "Get user by id",
      *   output = "Acme\ServerBundle\Entity\User",
      *   statusCodes = {
-     *     200 = "Returned when successful",
-     *     404 = "Returned when the user is not found"
+     *     Response::HTTP_OK = "Returned when successful",
+     *     Response::HTTP_NOT_FOUND = "Returned when the user is not found"
      *   }
      * )
      *
-     * @Get("/users/id/{id}", name="get_user_by_id", requirements = { "id" = "\d+" }, options = { "method_prefix" = false })
+     * @Get("/users/id/{userId}", name="get_user_by_id", requirements = { "userId" = "\d+" }, options = { "method_prefix" = false })
      *
-     * @param int $id
+     * @param int $userId
      *
      * @return User
      *
      * @throws NotFoundHttpException when user does not exist
      */
-    public function getUserByIdAction($id)
+    public function getUserByIdAction($userId)
     {
-        if (!($user = $this->get('rest.user.helper')->get($id))) {
+        if (!$user = $this->get('rest.user.helper')->get($userId)) {
             throw new NotFoundHttpException();
         }
 
@@ -61,7 +61,7 @@ class UserController extends FOSRestController
      *   }
      * )
      *
-     * @Get("/users/login/{login}", name="get_user_by_login", options={ "method_prefix" = false })
+     * @Get("/users/login/{login}", options={ "method_prefix" = false })
      *
      * @param string $login
      *
@@ -71,7 +71,7 @@ class UserController extends FOSRestController
      */
     public function getUserByLoginAction($login)
     {
-        if (!($user = $this->get('rest.user.helper')->getBy(['login' => $login]))) {
+        if (!$user = $this->get('rest.user.helper')->getBy(['login' => $login])) {
             throw new NotFoundHttpException();
         }
 
@@ -95,7 +95,7 @@ class UserController extends FOSRestController
      *   }
      * )
      *
-     * @Get("/users/unfollows", name="get_unfollows_users", options={ "method_prefix" = false })
+     * @Get("/users/unfollows", options={ "method_prefix" = false })
      *
      * @return User[]
      *
@@ -103,7 +103,7 @@ class UserController extends FOSRestController
      */
     public function getUnfollowsUsersAction()
     {
-        if (!($users = $this->get('rest.user.helper')->getUnfollowsUsers($this->getUser()))) {
+        if (!$users = $this->get('rest.user.helper')->getUnfollowsUsers($this->getUser())) {
             throw new NotFoundHttpException();
         }
 
@@ -120,8 +120,8 @@ class UserController extends FOSRestController
      *   description = "Create a new user",
      *   input = "Acme\ServerBundle\Form\RegistrationType",
      *   statusCodes = {
-     *     200 = "Returned when successful",
-     *     400 = "Returned when errors"
+     *     Response::HTTP_OK = "Returned when successful",
+     *     Response::HTTP_BAD_REQUEST = "Returned when errors"
      *   }
      * )
      *
@@ -137,13 +137,13 @@ class UserController extends FOSRestController
             );
 
             $routeOptions = [
-                'id' => $user->getId(),
+                'userId' => $user->getId(),
                 '_format' => $request->get('_format'),
             ];
 
-            $view = View::createRouteRedirect('api_1_get_user_by_id', $routeOptions);
+            $view = $this->routeRedirectView('api_1_get_user_by_id', $routeOptions);
         } catch (InvalidFormException $exception) {
-            $view = View::create($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+            $view = $this->view($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
         return $this->handleView($view);
@@ -156,12 +156,12 @@ class UserController extends FOSRestController
      *   resource = true,
      *   description = "Sign in user by email/password and get auth token",
      *   statusCodes = {
-     *     200 = "Returned when successful",
-     *     404 = "Returned when the user is not found"
+     *     Response::HTTP_OK = "Returned when successful",
+     *     Response::HTTP_NOT_FOUND = "Returned when the user is not found"
      *   }
      * )
      *
-     * @Get("/users/email/{email}/password/{password}", name="get_user_token_by_email_password", requirements = { "email" = "\S+", "password" = "\S+" }, options = { "method_prefix" = false })
+     * @Get("/users/email/{email}/password/{password}", requirements = { "email" = "\S+", "password" = "\S+" }, options = { "method_prefix" = false })
      *
      * @param string $email
      * @param string $password
@@ -190,9 +190,9 @@ class UserController extends FOSRestController
 
             $this->get('rest.user.helper')->patch($user);
 
-            $view = View::create($token, Response::HTTP_OK);
+            $view = $this->view(['token' => $token], Response::HTTP_OK);
         } catch (InvalidFormException $exception) {
-            $view = View::create($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+            $view = $this->view($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
         return $this->handleView($view);
@@ -224,13 +224,13 @@ class UserController extends FOSRestController
             );
 
             $routeOptions = [
-                'id' => $user->getId(),
+                'userId' => $user->getId(),
                 '_format' => $request->get('_format'),
             ];
 
-            $view = View::createRouteRedirect('api_1_get_user_by_id', $routeOptions, Response::HTTP_NO_CONTENT);
+            $view = $this->routeRedirectView('api_1_get_user_by_id', $routeOptions, Response::HTTP_NO_CONTENT);
         } catch (InvalidFormException $exception) {
-            $view = View::create($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+            $view = $this->view($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
         return $this->handleView($view);

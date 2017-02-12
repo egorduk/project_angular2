@@ -4,10 +4,13 @@ namespace Acme\ServerBundle\Controller;
 
 use Acme\ServerBundle\Entity\Picture;
 use Acme\ServerBundle\Exception\InvalidFormException;
+use Acme\ServerBundle\Form\PictureType;
+use FOS\RestBundle\Request\ParamFetcher;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\View;
 use FOS\RestBundle\Controller\Annotations as RestAnnotations;
 use FOS\RestBundle\Controller\FOSRestController;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -50,6 +53,42 @@ class PictureController extends FOSRestController
     }
 
     /**
+     * Get gallery pictures.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Get gallery pictures",
+     *   output = "Acme\ServerBundle\Entity\Picture",
+     *   statusCodes = {
+     *     Response::HTTP_OK = "Returned when successful",
+     *     Response::HTTP_NOT_FOUND = "Returned when the pictures are not found"
+     *   }
+     * )
+     *
+     * @RestAnnotations\Get("/pictures/galleries/{galleryId}", requirements = { "galleryId" = "\d+" }, name="get_gallery_pictures", options = { "method_prefix" = false })
+     *
+     * @param int $galleryId
+     *
+     * @return Response
+     *
+     * @throws NotFoundHttpException when pictures do not exist
+     */
+    public function getGalleryPicturesAction($galleryId)
+    {
+        if (!($gallery = $this->get('rest.gallery.helper')->get($galleryId))) {
+            throw new NotFoundHttpException();
+        }
+
+        if (!($picture = $this->get('rest.picture.helper')->getByGallery($gallery))) {
+            throw new NotFoundHttpException();
+        }
+
+        $view = $this->view(['picture' => $picture]);
+
+        return $this->handleView($view);
+    }
+
+    /**
      * Get all pictures.
      *
      * @ApiDoc(
@@ -77,10 +116,8 @@ class PictureController extends FOSRestController
         $offset = null == $offset ? 0 : $offset;
         $limit = $paramFetcher->get('limit');
 
-        $pictures = $this->get('rest.picture.helper')->all($limit, $offset);
-
-        if (count($pictures)) {
-            $view = $this->view(array('pictures' => $pictures));
+        if ($pictures = $this->get('rest.picture.helper')->all($limit, $offset)) {
+            $view = $this->view(['pictures' => $pictures]);
 
             return $this->handleView($view);
         } else {
@@ -89,14 +126,14 @@ class PictureController extends FOSRestController
     }
 
     /**
-     * Create a picture.
+     * Create a new picture.
      *
      * @ApiDoc(
      *   resource = true,
      *   description = "Create a new picture",
      *   input = "Acme\ServerBundle\Form\PictureType",
      *   statusCodes = {
-     *     Response::HTTP_OK = "Returned when successful",
+     *     Response::HTTP_CREATED = "Returned when successful",
      *     Response::HTTP_BAD_REQUEST = "Returned when errors"
      *   }
      * )
@@ -108,16 +145,14 @@ class PictureController extends FOSRestController
     public function postPictureAction(Request $request)
     {
         try {
-            $picture = $this->get('rest.picture.helper')->post(
-                $request->request->all()
+            $this->get('rest.picture.helper')->post(
+                array_merge($request->request->all(), [
+                    'user' => $this->getUser(),
+                    'file' => $request->files->get('file'),
+                ])
             );
 
-            $routeOptions = [
-                'id' => $picture->getId(),
-                '_format' => $request->get('_format'),
-            ];
-
-            $view = View::createRouteRedirect('api_1_get_picture', $routeOptions);
+            $view = $this->view(null, Response::HTTP_CREATED);
         } catch (InvalidFormException $exception) {
             $view = $this->view($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -189,27 +224,23 @@ class PictureController extends FOSRestController
      *   }
      * )
      *
-     * @param int $id
+     * @param int $pictureId
      *
      * @return Response
      *
      * @throws NotFoundHttpException when picture does not exist
      */
-    public function deletePictureAction($id)
+    public function deletePictureAction($pictureId)
     {
-        $picture = $this->getDoctrine()
-            ->getRepository('AcmeServerBundle:Picture')
-            ->find($id);
-
-        if (!is_null($picture)) {
-            $this->get('rest.picture.helper')->delete($picture);
-
-            $view = View::createRouteRedirect('api_1_get_pictures', [], Response::HTTP_NO_CONTENT);
-
-            return $this->handleView($view);
-        } else {
+        if (!$picture = $this->get('rest.picture.helper')->get($pictureId)) {
             throw new NotFoundHttpException();
         }
+
+        $this->get('rest.picture.helper')->delete($picture);
+
+        $view = $this->view([], Response::HTTP_NO_CONTENT);
+
+        return $this->handleView($view);
     }
 
     /**
@@ -232,7 +263,7 @@ class PictureController extends FOSRestController
      */
     public function getFriendPicturesAction()
     {
-        if (!($pictures = $this->get('rest.picture.helper')->getFriendsPictures($this->getUser()))) {
+        if (!$pictures = $this->get('rest.picture.helper')->getFriendsPictures($this->getUser())) {
             throw new NotFoundHttpException();
         }
 
@@ -255,7 +286,7 @@ class PictureController extends FOSRestController
      *   }
      * )
      *
-     * @RestAnnotations\Patch("/pictures/{pictureId}/name", name="update_picture_name", requirements = { "pictureId" = "\d+" }, options={ "method_prefix" = false })
+     * @RestAnnotations\Patch("/pictures/{pictureId}/name", requirements = { "pictureId" = "\d+" }, options={ "method_prefix" = false })
      *
      * @param Request $request
      * @param int     $pictureId
@@ -277,6 +308,132 @@ class PictureController extends FOSRestController
             } else {
                 $view = $this->view(null, Response::HTTP_NOT_FOUND);
             }
+        } catch (InvalidFormException $exception) {
+            $view = $this->view($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+
+        return $this->handleView($view);
+    }
+
+    /**
+     * Update picture status.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Update picture status",
+     *   input = "Acme\ServerBundle\Form\PictureType",
+     *   statusCodes = {
+     *     Response::HTTP_NO_CONTENT = "Returned when successful",
+     *     Response::HTTP_BAD_REQUEST = "Returned when errors",
+     *     Response::HTTP_NOT_FOUND = "Returned when picture does not found"
+     *   }
+     * )
+     *
+     * @RestAnnotations\Patch("/pictures/{pictureId}/status", requirements = { "pictureId" = "\d+" }, options={ "method_prefix" = false })
+     *
+     * @param Request $request
+     * @param int     $pictureId
+     *
+     * @return Response
+     */
+    public function patchPictureStatusAction(Request $request, $pictureId)
+    {
+        try {
+            if ($picture = $this->get('rest.picture.helper')->getOneBy(['id' => $pictureId, 'user' => $this->getUser()])) {
+                $picture = $this->get('rest.picture.helper')->patch($picture, $request->request->all());
+
+                $routeOptions = [
+                    'pictureId' => $picture->getId(),
+                    '_format' => $request->get('_format'),
+                ];
+
+                $view = View::createRouteRedirect('api_1_get_picture_by_id', $routeOptions, Response::HTTP_NO_CONTENT);
+            } else {
+                $view = $this->view(null, Response::HTTP_NOT_FOUND);
+            }
+        } catch (InvalidFormException $exception) {
+            $view = $this->view($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+
+        return $this->handleView($view);
+    }
+
+    /**
+     * Delete existing picture from gallery.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Delete existing picture from gallery",
+     *   statusCodes = {
+     *     Response::HTTP_NO_CONTENT = "Returned when successful",
+     *     Response::HTTP_NOT_FOUND = "Returned when errors"
+     *   }
+     * )
+     *
+     * @RestAnnotations\Delete("/pictures/{pictureId}/galleries/{galleryId}", requirements = { "pictureId" = "\d+", "galleryId" = "\d+" }, options = { "method_prefix" = false })
+     *
+     * @param int $pictureId
+     * @param int $galleryId
+     *
+     * @return Response
+     *
+     * @throws NotFoundHttpException when picture does not exist
+     */
+    public function deletePictureFromGalleryAction($pictureId, $galleryId)
+    {
+        if (!($picture = $this->get('rest.picture.helper')->get($pictureId))) {
+            throw new NotFoundHttpException();
+        }
+
+        if (!($gallery = $this->get('rest.gallery.helper')->get($galleryId))) {
+            throw new NotFoundHttpException();
+        }
+
+        if (!($ghp = $this->get('rest.gallery.helper')->getOneGhpBy([
+            'picture' => $picture,
+            'gallery' => $gallery,
+            'user' => $this->getUser(),
+        ]))) {
+            throw new NotFoundHttpException();
+        }
+
+        $this->get('rest.gallery.helper')->deleteGhp($ghp);
+
+        $view = $this->view(null, Response::HTTP_NO_CONTENT);
+
+        return $this->handleView($view);
+    }
+
+    /**
+     * Add a picture to gallery.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   description = "Add a picture to gallery",
+     *   input = "Acme\ServerBundle\Form\GhpType",
+     *   statusCodes = {
+     *     Response::HTTP_CREATED = "Returned when successful",
+     *     Response::HTTP_BAD_REQUEST = "Returned when errors"
+     *   }
+     * )
+     *
+     * @param Request $request
+     *
+     * @return Response
+     */
+    public function postPicturesGalleriesAction(Request $request)
+    {
+        try {
+            $picture = $this->get('rest.gallery.helper')->postToGallery(
+                array_merge($request->request->all(), ['user' => $this->getUser()])
+            );
+
+            $routeOptions = [
+                'pictureId' => $picture->getId(),
+                '_format' => $request->get('_format'),
+            ];
+
+            $view = $this->routeRedirectView('api_1_get_picture_by_id', $routeOptions);
         } catch (InvalidFormException $exception) {
             $view = $this->view($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }

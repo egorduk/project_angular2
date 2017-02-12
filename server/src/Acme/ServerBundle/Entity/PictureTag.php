@@ -2,13 +2,14 @@
 
 namespace Acme\ServerBundle\Entity;
 
+use Acme\ServerBundle\Model\RestEntityInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Table(name="picture_tag", indexes={@ORM\Index(name="FK_picture_tag_picture", columns={"picture_id"}), @ORM\Index(name="FK_picture_tag_tag", columns={"tag_id"})})
  * @ORM\Entity(repositoryClass="Acme\ServerBundle\Repository\PictureTagRepository")
  */
-class PictureTag
+class PictureTag implements RestEntityInterface
 {
     /**
      * @var int

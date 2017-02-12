@@ -2,6 +2,7 @@
 
 namespace Acme\ServerBundle\Entity;
 
+use Acme\ServerBundle\Model\RestEntityInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -10,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="gallery_has_picture", indexes={@ORM\Index(name="FK_gallery_has_picture_picture_gallery", columns={"gallery_id"}), @ORM\Index(name="FK_gallery_has_picture_picture", columns={"picture_id"}), @ORM\Index(name="FK_gallery_has_picture_user_id", columns={"user_id"})})
  * @ORM\Entity(repositoryClass="Acme\ServerBundle\Repository\GalleryHasPictureRepository")
  */
-class GalleryHasPicture
+class GalleryHasPicture implements RestEntityInterface
 {
     /**
      * @var int
@@ -24,7 +25,7 @@ class GalleryHasPicture
     /**
      * @var \Acme\ServerBundle\Entity\User
      *
-     * @ORM\ManyToOne(targetEntity="Acme\ServerBundle\Entity\User")
+     * @ORM\ManyToOne(targetEntity="Acme\ServerBundle\Entity\User", inversedBy="users")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      * })
@@ -34,7 +35,7 @@ class GalleryHasPicture
     /**
      * @var \Acme\ServerBundle\Entity\PictureGallery
      *
-     * @ORM\ManyToOne(targetEntity="Acme\ServerBundle\Entity\PictureGallery")
+     * @ORM\ManyToOne(targetEntity="Acme\ServerBundle\Entity\PictureGallery", inversedBy="galleries")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="gallery_id", referencedColumnName="id")
      * })
@@ -44,7 +45,7 @@ class GalleryHasPicture
     /**
      * @var \Acme\ServerBundle\Entity\Picture
      *
-     * @ORM\ManyToOne(targetEntity="Acme\ServerBundle\Entity\Picture")
+     * @ORM\ManyToOne(targetEntity="Acme\ServerBundle\Entity\Picture", inversedBy="pictures")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="picture_id", referencedColumnName="id")
      * })

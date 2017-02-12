@@ -2,27 +2,36 @@
 
 namespace Acme\ServerBundle\Helper;
 
+use Acme\ServerBundle\Entity\GalleryHasPicture;
 use Acme\ServerBundle\Entity\Picture;
+use Acme\ServerBundle\Entity\PictureGallery;
 use Acme\ServerBundle\Entity\User;
 use Acme\ServerBundle\Model\RestEntityInterface;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\Form\FormFactoryInterface;
 use Acme\ServerBundle\Form\PictureType;
 use Acme\ServerBundle\Exception\InvalidFormException;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class PictureRestHelper implements RestHelperInterface
 {
     private $em;
-    private $entityClass;
-    private $repository;
     private $formFactory;
+    private $imgThumbHelper;
+    private $entityClass;
+    private $parameters;
+    private $repository;
 
-    public function __construct(EntityManager $em, FormFactoryInterface $formFactory, $entityClass)
+    public function __construct(EntityManager $em, FormFactoryInterface $formFactory, ImageThumbnailHelper $imgThumbHelper, $entityClass, $parameters)
     {
         $this->em = $em;
         $this->entityClass = $entityClass;
         $this->repository = $this->em->getRepository($this->entityClass);
         $this->formFactory = $formFactory;
+        $this->imgThumbHelper = $imgThumbHelper;
+        $this->parameters = $parameters;
     }
 
     /**
@@ -78,6 +87,25 @@ class PictureRestHelper implements RestHelperInterface
     }
 
     /**
+     * Get gallery pictures.
+     *
+     * @param PictureGallery $gallery
+     *
+     * @return Picture[]
+     */
+    public function getByGallery(PictureGallery $gallery)
+    {
+        return $this->em->createQueryBuilder()
+            ->select('p.id, p.name, p.dateUpload, p.isShowHost, p.resizeHeight, p.resizeWidth, p.filename')
+            ->from('AcmeServerBundle:GalleryHasPicture', 'ghp')
+            ->innerJoin('AcmeServerBundle:Picture', 'p', 'WITH', 'p = ghp.picture')
+            ->where('ghp.gallery = :gallery')
+            ->setParameter('gallery', $gallery)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
      * Get a list of pictures.
      *
      * @param int $limit  the limit of the result
@@ -87,7 +115,7 @@ class PictureRestHelper implements RestHelperInterface
      */
     public function all($limit = 5, $offset = 0)
     {
-        return $this->repository->findBy(array(), null, $limit, $offset);
+        return $this->repository->findBy([], null, $limit, $offset);
     }
 
     /**
@@ -131,15 +159,13 @@ class PictureRestHelper implements RestHelperInterface
     }
 
     /**
-     * Process the form.
-     *
      * @param RestEntityInterface $obj
      * @param array               $parameters
      * @param string              $method
      *
      * @return Picture
      *
-     * @throws \Acme\ServerBundle\Exception\InvalidFormException
+     * @throws InvalidFormException
      */
     private function processForm(RestEntityInterface $obj, array $parameters, $method = 'PUT')
     {
@@ -148,12 +174,36 @@ class PictureRestHelper implements RestHelperInterface
 
         if ($form->isValid()) {
             $picture = $form->getData();
-           // dump($parameters);die;
 
             if ($method === 'POST') {
-                $picture->setDateUploadAndIsShowHost();
+                /** @var UploadedFile $file **/
+                $file = $parameters['file'];
+
+                $fileName = $file->getClientOriginalName();
+
+                $uploadedFile = $file->move(
+                    $this->parameters['original'],
+                    $fileName
+                );
+
+                $sourceImagePath = $uploadedFile->getLinkTarget();
+                $sourceImageMimeType = $uploadedFile->getMimeType();
+
+                $isSuccess = $this->imgThumbHelper->createImageThumbnail($sourceImagePath, $sourceImageMimeType);
+
+                if ($isSuccess) {
+                    $picture->setFilename($fileName);
+                    $picture->setResizeWidthHeight(
+                        $this->imgThumbHelper->getThumbnailWidth(),
+                        $this->imgThumbHelper->getThumbnailHeight()
+                    );
+                    $picture->setDateUploadIsShowHost();
+                    $picture->setUser($parameters['user']);
+                } else {
+                    throw new FileException();
+                }
             } elseif ($method === 'PATCH') {
-                $picture->setName($parameters['name']);
+                $picture->setNameIsShowHost($parameters['name'], $parameters['isShowHost']);
             }
 
             $this->repository->save($picture, true);
@@ -180,5 +230,9 @@ class PictureRestHelper implements RestHelperInterface
     public function delete(RestEntityInterface $obj)
     {
         return $this->repository->remove($obj, true);
+    }
+
+    public function deleteFromGallery(RestEntityInterface $obj)
+    {
     }
 }

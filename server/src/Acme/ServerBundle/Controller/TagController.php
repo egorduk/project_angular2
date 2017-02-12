@@ -31,7 +31,7 @@ class TagController extends FOSRestController
      *
      * @return Response
      *
-     * @throws NotFoundHttpException when pictures not exist
+     * @throws NotFoundHttpException when tags do not exist
      */
     public function getTagsAction(ParamFetcherInterface $paramFetcher)
     {
@@ -39,14 +39,12 @@ class TagController extends FOSRestController
         $offset = null == $offset ? 0 : $offset;
         $limit = $paramFetcher->get('limit');
 
-        $tags = $this->get('rest.tag.helper')->all($limit, $offset);
-
-        if (count($tags)) {
-            $view = $this->view(['tags' => $tags]);
-
-            return $this->handleView($view);
-        } else {
+        if (!($tags = $this->get('rest.tag.helper')->all($limit, $offset))) {
             throw new NotFoundHttpException();
         }
+
+        $view = $this->view(['tags' => $tags]);
+
+        return $this->handleView($view);
     }
 }

@@ -21,7 +21,7 @@ class Friend implements RestEntityInterface
     private $id;
 
     /**
-     * @var int
+     * @var Friend
      *
      * @ORM\ManyToOne(targetEntity="Acme\ServerBundle\Entity\User", inversedBy="friends")
      * @ORM\JoinColumn(name="friend_id", referencedColumnName="id")
@@ -29,7 +29,7 @@ class Friend implements RestEntityInterface
     private $friend;
 
     /**
-     * @var int
+     * @var User
      *
      * @ORM\ManyToOne(targetEntity="Acme\ServerBundle\Entity\User", inversedBy="users")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
@@ -47,7 +47,7 @@ class Friend implements RestEntityInterface
     }
 
     /**
-     * @return int
+     * @return Friend
      */
     public function getFriend()
     {
@@ -55,15 +55,7 @@ class Friend implements RestEntityInterface
     }
 
     /**
-     * @param int $friend
-     */
-    public function setFriend($friend)
-    {
-        $this->friend = $friend;
-    }
-
-    /**
-     * @return int
+     * @return User
      */
     public function getUser()
     {
@@ -71,10 +63,16 @@ class Friend implements RestEntityInterface
     }
 
     /**
-     * @param int $user
+     * @param User $user
+     * @param Friend $friend
+     *
+     * @return $this
      */
-    public function setUser($user)
+    public function setUserFriend($user, $friend)
     {
         $this->user = $user;
+        $this->friend = $friend;
+
+        return $this;
     }
 }

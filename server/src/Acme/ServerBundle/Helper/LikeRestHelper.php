@@ -98,7 +98,7 @@ class LikeRestHelper implements RestHelperInterface
      *
      * @return RestEntityInterface
      *
-     * @throws \Acme\ServerBundle\Exception\InvalidFormException
+     * @throws InvalidFormException
      */
     private function processForm(PictureLike $obj, array $parameters, $method = 'PUT')
     {
