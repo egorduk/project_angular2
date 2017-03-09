@@ -27,11 +27,6 @@ class ApiTokenAuthenticator implements SimplePreAuthenticatorInterface, Authenti
     {
         $token = $request->headers->get('token');
 
-        //$targetUrl = '/login/check';
-        //if (!$this->httpUtils->checkRequestPath($request, $targetUrl)) {
-         //   return;
-        //}
-
         return new PreAuthenticatedToken(
             new User(),
             $token,
@@ -76,7 +71,7 @@ class ApiTokenAuthenticator implements SimplePreAuthenticatorInterface, Authenti
     {
         return new Response(
             strtr($exception->getMessageKey(), $exception->getMessageData()),
-            401
+            Response::HTTP_UNAUTHORIZED
         );
     }
 

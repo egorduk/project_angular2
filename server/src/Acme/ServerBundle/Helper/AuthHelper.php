@@ -46,13 +46,13 @@ class AuthHelper
     {
         $serverFolder = dirname(dirname(__FILE__));
 
-        return openssl_pkey_get_private('file://'.$serverFolder.'/key/private.pem', 'pass');
+        return openssl_pkey_get_private('file://' . $serverFolder . '/key/private.pem', 'pass');
     }
 
     private function getPublicKey()
     {
         $serverFolder = dirname(dirname(__FILE__));
 
-        return openssl_pkey_get_public('file://'.$serverFolder.'/key/public.pem');
+        return openssl_pkey_get_public('file://' . $serverFolder . '/key/public.pem');
     }
 }

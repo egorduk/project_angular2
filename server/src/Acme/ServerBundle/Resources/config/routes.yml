@@ -39,13 +39,3 @@ galleries:
     prefix: /v1
     resource: Acme\ServerBundle\Controller\GalleryController
     name_prefix: api_1_ # naming collision
-
-#user_by_id:
-#    type: rest
-#    prefix: /v1
-#    pattern: /users/id/{id}
-#    defaults: { _controller: AcmeServerBundle:User:getUser, _format: ~ }
-#    requirements:
-#        _method: GET
-    #resource: "Acme\\ServerBundle\\Controller\\UserController"
-#    name_prefix: api_1_ # naming collision
